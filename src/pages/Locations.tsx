@@ -7,36 +7,37 @@ import { Button } from "@/components/ui/button";
 
 const locations = [
   {
-    name: "Downtown",
-    address: "123 Main St, Downtown",
-    hours: "11am – 10pm daily",
-    phone: "(555) 100-0001",
-    deal: "Taco Tuesday: 15% off all proteins",
-    mapUrl: "https://maps.google.com/?q=123+Main+St+Downtown",
+    name: "Elk Grove",
+    address: "7419 Laguna Blvd #220, Elk Grove, CA 95624",
+    hours: "Check store for hours",
+    phone: "(916) 585-5714",
+    deal: "Loyalty members: 10% off first visit",
+    mapUrl: "https://maps.google.com/?q=7419+Laguna+Blvd+%23220+Elk+Grove+CA+95624",
   },
   {
-    name: "Midtown",
-    address: "456 Center Ave, Midtown",
-    hours: "11am – 10pm daily",
-    phone: "(555) 100-0002",
-    deal: "Happy Hour: $3 beers M–F 3–6pm",
-    mapUrl: "https://maps.google.com/?q=456+Center+Ave+Midtown",
+    name: "South San Francisco",
+    address: "200 Grand Ave, South San Francisco, CA 94080",
+    hours: "Check store for hours",
+    phone: "(650) 379-8043",
+    deal: "Happy Hour specials daily",
+    mapUrl: "https://maps.google.com/?q=200+Grand+Ave+South+San+Francisco+CA+94080",
   },
   {
-    name: "Westside",
-    address: "789 West Blvd, Westside",
-    hours: "11am – 11pm Fri–Sat, 11am – 10pm otherwise",
-    phone: "(555) 100-0003",
-    deal: "Weekend Special: Free dessert with VIP",
-    mapUrl: "https://maps.google.com/?q=789+West+Blvd+Westside",
+    name: "Downtown Sacramento",
+    address: "606 L Street, Sacramento, CA 95814",
+    hours: "Check store for hours",
+    phone: "(916) 822-4146",
+    deal: "VIP Room & Patio available",
+    mapUrl: "https://maps.google.com/?q=606+L+Street+Sacramento+CA+95814",
+    badge: "NOW OPEN!",
   },
   {
-    name: "Eastgate",
-    address: "321 East Rd, Eastgate",
-    hours: "11:30am – 9:30pm daily",
-    phone: "(555) 100-0004",
-    deal: "Family Night Thu: Kids eat free",
-    mapUrl: "https://maps.google.com/?q=321+East+Rd+Eastgate",
+    name: "Davis",
+    address: "500 1st Street Suite 15, Davis, CA 95616",
+    hours: "Check store for hours",
+    phone: "(530) 298-1678",
+    deal: "College night specials",
+    mapUrl: "https://maps.google.com/?q=500+1st+Street+Suite+15+Davis+CA+95616",
   },
 ];
 
@@ -46,17 +47,18 @@ const LocationsPage = () => (
     <main className="pt-24 pb-16">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h1 className="font-display text-4xl font-bold text-foreground mb-3">Our Locations</h1>
-          <p className="text-muted-foreground text-lg">4 spots serving up warmth and flavor.</p>
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-3 tracking-wider">OUR LOCATIONS</h1>
+          <p className="text-muted-foreground text-lg">4 NorCal spots serving up warmth and flavor.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {locations.map((loc) => (
             <Card key={loc.name} className="border-border">
               <CardHeader>
-                <CardTitle className="font-display text-2xl flex items-center gap-2">
+                <CardTitle className="font-display text-2xl flex items-center gap-2 tracking-wider">
                   <MapPin className="w-5 h-5 text-primary" />
                   {loc.name}
+                  {loc.badge && <Badge className="bg-primary text-primary-foreground text-xs">{loc.badge}</Badge>}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -65,7 +67,8 @@ const LocationsPage = () => (
                   <Clock className="w-4 h-4" /> {loc.hours}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Phone className="w-4 h-4" /> {loc.phone}
+                  <Phone className="w-4 h-4" />
+                  <a href={`tel:${loc.phone}`} className="hover:text-primary transition-colors">{loc.phone}</a>
                 </div>
                 <Badge variant="secondary" className="text-xs">{loc.deal}</Badge>
                 <div className="pt-2">

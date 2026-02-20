@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import heroImage from "@/assets/hero-hotpot.jpg";
+import heroImage from "@/assets/shabu-hero.jpg";
 
 const benefits = [
   {
@@ -25,8 +25,8 @@ const benefits = [
   },
   {
     icon: MapPin,
-    title: "4 Locations",
-    description: "Earn and redeem rewards at any of our 4 Shabu Shack locations.",
+    title: "4 NorCal Locations",
+    description: "Earn and redeem rewards at Elk Grove, SSF, Downtown Sac, and Davis.",
   },
 ];
 
@@ -40,10 +40,10 @@ const Index = () => {
         <div className="absolute inset-0">
           <img
             src={heroImage}
-            alt="Delicious shabu-shabu hot pot with fresh ingredients"
+            alt="Shabu Shack premium hot pot with fresh sliced beef"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-warm-brown/90 via-warm-brown/70 to-warm-brown/40" />
+          <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/75 to-secondary/40" />
         </div>
 
         <div className="relative container mx-auto px-4 py-24 md:py-40">
@@ -53,11 +53,11 @@ const Index = () => {
             transition={{ duration: 0.7 }}
             className="max-w-xl"
           >
-            <h1 className="font-display text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
-              Dip. Swirl. <br />
-              <span className="text-accent">Get Rewarded.</span>
+            <h1 className="font-display text-5xl md:text-7xl font-bold text-secondary-foreground mb-4 leading-none tracking-wider">
+              NORCAL'S #1 <br />
+              <span className="text-primary">HOTPOT</span>
             </h1>
-            <p className="text-lg md:text-xl text-white/80 mb-8">
+            <p className="text-lg md:text-xl text-secondary-foreground/80 mb-8">
               Join Shabu Shack Rewards and earn free meals, exclusive deals, and VIP perks every time you dine with us.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
@@ -68,7 +68,7 @@ const Index = () => {
                 asChild
                 variant="outline"
                 size="lg"
-                className="text-base bg-white/10 border-white/30 text-white hover:bg-white/20"
+                className="text-base bg-secondary-foreground/10 border-secondary-foreground/30 text-secondary-foreground hover:bg-secondary-foreground/20"
               >
                 <Link to="/menu">View Menu</Link>
               </Button>
@@ -86,8 +86,8 @@ const Index = () => {
             viewport={{ once: true }}
             className="text-center mb-14"
           >
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Why Join Shabu Shack Rewards?
+            <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4 tracking-wider">
+              WHY JOIN SHABU SHACK REWARDS?
             </h2>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
               Every visit brings you closer to something delicious.
@@ -108,7 +108,7 @@ const Index = () => {
                     <div className="mx-auto w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                       <b.icon className="w-7 h-7 text-primary" />
                     </div>
-                    <h3 className="font-display text-xl font-semibold mb-2 text-foreground">{b.title}</h3>
+                    <h3 className="font-display text-xl font-semibold mb-2 text-foreground tracking-wide">{b.title}</h3>
                     <p className="text-muted-foreground text-sm">{b.description}</p>
                   </CardContent>
                 </Card>
@@ -128,8 +128,8 @@ const Index = () => {
               viewport={{ once: true }}
               className="flex-1"
             >
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Your Digital Punch Card
+              <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4 tracking-wider">
+                YOUR DIGITAL PUNCH CARD
               </h2>
               <p className="text-muted-foreground text-lg mb-6">
                 No more paper cards. Track your progress digitally across all 4 locations. Every 10th visit earns you a free meal!
@@ -148,7 +148,7 @@ const Index = () => {
               <Card className="bg-gradient-to-br from-primary to-secondary p-1 rounded-2xl">
                 <div className="bg-background rounded-xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-display text-lg font-semibold text-foreground">Punch Card</span>
+                    <span className="font-display text-lg font-semibold text-foreground tracking-wider">PUNCH CARD</span>
                     <span className="text-sm text-muted-foreground">7 / 10</span>
                   </div>
                   <div className="grid grid-cols-5 gap-3 mb-4">
@@ -183,11 +183,11 @@ const Index = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
-              Ready to Start Earning?
+            <h2 className="font-display text-3xl md:text-5xl font-bold mb-4 tracking-wider">
+              READY TO START EARNING?
             </h2>
             <p className="text-lg opacity-90 mb-8 max-w-lg mx-auto">
-              Join thousands of shabu lovers and get rewarded for every visit.
+              Join thousands of shabu lovers across NorCal and get rewarded for every visit.
             </p>
             <Button
               asChild

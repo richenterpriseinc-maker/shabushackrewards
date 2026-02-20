@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import logo from "@/assets/shabu-shack-logo.png";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -14,11 +15,10 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-secondary/95 backdrop-blur-md border-b border-border">
       <div className="container mx-auto flex items-center justify-between h-16 px-4">
         <Link to="/" className="flex items-center gap-2">
-          <span className="text-2xl">🍲</span>
-          <span className="font-display text-xl font-bold text-foreground">Shabu Shack</span>
+          <img src={logo} alt="Shabu Shack" className="h-10" />
         </Link>
 
         {/* Desktop */}
@@ -27,7 +27,7 @@ const Navbar = () => {
             <Link
               key={l.to}
               to={l.to}
-              className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              className="text-sm font-medium text-secondary-foreground/70 hover:text-primary transition-colors tracking-wide uppercase"
             >
               {l.label}
             </Link>
@@ -38,19 +38,19 @@ const Navbar = () => {
         </div>
 
         {/* Mobile toggle */}
-        <button className="md:hidden text-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
+        <button className="md:hidden text-secondary-foreground" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="md:hidden bg-background border-b border-border px-4 pb-4 space-y-3">
+        <div className="md:hidden bg-secondary border-b border-border px-4 pb-4 space-y-3">
           {links.map((l) => (
             <Link
               key={l.to}
               to={l.to}
-              className="block text-sm font-medium text-muted-foreground hover:text-primary"
+              className="block text-sm font-medium text-secondary-foreground/70 hover:text-primary uppercase tracking-wide"
               onClick={() => setMobileOpen(false)}
             >
               {l.label}
