@@ -7,6 +7,10 @@ import { Input } from "@/components/ui/input";
 import { Gift, PartyPopper, Cake, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+const WHITELISTED_EMAILS = [
+  "ssdavisca@gmail.com",
+];
+
 const LOCATION_PINS: Record<string, string> = {
   "Elk Grove": "8888",
   "South San Francisco": "7777",
@@ -32,6 +36,8 @@ const BirthdayWheel: React.FC = () => {
   const [pinError, setPinError] = useState("");
   const [verified, setVerified] = useState(false);
   const [verifiedLocation, setVerifiedLocation] = useState("");
+  const [email, setEmail] = useState("");
+  const [verifyMethod, setVerifyMethod] = useState<"pin" | "email" | null>(null);
   const [result, setResult] = useState<WheelSlice | null>(null);
   const [hasSpun, setHasSpun] = useState(false);
 
@@ -45,6 +51,18 @@ const BirthdayWheel: React.FC = () => {
       setPinError("");
     } else {
       setPinError("Invalid PIN. Ask your server for today's code!");
+    }
+  };
+
+  const handleEmailVerify = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmedEmail = email.trim().toLowerCase();
+    if (WHITELISTED_EMAILS.includes(trimmedEmail)) {
+      setVerified(true);
+      setVerifiedLocation("VIP Guest");
+      setPinError("");
+    } else {
+      setPinError("This email is not on the birthday list.");
     }
   };
 
@@ -83,31 +101,66 @@ const BirthdayWheel: React.FC = () => {
               >
                 <Lock className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
                 <h2 className="font-display text-2xl text-foreground mb-2">
-                  Enter Your Location PIN
+                  Verify to Spin
                 </h2>
                 <p className="text-muted-foreground text-sm mb-6">
-                  Ask your server for the 4-digit birthday PIN to unlock the wheel.
+                  Enter your location PIN or your registered email to unlock the wheel.
                 </p>
-                <form onSubmit={handleVerify} className="flex flex-col gap-4 max-w-xs mx-auto">
-                  <Input
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={4}
-                    placeholder="Enter 4-digit PIN"
-                    value={pin}
-                    onChange={(e) => {
-                      setPin(e.target.value.replace(/\D/g, "").slice(0, 4));
-                      setPinError("");
-                    }}
-                    className="text-center text-2xl tracking-[0.5em] font-mono"
-                  />
-                  {pinError && (
-                    <p className="text-destructive text-sm">{pinError}</p>
-                  )}
-                  <Button type="submit" disabled={pin.length < 4} className="font-display text-lg tracking-wider">
-                    Unlock Wheel
+
+                {/* Toggle between PIN and Email */}
+                <div className="flex gap-2 justify-center mb-6">
+                  <Button
+                    type="button"
+                    variant={verifyMethod !== "email" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => { setVerifyMethod("pin"); setPinError(""); }}
+                  >
+                    Location PIN
                   </Button>
-                </form>
+                  <Button
+                    type="button"
+                    variant={verifyMethod === "email" ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => { setVerifyMethod("email"); setPinError(""); }}
+                  >
+                    Email
+                  </Button>
+                </div>
+
+                {verifyMethod === "email" ? (
+                  <form onSubmit={handleEmailVerify} className="flex flex-col gap-4 max-w-xs mx-auto">
+                    <Input
+                      type="email"
+                      placeholder="your@email.com"
+                      value={email}
+                      onChange={(e) => { setEmail(e.target.value); setPinError(""); }}
+                      className="text-center"
+                    />
+                    {pinError && <p className="text-destructive text-sm">{pinError}</p>}
+                    <Button type="submit" disabled={!email.includes("@")} className="font-display text-lg tracking-wider">
+                      Verify Email
+                    </Button>
+                  </form>
+                ) : (
+                  <form onSubmit={handleVerify} className="flex flex-col gap-4 max-w-xs mx-auto">
+                    <Input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={4}
+                      placeholder="Enter 4-digit PIN"
+                      value={pin}
+                      onChange={(e) => {
+                        setPin(e.target.value.replace(/\D/g, "").slice(0, 4));
+                        setPinError("");
+                      }}
+                      className="text-center text-2xl tracking-[0.5em] font-mono"
+                    />
+                    {pinError && <p className="text-destructive text-sm">{pinError}</p>}
+                    <Button type="submit" disabled={pin.length < 4} className="font-display text-lg tracking-wider">
+                      Unlock Wheel
+                    </Button>
+                  </form>
+                )}
               </motion.div>
             ) : (
               /* ---- WHEEL ---- */
