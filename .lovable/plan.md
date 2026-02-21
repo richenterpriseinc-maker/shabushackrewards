@@ -16,17 +16,15 @@ A warm, inviting web app that rewards your loyal customers and drives foot traff
 - Simple profile with name, phone, and favorite location
 - Returning customers can sign in instantly
 
-## 3. Digital Punch Card & Rewards
-- Visual punch card that tracks visits across all 4 locations
-- Progress indicator showing how close they are to their next reward (e.g., "3 more visits until a free meal!")
-- Reward history so customers can see what they've earned
+## 3. Hybrid Rewards System (Points + Punch Card + Prepaid)
+- **Points:** Earn 1 pt per $1 spent (VIP gets 2x). Redeem for dishes, drinks, meals.
+- **Punch Card:** Visual 10-visit punch card → free meal. Tracks across all locations.
+- **Prepaid Balance:** Load $50+ for bonus credit ($50→$55, $100→$110, $200→$230, $500→$600). VIP gets higher bonuses.
+- **Reward History:** Full activity log showing points earned, punches, redemptions, and balance loads.
 
-## 4. Membership Subscription (VIP Tier)
-- Optional paid monthly VIP membership with premium perks:
-  - % discount on every visit
-  - Birthday reward (free dish or dessert)
-  - Early access to new menu items
-  - Priority seating or reservations
+## 4. Membership Tiers (Free + VIP)
+- **Free:** Punch card, 1x points, prepaid balance, public deals
+- **VIP ($9.99/mo):** Everything free + 15% off, 2x points, birthday reward, early menu access, priority seating, members-only deals, higher prepaid bonuses
 - Stripe-powered subscription billing
 
 ## 5. Exclusive Deals & Promotions
