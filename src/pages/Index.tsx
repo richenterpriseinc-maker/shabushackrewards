@@ -10,23 +10,23 @@ import heroImage from "@/assets/shabu-hero.jpg";
 const benefits = [
   {
     icon: Gift,
-    title: "Earn Rewards",
-    description: "Collect punches with every visit. 10 punches = a free meal on us!",
+    title: "Points + Punches",
+    description: "Earn 1 pt per $1 spent and collect punches. 10 visits = a free meal!",
   },
   {
     icon: Star,
-    title: "VIP Perks",
-    description: "Upgrade to VIP for discounts, birthday rewards, and priority seating.",
+    title: "VIP Membership",
+    description: "15% off every visit, 2x points, birthday rewards, and priority seating.",
   },
   {
     icon: Utensils,
-    title: "Exclusive Deals",
-    description: "Members-only promotions and flash deals at all locations.",
+    title: "Prepaid & Save",
+    description: "Load funds for bonus credit. The more you load, the more you earn.",
   },
   {
     icon: MapPin,
     title: "4 NorCal Locations",
-    description: "Earn and redeem rewards at Elk Grove, SSF, Downtown Sac, and Davis.",
+    description: "Earn and redeem across Elk Grove, SSF, Downtown Sac, and Davis.",
   },
 ];
 
