@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Gift, Crown, MapPin, Tag, Coins, Wallet, History, TrendingUp, Utensils } from "lucide-react";
+import { Gift, Crown, MapPin, Tag, Coins, Wallet, History, TrendingUp, Utensils, Cake } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -202,6 +202,24 @@ const RewardsPage = () => {
                     </div>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Birthday Wheel CTA */}
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+            <Card className="mb-8 border-warm-gold bg-warm-gold/5">
+              <CardContent className="py-6 flex flex-col sm:flex-row items-center gap-4">
+                <Cake className="w-10 h-10 text-warm-gold" />
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="font-display text-xl font-semibold text-foreground mb-1">🎂 Birthday? Spin the Wheel!</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Visit any Shabu Shack on your birthday and spin for a free prize — in-store only!
+                  </p>
+                </div>
+                <Button asChild className="bg-warm-gold hover:bg-warm-gold/90 text-secondary">
+                  <Link to="/birthday">Spin Now</Link>
+                </Button>
               </CardContent>
             </Card>
           </motion.div>

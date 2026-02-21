@@ -9,6 +9,7 @@ import Locations from "./pages/Locations";
 import Deals from "./pages/Deals";
 import Rewards from "./pages/Rewards";
 import Join from "./pages/Join";
+import BirthdayWheel from "./pages/BirthdayWheel";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/deals" element={<Deals />} />
           <Route path="/rewards" element={<Rewards />} />
           <Route path="/join" element={<Join />} />
+          <Route path="/birthday" element={<BirthdayWheel />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
