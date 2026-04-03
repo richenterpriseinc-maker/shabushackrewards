@@ -42,6 +42,22 @@ const BirthdayWheel: React.FC = () => {
   const [verifyMethod, setVerifyMethod] = useState<"pin" | "email" | null>(null);
   const [result, setResult] = useState<WheelSlice | null>(null);
   const [hasSpun, setHasSpun] = useState(false);
+  const geoRef = useRef<{ latitude: number; longitude: number } | null>(null);
+  const [geoStatus, setGeoStatus] = useState<"idle" | "granted" | "denied">("idle");
+
+  // Request geolocation on mount
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          geoRef.current = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+          setGeoStatus("granted");
+        },
+        () => setGeoStatus("denied"),
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+  }, []);
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,9 +84,26 @@ const BirthdayWheel: React.FC = () => {
     }
   };
 
-  const handleResult = (slice: WheelSlice) => {
+  const handleResult = async (slice: WheelSlice) => {
     setResult(slice);
     setHasSpun(true);
+
+    // Save spin with geolocation to database
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const geo = geoRef.current;
+        await supabase.from("birthday_spins").insert({
+          user_id: user.id,
+          prize_type: slice.label.includes("Points") ? "points" : slice.label.includes("Off") ? "discount" : "free_item",
+          prize_value: slice.label,
+          latitude: geo?.latitude ?? null,
+          longitude: geo?.longitude ?? null,
+        } as any);
+      }
+    } catch (err) {
+      console.error("Failed to save spin:", err);
+    }
   };
 
   return (
