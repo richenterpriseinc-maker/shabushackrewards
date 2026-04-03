@@ -18,7 +18,9 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          latitude: number | null
           location_id: string | null
+          longitude: number | null
           prize_type: string
           prize_value: string
           spin_date: string
@@ -27,7 +29,9 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          latitude?: number | null
           location_id?: string | null
+          longitude?: number | null
           prize_type: string
           prize_value: string
           spin_date?: string
@@ -36,7 +40,9 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          latitude?: number | null
           location_id?: string | null
+          longitude?: number | null
           prize_type?: string
           prize_value?: string
           spin_date?: string
@@ -126,6 +132,8 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          latitude: number | null
+          longitude: number | null
           related_visit_id: string | null
           type: Database["public"]["Enums"]["points_type"]
           user_id: string
@@ -135,6 +143,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           related_visit_id?: string | null
           type: Database["public"]["Enums"]["points_type"]
           user_id: string
@@ -144,6 +154,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          latitude?: number | null
+          longitude?: number | null
           related_visit_id?: string | null
           type?: Database["public"]["Enums"]["points_type"]
           user_id?: string
