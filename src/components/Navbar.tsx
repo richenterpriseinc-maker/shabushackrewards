@@ -8,7 +8,6 @@ const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const links = [
-    { to: "/menu", label: "Menu" },
     { to: "/deals", label: "Deals" },
     { to: "/locations", label: "Locations" },
     { to: "/rewards", label: "Rewards" },
