@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SpinWheel, { type WheelSlice } from "@/components/SpinWheel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Gift, PartyPopper, Cake, Lock } from "lucide-react";
+import { Gift, PartyPopper, Cake, Lock, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const WHITELISTED_EMAILS = [
   "ssdavisca@gmail.com",
@@ -40,6 +42,22 @@ const BirthdayWheel: React.FC = () => {
   const [verifyMethod, setVerifyMethod] = useState<"pin" | "email" | null>(null);
   const [result, setResult] = useState<WheelSlice | null>(null);
   const [hasSpun, setHasSpun] = useState(false);
+  const geoRef = useRef<{ latitude: number; longitude: number } | null>(null);
+  const [geoStatus, setGeoStatus] = useState<"idle" | "granted" | "denied">("idle");
+
+  // Request geolocation on mount
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          geoRef.current = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+          setGeoStatus("granted");
+        },
+        () => setGeoStatus("denied"),
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    }
+  }, []);
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
@@ -66,9 +84,26 @@ const BirthdayWheel: React.FC = () => {
     }
   };
 
-  const handleResult = (slice: WheelSlice) => {
+  const handleResult = async (slice: WheelSlice) => {
     setResult(slice);
     setHasSpun(true);
+
+    // Save spin with geolocation to database
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const geo = geoRef.current;
+        await supabase.from("birthday_spins").insert({
+          user_id: user.id,
+          prize_type: slice.label.includes("Points") ? "points" : slice.label.includes("Off") ? "discount" : "free_item",
+          prize_value: slice.label,
+          latitude: geo?.latitude ?? null,
+          longitude: geo?.longitude ?? null,
+        } as any);
+      }
+    } catch (err) {
+      console.error("Failed to save spin:", err);
+    }
   };
 
   return (
@@ -173,6 +208,18 @@ const BirthdayWheel: React.FC = () => {
                 <p className="text-sm text-muted-foreground">
                   📍 Verified at <span className="font-semibold text-foreground">{verifiedLocation}</span>
                 </p>
+                {geoStatus === "granted" && geoRef.current && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    Location tracked ({geoRef.current.latitude.toFixed(4)}, {geoRef.current.longitude.toFixed(4)})
+                  </p>
+                )}
+                {geoStatus === "denied" && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    Location access denied — spin won't be geo-tagged
+                  </p>
+                )}
 
                 <SpinWheel
                   slices={WHEEL_SLICES}
