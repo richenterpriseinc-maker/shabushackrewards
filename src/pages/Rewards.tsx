@@ -1,28 +1,32 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Gift, Crown, MapPin, Tag, Coins, Wallet, History, TrendingUp, Utensils, Cake } from "lucide-react";
+import { Gift, Crown, MapPin, Tag, Coins, Wallet, History, TrendingUp, Utensils, Cake, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { useRewardsData } from "@/hooks/use-rewards-data";
+import { supabase } from "@/integrations/supabase/client";
 
 const RewardsPage = () => {
-  // Mock data — will be dynamic with backend
-  const punches = 7;
-  const total = 10;
-  const points = 1_340;
-  const prepaidBalance = 110;
-  const tier = "Free"; // or "VIP"
+  const navigate = useNavigate();
+  const { profile, punchCard, prepaid, points, activity, isLoading, isAuthenticated } = useRewardsData();
 
-  const rewardHistory = [
-    { date: "Feb 10", action: "Earned 42 pts", location: "Elk Grove", type: "earn" },
-    { date: "Feb 3", action: "Punch #7", location: "Davis", type: "punch" },
-    { date: "Jan 28", action: "Redeemed: Free Drink", location: "Downtown Sac", type: "redeem" },
-    { date: "Jan 20", action: "Earned 38 pts", location: "SSF", type: "earn" },
-    { date: "Jan 14", action: "Loaded $100 → $110", location: "—", type: "prepaid" },
-  ];
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) navigate("/login");
+    });
+  }, [navigate]);
+
+  const punches = punchCard?.punches_count ?? 0;
+  const completedCards = punchCard?.completed_cards ?? 0;
+  const total = 10;
+  const prepaidBalance = Number(prepaid?.balance ?? 0) + Number(prepaid?.bonus_credits ?? 0);
+  const tier = profile?.membership_tier === "vip" ? "VIP" : "Free";
 
   const redeemableRewards = [
     { name: "Free Drink", cost: 200 },
@@ -31,6 +35,18 @@ const RewardsPage = () => {
     { name: "Free Meal", cost: 1500 },
   ];
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="pt-24 pb-16 flex items-center justify-center min-h-[60vh]">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -38,7 +54,9 @@ const RewardsPage = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-12">
             <h1 className="font-display text-4xl font-bold text-foreground mb-3 tracking-wider">YOUR REWARDS</h1>
-            <p className="text-muted-foreground text-lg">Track points, punches, and perks — all in one place.</p>
+            <p className="text-muted-foreground text-lg">
+              {profile?.name ? `Welcome back, ${profile.name}!` : "Track points, punches, and perks — all in one place."}
+            </p>
           </div>
 
           {/* Stats Row */}
@@ -46,7 +64,7 @@ const RewardsPage = () => {
             {[
               { icon: Coins, label: "Points", value: points.toLocaleString(), color: "text-primary" },
               { icon: Gift, label: "Punches", value: `${punches}/${total}`, color: "text-primary" },
-              { icon: Wallet, label: "Balance", value: `$${prepaidBalance}`, color: "text-accent" },
+              { icon: Wallet, label: "Balance", value: `$${prepaidBalance.toFixed(2)}`, color: "text-accent" },
               { icon: Crown, label: "Tier", value: tier, color: "text-accent" },
             ].map((stat, i) => (
               <motion.div key={stat.label} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
@@ -67,7 +85,9 @@ const RewardsPage = () => {
               <div className="bg-background rounded-xl p-6">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-display text-lg font-semibold text-foreground tracking-wide">PUNCH CARD</span>
-                  <span className="text-sm text-muted-foreground">{punches} / {total}</span>
+                  <span className="text-sm text-muted-foreground">
+                    {punches} / {total} {completedCards > 0 && `(${completedCards} completed)`}
+                  </span>
                 </div>
                 <div className="grid grid-cols-5 gap-3 mb-4">
                   {Array.from({ length: total }).map((_, i) => (
@@ -85,7 +105,10 @@ const RewardsPage = () => {
                 </div>
                 <Progress value={(punches / total) * 100} className="mb-2" />
                 <p className="text-center text-sm text-muted-foreground">
-                  {total - punches} more visits until your <strong className="text-primary">free meal!</strong>
+                  {punches >= total
+                    ? <strong className="text-primary">You've earned a free meal! 🎉</strong>
+                    : <>{total - punches} more visits until your <strong className="text-primary">free meal!</strong></>
+                  }
                 </p>
               </div>
             </Card>
@@ -93,7 +116,6 @@ const RewardsPage = () => {
 
           {/* Points Redemption + Prepaid Balance */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {/* Redeem Points */}
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
               <Card className="h-full border-border">
                 <CardContent className="py-5">
@@ -102,7 +124,7 @@ const RewardsPage = () => {
                     <h3 className="font-display text-lg font-semibold text-foreground tracking-wide">REDEEM POINTS</h3>
                   </div>
                   <p className="text-sm text-muted-foreground mb-4">
-                    You have <strong className="text-foreground">{points.toLocaleString()} pts</strong>. Earn 1 pt per $1 spent.
+                    You have <strong className="text-foreground">{points.toLocaleString()} pts</strong>. Earn {tier === "VIP" ? "2" : "1"} pt per $1 spent.
                   </p>
                   <div className="space-y-2">
                     {redeemableRewards.map((r) => (
@@ -121,7 +143,6 @@ const RewardsPage = () => {
               </Card>
             </motion.div>
 
-            {/* Prepaid Balance */}
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
               <Card className="h-full border-border">
                 <CardContent className="py-5">
@@ -130,7 +151,7 @@ const RewardsPage = () => {
                     <h3 className="font-display text-lg font-semibold text-foreground tracking-wide">PREPAID BALANCE</h3>
                   </div>
                   <p className="text-sm text-muted-foreground mb-2">
-                    Current balance: <strong className="text-foreground text-lg">${prepaidBalance}</strong>
+                    Current balance: <strong className="text-foreground text-lg">${prepaidBalance.toFixed(2)}</strong>
                   </p>
                   <p className="text-xs text-muted-foreground mb-4">
                     Load funds and get bonus credit. The more you load, the more you save!
@@ -141,11 +162,11 @@ const RewardsPage = () => {
                       { load: 100, bonus: 10 },
                       { load: 200, bonus: 30 },
                       { load: 500, bonus: 100 },
-                    ].map((tier) => (
-                      <div key={tier.load} className="flex items-center justify-between p-2 rounded-lg border border-border">
+                    ].map((t) => (
+                      <div key={t.load} className="flex items-center justify-between p-2 rounded-lg border border-border">
                         <div>
-                          <span className="text-sm text-foreground font-medium">${tier.load}</span>
-                          <span className="text-xs text-primary ml-2">+${tier.bonus} bonus</span>
+                          <span className="text-sm text-foreground font-medium">${t.load}</span>
+                          <span className="text-xs text-primary ml-2">+${t.bonus} bonus</span>
                         </div>
                         <Button size="sm" variant="outline" className="text-xs h-7">
                           Load
@@ -158,7 +179,7 @@ const RewardsPage = () => {
             </motion.div>
           </div>
 
-          {/* VIP Upsell (show only for Free tier) */}
+          {/* VIP Upsell */}
           {tier === "Free" && (
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
               <Card className="mb-8 border-accent bg-accent/5">
@@ -186,22 +207,28 @@ const RewardsPage = () => {
                   <History className="w-5 h-5 text-primary" />
                   <h3 className="font-display text-lg font-semibold text-foreground tracking-wide">RECENT ACTIVITY</h3>
                 </div>
-                <div className="space-y-3">
-                  {rewardHistory.map((entry, i) => (
-                    <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                      <div className="flex items-center gap-3">
-                        <Badge variant={entry.type === "redeem" ? "default" : "secondary"} className="text-xs">
-                          {entry.type === "earn" ? "Points" : entry.type === "punch" ? "Punch" : entry.type === "redeem" ? "Redeemed" : "Loaded"}
-                        </Badge>
-                        <span className="text-sm text-foreground">{entry.action}</span>
+                {activity.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">
+                    No activity yet. Visit a Shabu Shack to start earning rewards!
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {activity.map((entry, i) => (
+                      <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                        <div className="flex items-center gap-3">
+                          <Badge variant={entry.type === "redeem" ? "default" : "secondary"} className="text-xs">
+                            {entry.type === "earn" ? "Points" : entry.type === "redeem" ? "Redeemed" : entry.type === "spin" ? "Birthday" : "Other"}
+                          </Badge>
+                          <span className="text-sm text-foreground">{entry.action}</span>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-muted-foreground">{entry.location}</p>
+                          <p className="text-xs text-muted-foreground">{entry.date}</p>
+                        </div>
                       </div>
-                      <div className="text-right">
-                        <p className="text-xs text-muted-foreground">{entry.location}</p>
-                        <p className="text-xs text-muted-foreground">{entry.date}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </motion.div>
