@@ -159,8 +159,8 @@ const RewardsPage = () => {
                   <div className="space-y-2">
                     {[
                       { load: 50, bonus: 5 },
-                      { load: 100, bonus: 10 },
-                      { load: 200, bonus: 30 },
+                      { load: 100, bonus: 20 },
+                      { load: 200, bonus: 40 },
                       { load: 500, bonus: 100 },
                     ].map((t) => (
                       <div key={t.load} className="flex items-center justify-between p-2 rounded-lg border border-border">
