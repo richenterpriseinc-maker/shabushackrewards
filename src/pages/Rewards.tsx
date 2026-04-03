@@ -165,7 +165,7 @@ const RewardsPage = () => {
                 <CardContent className="py-6 flex flex-col sm:flex-row items-center gap-4">
                   <Crown className="w-10 h-10 text-accent" />
                   <div className="flex-1 text-center sm:text-left">
-                    <h3 className="font-display text-xl font-semibold text-foreground mb-1">Upgrade to VIP — $9.99/mo</h3>
+                    <h3 className="font-display text-xl font-semibold text-foreground mb-1">Upgrade to VIP — $2.49/mo or $24.99/yr</h3>
                     <p className="text-sm text-muted-foreground">
                       15% off every visit, birthday reward, early menu access, priority seating, and 2x points.
                     </p>
