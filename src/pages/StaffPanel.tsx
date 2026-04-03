@@ -236,7 +236,7 @@ const StaffPanel: React.FC = () => {
     }
     setActionLoading(true);
     try {
-      const bonus = amount >= 100 ? amount * 0.1 : amount >= 50 ? amount * 0.05 : 0;
+      const bonus = amount >= 100 ? amount * 0.2 : amount >= 50 ? amount * 0.1 : 0;
       await supabase
         .from("prepaid_balances")
         .update({
