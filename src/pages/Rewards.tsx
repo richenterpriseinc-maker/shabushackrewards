@@ -16,10 +16,13 @@ import { QRCodeSVG } from "qrcode.react";
 const RewardsPage = () => {
   const navigate = useNavigate();
   const { profile, punchCard, prepaid, points, activity, isLoading, isAuthenticated } = useRewardsData();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [showQR, setShowQR] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) navigate("/login");
+      else setUserId(session.user.id);
     });
   }, [navigate]);
 
