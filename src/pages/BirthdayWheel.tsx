@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SpinWheel, { type WheelSlice } from "@/components/SpinWheel";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Gift, PartyPopper, Cake, Lock } from "lucide-react";
+import { Gift, PartyPopper, Cake, Lock, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const WHITELISTED_EMAILS = [
   "ssdavisca@gmail.com",
