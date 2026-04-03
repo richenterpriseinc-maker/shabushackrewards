@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,8 @@ import {
   LogOut,
   User,
   MapPin,
+  Camera,
+  X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
