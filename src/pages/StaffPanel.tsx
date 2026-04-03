@@ -52,11 +52,73 @@ const StaffPanel: React.FC = () => {
   const [searching, setSearching] = useState(false);
   const [customer, setCustomer] = useState<CustomerData | null>(null);
 
+  // Scanner state
+  const [showScanner, setShowScanner] = useState(false);
+  const scannerRef = useRef<any>(null);
+  const scannerContainerId = "qr-scanner-region";
+
   // Action states
   const [pointsAmount, setPointsAmount] = useState("");
   const [pointsDesc, setPointsDesc] = useState("");
   const [loadAmount, setLoadAmount] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+
+  const handleQrScan = useCallback((decodedText: string) => {
+    setSearchQuery(decodedText);
+    setShowScanner(false);
+    // Auto-submit search
+    setTimeout(() => {
+      const form = document.querySelector<HTMLFormElement>("#staff-search-form");
+      form?.requestSubmit();
+    }, 100);
+  }, []);
+
+  useEffect(() => {
+    if (!showScanner) {
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(() => {});
+        scannerRef.current = null;
+      }
+      return;
+    }
+
+    let cancelled = false;
+
+    const startScanner = async () => {
+      const { Html5QrcodeScanner } = await import("html5-qrcode");
+      if (cancelled) return;
+
+      const scanner = new Html5QrcodeScanner(
+        scannerContainerId,
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+          rememberLastUsedCamera: true,
+        },
+        false
+      );
+
+      scanner.render(
+        (decodedText: string) => {
+          handleQrScan(decodedText);
+          scanner.clear().catch(() => {});
+        },
+        () => {} // ignore errors
+      );
+
+      scannerRef.current = scanner;
+    };
+
+    startScanner();
+
+    return () => {
+      cancelled = true;
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(() => {});
+        scannerRef.current = null;
+      }
+    };
+  }, [showScanner, handleQrScan]);
 
   const handlePinLogin = async (e: React.FormEvent) => {
     e.preventDefault();
