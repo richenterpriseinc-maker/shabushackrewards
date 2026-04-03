@@ -415,18 +415,40 @@ const StaffPanel: React.FC = () => {
       <div className="max-w-lg mx-auto p-4 space-y-4">
         {/* Customer Search */}
         <Card>
-          <CardContent className="pt-4">
-            <form onSubmit={handleSearch} className="flex gap-2">
+          <CardContent className="pt-4 space-y-3">
+            <form id="staff-search-form" onSubmit={handleSearch} className="flex gap-2">
               <Input
                 placeholder="Phone, name, or scan QR..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1"
               />
+              <Button
+                type="button"
+                size="icon"
+                variant={showScanner ? "destructive" : "outline"}
+                onClick={() => setShowScanner(!showScanner)}
+              >
+                {showScanner ? <X className="w-4 h-4" /> : <Camera className="w-4 h-4" />}
+              </Button>
               <Button type="submit" disabled={searching} size="icon">
                 <Search className="w-4 h-4" />
               </Button>
             </form>
+
+            {/* QR Scanner */}
+            <AnimatePresence>
+              {showScanner && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden rounded-lg"
+                >
+                  <div id={scannerContainerId} className="w-full" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </CardContent>
         </Card>
 
