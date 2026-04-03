@@ -53,7 +53,7 @@ const JoinPage = () => (
               </div>
               <CardHeader className="text-center">
                 <CardTitle className="font-display text-2xl tracking-wide">VIP MEMBERSHIP</CardTitle>
-                <p className="text-3xl font-bold text-foreground mt-2">$9.99 <span className="text-base font-normal text-muted-foreground">/ month</span></p>
+                <p className="text-3xl font-bold text-foreground mt-2">$2.49 <span className="text-base font-normal text-muted-foreground">/ month</span> <span className="block text-sm text-muted-foreground mt-1">or $24.99/year (save 16%)</span></p>
               </CardHeader>
               <CardContent className="space-y-4">
                 <ul className="space-y-3">

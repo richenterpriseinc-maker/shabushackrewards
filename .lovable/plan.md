@@ -24,7 +24,7 @@ A warm, inviting web app that rewards your loyal customers and drives foot traff
 
 ## 4. Membership Tiers (Free + VIP)
 - **Free:** Punch card, 1x points, prepaid balance, public deals
-- **VIP ($9.99/mo):** Everything free + 15% off, 2x points, birthday reward, early menu access, priority seating, members-only deals, higher prepaid bonuses
+- **VIP ($2.49/mo or $24.99/yr):** Everything free + 15% off, 2x points, birthday reward, early menu access, priority seating, members-only deals, higher prepaid bonuses
 - Stripe-powered subscription billing
 
 ## 5. Exclusive Deals & Promotions
