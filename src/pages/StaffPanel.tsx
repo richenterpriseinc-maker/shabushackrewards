@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,8 @@ import {
   LogOut,
   User,
   MapPin,
+  Camera,
+  X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -50,11 +52,73 @@ const StaffPanel: React.FC = () => {
   const [searching, setSearching] = useState(false);
   const [customer, setCustomer] = useState<CustomerData | null>(null);
 
+  // Scanner state
+  const [showScanner, setShowScanner] = useState(false);
+  const scannerRef = useRef<any>(null);
+  const scannerContainerId = "qr-scanner-region";
+
   // Action states
   const [pointsAmount, setPointsAmount] = useState("");
   const [pointsDesc, setPointsDesc] = useState("");
   const [loadAmount, setLoadAmount] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+
+  const handleQrScan = useCallback((decodedText: string) => {
+    setSearchQuery(decodedText);
+    setShowScanner(false);
+    // Auto-submit search
+    setTimeout(() => {
+      const form = document.querySelector<HTMLFormElement>("#staff-search-form");
+      form?.requestSubmit();
+    }, 100);
+  }, []);
+
+  useEffect(() => {
+    if (!showScanner) {
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(() => {});
+        scannerRef.current = null;
+      }
+      return;
+    }
+
+    let cancelled = false;
+
+    const startScanner = async () => {
+      const { Html5QrcodeScanner } = await import("html5-qrcode");
+      if (cancelled) return;
+
+      const scanner = new Html5QrcodeScanner(
+        scannerContainerId,
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+          rememberLastUsedCamera: true,
+        },
+        false
+      );
+
+      scanner.render(
+        (decodedText: string) => {
+          handleQrScan(decodedText);
+          scanner.clear().catch(() => {});
+        },
+        () => {} // ignore errors
+      );
+
+      scannerRef.current = scanner;
+    };
+
+    startScanner();
+
+    return () => {
+      cancelled = true;
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(() => {});
+        scannerRef.current = null;
+      }
+    };
+  }, [showScanner, handleQrScan]);
 
   const handlePinLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -351,18 +415,40 @@ const StaffPanel: React.FC = () => {
       <div className="max-w-lg mx-auto p-4 space-y-4">
         {/* Customer Search */}
         <Card>
-          <CardContent className="pt-4">
-            <form onSubmit={handleSearch} className="flex gap-2">
+          <CardContent className="pt-4 space-y-3">
+            <form id="staff-search-form" onSubmit={handleSearch} className="flex gap-2">
               <Input
                 placeholder="Phone, name, or scan QR..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1"
               />
+              <Button
+                type="button"
+                size="icon"
+                variant={showScanner ? "destructive" : "outline"}
+                onClick={() => setShowScanner(!showScanner)}
+              >
+                {showScanner ? <X className="w-4 h-4" /> : <Camera className="w-4 h-4" />}
+              </Button>
               <Button type="submit" disabled={searching} size="icon">
                 <Search className="w-4 h-4" />
               </Button>
             </form>
+
+            {/* QR Scanner */}
+            <AnimatePresence>
+              {showScanner && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="overflow-hidden rounded-lg"
+                >
+                  <div id={scannerContainerId} className="w-full" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </CardContent>
         </Card>
 
