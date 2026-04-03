@@ -83,6 +83,53 @@ const RewardsPage = () => {
             ))}
           </div>
 
+          {/* QR Code for Staff Scan */}
+          {userId && (
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+              <Card className="mb-8 border-border">
+                <CardContent className="py-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <QrCode className="w-5 h-5 text-primary" />
+                      <h3 className="font-display text-lg font-semibold text-foreground tracking-wide">MY QR CODE</h3>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setShowQR(!showQR)}
+                      className="text-xs"
+                    >
+                      {showQR ? "Hide" : "Show"}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Show this to staff to earn punches, points, and rewards instantly.
+                  </p>
+                  {showQR && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="flex flex-col items-center gap-3"
+                    >
+                      <div className="bg-white p-4 rounded-xl shadow-inner">
+                        <QRCodeSVG
+                          value={`shabu:${userId}`}
+                          size={180}
+                          bgColor="#ffffff"
+                          fgColor="#1a1a1a"
+                          level="M"
+                        />
+                      </div>
+                      <p className="text-[10px] text-muted-foreground font-mono">
+                        {profile?.name || "Member"}
+                      </p>
+                    </motion.div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
           {/* Punch Card */}
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <Card className="mb-8 bg-gradient-to-br from-primary to-secondary p-1 rounded-2xl">
