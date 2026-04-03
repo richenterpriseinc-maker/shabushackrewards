@@ -40,7 +40,10 @@ const Footer = () => (
         </div>
       </div>
       <div className="border-t border-secondary-foreground/20 mt-8 pt-6 text-center text-sm opacity-60">
-        © 2026 Shabu Shack. All rights reserved.
+        <p>© 2026 Shabu Shack. All rights reserved.</p>
+        <Link to="/staff" className="inline-block mt-2 text-[10px] opacity-30 hover:opacity-60 transition-opacity">
+          Staff Portal
+        </Link>
       </div>
     </div>
   </footer>
