@@ -504,7 +504,7 @@ const StaffPanel: React.FC = () => {
                 </CardHeader>
                 <CardContent className="px-4 pb-4 space-y-2">
                   <p className="text-xs text-muted-foreground">
-                    Load $50+ → 5% bonus • Load $100+ → 10% bonus
+                    Load $50+ → 10% bonus • Load $100+ → 20% bonus
                   </p>
                   <div className="flex gap-2">
                     <Input
