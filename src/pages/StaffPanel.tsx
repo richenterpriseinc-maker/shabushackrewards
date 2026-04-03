@@ -87,28 +87,38 @@ const StaffPanel: React.FC = () => {
     setCustomer(null);
 
     try {
-      // Search profiles by phone or name
       const query = searchQuery.trim();
       let profileData: any = null;
 
-      // Try phone match first
-      const { data: byPhone } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("phone", query)
-        .maybeSingle();
-
-      if (byPhone) {
-        profileData = byPhone;
-      } else {
-        // Try name search (partial)
-        const { data: byName } = await supabase
+      // Check for QR code format: shabu:<user_id>
+      if (query.startsWith("shabu:")) {
+        const qrUserId = query.replace("shabu:", "");
+        const { data: byId } = await supabase
           .from("profiles")
           .select("*")
-          .ilike("name", `%${query}%`)
-          .limit(1)
+          .eq("user_id", qrUserId)
           .maybeSingle();
-        profileData = byName;
+        profileData = byId;
+      } else {
+        // Try phone match first
+        const { data: byPhone } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("phone", query)
+          .maybeSingle();
+
+        if (byPhone) {
+          profileData = byPhone;
+        } else {
+          // Try name search (partial)
+          const { data: byName } = await supabase
+            .from("profiles")
+            .select("*")
+            .ilike("name", `%${query}%`)
+            .limit(1)
+            .maybeSingle();
+          profileData = byName;
+        }
       }
 
       if (!profileData) {
@@ -344,7 +354,7 @@ const StaffPanel: React.FC = () => {
           <CardContent className="pt-4">
             <form onSubmit={handleSearch} className="flex gap-2">
               <Input
-                placeholder="Search by phone or name..."
+                placeholder="Phone, name, or scan QR..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1"

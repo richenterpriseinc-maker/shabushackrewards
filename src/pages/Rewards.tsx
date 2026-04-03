@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -6,19 +6,23 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Gift, Crown, MapPin, Tag, Coins, Wallet, History, TrendingUp, Utensils, Cake, Loader2 } from "lucide-react";
+import { Gift, Crown, MapPin, Tag, Coins, Wallet, History, TrendingUp, Utensils, Cake, Loader2, QrCode } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useRewardsData } from "@/hooks/use-rewards-data";
 import { supabase } from "@/integrations/supabase/client";
+import { QRCodeSVG } from "qrcode.react";
 
 const RewardsPage = () => {
   const navigate = useNavigate();
   const { profile, punchCard, prepaid, points, activity, isLoading, isAuthenticated } = useRewardsData();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [showQR, setShowQR] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) navigate("/login");
+      else setUserId(session.user.id);
     });
   }, [navigate]);
 
@@ -78,6 +82,53 @@ const RewardsPage = () => {
               </motion.div>
             ))}
           </div>
+
+          {/* QR Code for Staff Scan */}
+          {userId && (
+            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+              <Card className="mb-8 border-border">
+                <CardContent className="py-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <QrCode className="w-5 h-5 text-primary" />
+                      <h3 className="font-display text-lg font-semibold text-foreground tracking-wide">MY QR CODE</h3>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setShowQR(!showQR)}
+                      className="text-xs"
+                    >
+                      {showQR ? "Hide" : "Show"}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Show this to staff to earn punches, points, and rewards instantly.
+                  </p>
+                  {showQR && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="flex flex-col items-center gap-3"
+                    >
+                      <div className="bg-white p-4 rounded-xl shadow-inner">
+                        <QRCodeSVG
+                          value={`shabu:${userId}`}
+                          size={180}
+                          bgColor="#ffffff"
+                          fgColor="#1a1a1a"
+                          level="M"
+                        />
+                      </div>
+                      <p className="text-[10px] text-muted-foreground font-mono">
+                        {profile?.name || "Member"}
+                      </p>
+                    </motion.div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
 
           {/* Punch Card */}
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
