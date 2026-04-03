@@ -208,6 +208,18 @@ const BirthdayWheel: React.FC = () => {
                 <p className="text-sm text-muted-foreground">
                   📍 Verified at <span className="font-semibold text-foreground">{verifiedLocation}</span>
                 </p>
+                {geoStatus === "granted" && geoRef.current && (
+                  <p className="text-xs text-muted-foreground flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    Location tracked ({geoRef.current.latitude.toFixed(4)}, {geoRef.current.longitude.toFixed(4)})
+                  </p>
+                )}
+                {geoStatus === "denied" && (
+                  <p className="text-xs text-destructive flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />
+                    Location access denied — spin won't be geo-tagged
+                  </p>
+                )}
 
                 <SpinWheel
                   slices={WHEEL_SLICES}
