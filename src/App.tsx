@@ -11,6 +11,7 @@ import Rewards from "./pages/Rewards";
 import Join from "./pages/Join";
 import BirthdayWheel from "./pages/BirthdayWheel";
 import Login from "./pages/Login";
+import OwnerDashboard from "./pages/OwnerDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/join" element={<Join />} />
           <Route path="/birthday" element={<BirthdayWheel />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/owner" element={<OwnerDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
