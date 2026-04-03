@@ -354,7 +354,7 @@ const StaffPanel: React.FC = () => {
           <CardContent className="pt-4">
             <form onSubmit={handleSearch} className="flex gap-2">
               <Input
-                placeholder="Search by phone or name..."
+                placeholder="Phone, name, or scan QR..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="flex-1"
