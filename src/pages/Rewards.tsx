@@ -61,6 +61,17 @@ const RewardsPage = () => {
             <p className="text-muted-foreground text-lg">
               {profile?.name ? `Welcome back, ${profile.name}!` : "Track points, punches, and perks — all in one place."}
             </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-3 text-muted-foreground hover:text-foreground"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                navigate("/login");
+              }}
+            >
+              <LogOut className="w-4 h-4 mr-1" /> Sign Out
+            </Button>
           </div>
 
           {/* Stats Row */}
