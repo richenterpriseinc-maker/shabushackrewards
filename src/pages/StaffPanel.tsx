@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,6 +43,7 @@ interface CustomerData {
 }
 
 const StaffPanel: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState("");
   const [verified, setVerified] = useState(false);
@@ -142,6 +144,14 @@ const StaffPanel: React.FC = () => {
     }
     setVerified(true);
     setPinError("");
+    // Auto-search if customer param exists
+    const customerParam = searchParams.get("customer");
+    if (customerParam) {
+      setSearchQuery(`shabu:${customerParam}`);
+      setTimeout(() => {
+        document.querySelector<HTMLFormElement>("#staff-search-form")?.requestSubmit();
+      }, 100);
+    }
   };
 
   const handleSearch = async (e: React.FormEvent) => {

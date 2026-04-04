@@ -124,7 +124,7 @@ const RewardsPage = () => {
                     >
                       <div className="bg-white p-4 rounded-xl shadow-inner">
                         <QRCodeSVG
-                          value={`shabu:${userId}`}
+                          value={`${window.location.origin}/staff?customer=${userId}`}
                           size={180}
                           bgColor="#ffffff"
                           fgColor="#1a1a1a"
