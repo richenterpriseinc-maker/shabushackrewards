@@ -6,11 +6,11 @@ import { Tag, Zap, MapPin } from "lucide-react";
 
 const deals = [
   {
-    title: "Taco Tuesday Special",
-    description: "15% off all protein platters every Tuesday.",
-    location: "Downtown",
-    type: "Weekly",
-    membersOnly: false,
+    title: "10% Off Every Visit",
+    description: "Members save 10% on every visit, every time. Just show your QR code!",
+    location: "All Locations",
+    type: "Ongoing",
+    membersOnly: true,
   },
   {
     title: "Happy Hour Brews",
