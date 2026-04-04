@@ -6,6 +6,10 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+function phoneToEmail(phone: string): string {
+  return `${phone.replace(/\+/g, "")}@phone.shabushack.local`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -44,20 +48,24 @@ Deno.serve(async (req) => {
     // Delete used OTP
     await supabaseAdmin.from("phone_otps").delete().eq("id", otpRecord.id);
 
-    // Check if user exists by phone
+    const syntheticEmail = phoneToEmail(phone);
+
+    // Check if user already exists with this synthetic email
     const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-    const existingUser = existingUsers?.users?.find((u) => u.phone === phone);
+    let user = existingUsers?.users?.find(
+      (u) => u.email === syntheticEmail || u.phone === phone
+    );
 
-    let userId: string;
-
-    if (existingUser) {
-      userId = existingUser.id;
-    } else {
-      // Create new user with phone
-      const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
-        phone,
-        phone_confirm: true,
-      });
+    if (!user) {
+      // Create new user
+      const { data: newUser, error: createError } =
+        await supabaseAdmin.auth.admin.createUser({
+          email: syntheticEmail,
+          phone,
+          phone_confirm: true,
+          email_confirm: true,
+          user_metadata: { phone_signup: true },
+        });
       if (createError || !newUser?.user) {
         console.error("Create user error:", createError);
         return new Response(
@@ -65,38 +73,18 @@ Deno.serve(async (req) => {
           { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
-      userId = newUser.user.id;
+      user = newUser.user;
     }
 
-    // Generate a session token for the user
-    const { data: session, error: sessionError } =
+    // Generate magic link to create a session
+    const { data: linkData, error: linkError } =
       await supabaseAdmin.auth.admin.generateLink({
         type: "magiclink",
-        email: `${phone.replace(/\+/g, "")}@phone.shabu.local`,
+        email: user.email!,
       });
 
-    // Use signInWithPassword workaround - create a temp password and sign in
-    const tempPassword = crypto.randomUUID();
-    await supabaseAdmin.auth.admin.updateUser(userId, { password: tempPassword });
-
-    // Now sign in with the temp password to get a proper session
-    const anonClient = createClient(
-      Deno.env.get("SUPABASE_URL")!,
-      Deno.env.get("SUPABASE_PUBLISHABLE_KEY")!
-    );
-
-    // Use admin to generate link won't work for session, let's use a different approach
-    // Sign in directly and return the session
-    const { data: signInData, error: signInError } = await anonClient.auth.signInWithPassword({
-      phone,
-      password: tempPassword,
-    });
-
-    // Clean up - remove the temp password
-    await supabaseAdmin.auth.admin.updateUser(userId, { password: undefined });
-
-    if (signInError || !signInData?.session) {
-      console.error("Sign in error:", signInError);
+    if (linkError || !linkData?.properties?.hashed_token) {
+      console.error("Generate link error:", linkError);
       return new Response(
         JSON.stringify({ error: "Failed to create session" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -106,8 +94,8 @@ Deno.serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: true,
-        access_token: signInData.session.access_token,
-        refresh_token: signInData.session.refresh_token,
+        token_hash: linkData.properties.hashed_token,
+        email: user.email,
       }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
