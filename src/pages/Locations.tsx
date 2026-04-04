@@ -11,7 +11,7 @@ const locations = [
     address: "7419 Laguna Blvd #220, Elk Grove, CA 95624",
     hours: "Check store for hours",
     phone: "(916) 585-5714",
-    deal: "Loyalty members: 10% off first visit",
+    deal: "Loyalty members: 10% off every visit",
     mapUrl: "https://maps.google.com/?q=7419+Laguna+Blvd+%23220+Elk+Grove+CA+95624",
   },
   {

@@ -16,7 +16,7 @@ const benefits = [
   {
     icon: Star,
     title: "VIP Membership",
-    description: "15% off every visit, 2x points, birthday rewards, and priority seating.",
+    description: "10% off every visit, 2x points, birthday rewards, and priority seating.",
   },
   {
     icon: Utensils,

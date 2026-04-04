@@ -239,7 +239,7 @@ const RewardsPage = () => {
                   <div className="flex-1 text-center sm:text-left">
                     <h3 className="font-display text-xl font-semibold text-foreground mb-1">Upgrade to VIP — $2.49/mo or $24.99/yr</h3>
                     <p className="text-sm text-muted-foreground">
-                      15% off every visit, birthday reward, early menu access, priority seating, and 2x points.
+                      10% off every visit, birthday reward, early menu access, priority seating, and 2x points.
                     </p>
                   </div>
                   <Button asChild>
