@@ -69,7 +69,7 @@ const JoinPage = () => {
                     "Early access to new menu items",
                     "Priority seating & reservations",
                     "Members-only flash deals",
-                    "Higher prepaid bonus rates",
+                    "Exclusive VIP-only promotions",
                   ].map((perk) => (
                     <li key={perk} className="flex items-center gap-2 text-sm text-foreground">
                       <Check className="w-4 h-4 text-primary flex-shrink-0" /> {perk}
