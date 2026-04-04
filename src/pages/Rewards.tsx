@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Gift, Crown, MapPin, Tag, Coins, Wallet, History, TrendingUp, Utensils, Cake, Loader2, QrCode, LogOut } from "lucide-react";
+import { Gift, Crown, MapPin, Tag, Coins, Wallet, History, TrendingUp, Utensils, Cake, Loader2, QrCode, LogOut, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useRewardsData } from "@/hooks/use-rewards-data";
@@ -314,7 +314,13 @@ const RewardsPage = () => {
           </motion.div>
 
           {/* Quick Links */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <Card className="border-border hover:shadow-md transition-shadow">
+              <CardContent className="py-5 flex items-center gap-3">
+                <User className="w-6 h-6 text-primary" />
+                <Link to="/profile" className="text-sm font-medium text-foreground hover:text-primary">My Profile</Link>
+              </CardContent>
+            </Card>
             <Card className="border-border hover:shadow-md transition-shadow">
               <CardContent className="py-5 flex items-center gap-3">
                 <Tag className="w-6 h-6 text-primary" />

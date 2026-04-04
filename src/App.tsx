@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import StaffPanel from "./pages/StaffPanel";
 import ResetPassword from "./pages/ResetPassword";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -36,6 +37,7 @@ const App = () => (
           <Route path="/owner" element={<OwnerDashboard />} />
           <Route path="/staff" element={<StaffPanel />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
