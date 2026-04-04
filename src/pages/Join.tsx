@@ -115,6 +115,7 @@ const JoinPage = () => {
     </main>
     <Footer />
   </div>
-);
+  );
+};
 
 export default JoinPage;
