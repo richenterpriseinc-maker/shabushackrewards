@@ -43,6 +43,7 @@ interface CustomerData {
 }
 
 const StaffPanel: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [pin, setPin] = useState("");
   const [pinError, setPinError] = useState("");
   const [verified, setVerified] = useState(false);
