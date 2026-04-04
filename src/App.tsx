@@ -13,6 +13,7 @@ import BirthdayWheel from "./pages/BirthdayWheel";
 import Login from "./pages/Login";
 import OwnerDashboard from "./pages/OwnerDashboard";
 import StaffPanel from "./pages/StaffPanel";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
