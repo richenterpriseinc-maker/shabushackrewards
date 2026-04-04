@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check, Coins, Wallet } from "lucide-react";
 import { motion } from "framer-motion";
 
-const JoinPage = () => (
+const JoinPage = () => {
+  const navigate = useNavigate();
+
+  return (
   <div className="min-h-screen bg-background">
     <Navbar />
     <main className="pt-24 pb-16">
@@ -38,7 +42,7 @@ const JoinPage = () => (
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full" variant="outline">
+                <Button className="w-full" variant="outline" onClick={() => navigate("/login")}>
                   Sign Up Free
                 </Button>
               </CardContent>
@@ -72,7 +76,7 @@ const JoinPage = () => (
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full">
+                <Button className="w-full" onClick={() => navigate("/login")}>
                   Subscribe to VIP
                 </Button>
               </CardContent>
@@ -111,6 +115,7 @@ const JoinPage = () => (
     </main>
     <Footer />
   </div>
-);
+  );
+};
 
 export default JoinPage;
