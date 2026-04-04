@@ -42,7 +42,7 @@ const JoinPage = () => {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full" variant="outline">
+                <Button className="w-full" variant="outline" onClick={() => navigate("/login")}>
                   Sign Up Free
                 </Button>
               </CardContent>
