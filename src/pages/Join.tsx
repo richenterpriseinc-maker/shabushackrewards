@@ -69,7 +69,7 @@ const JoinPage = () => {
                     "Early access to new menu items",
                     "Priority seating & reservations",
                     "Members-only flash deals",
-                    "Higher prepaid bonus rates",
+                    "Exclusive VIP-only promotions",
                   ].map((perk) => (
                     <li key={perk} className="flex items-center gap-2 text-sm text-foreground">
                       <Check className="w-4 h-4 text-primary flex-shrink-0" /> {perk}
@@ -91,7 +91,7 @@ const JoinPage = () => {
             {[
               { icon: Coins, title: "Earn Points", desc: "Get 1 pt per $1 spent (2x for VIP). Redeem for free dishes, drinks, and more." },
               { icon: "🍲", title: "Collect Punches", desc: "Every visit = 1 punch. Hit 10 punches and your next meal is on us!" },
-              { icon: Wallet, title: "Prepaid & Save", desc: "Load $50+ to get bonus credit. VIP members get even higher bonuses." },
+              { icon: Wallet, title: "Prepaid & Save", desc: "Load $50+ to get bonus credit. $100 = $120 value!" },
             ].map((step, i) => (
               <motion.div key={step.title} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + i * 0.1 }}>
                 <Card className="border-border text-center h-full">
