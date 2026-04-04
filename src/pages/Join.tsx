@@ -76,7 +76,7 @@ const JoinPage = () => {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full">
+                <Button className="w-full" onClick={() => navigate("/login")}>
                   Subscribe to VIP
                 </Button>
               </CardContent>
