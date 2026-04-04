@@ -168,10 +168,35 @@ const Login = () => {
                     required
                   />
                 </div>
-                <Button type="submit" disabled={loading} className="w-full h-12 text-base gap-2">
+              <Button type="submit" disabled={loading} className="w-full h-12 text-base gap-2">
                   {loading ? (isSignUp ? "Creating account..." : "Signing in...") : (isSignUp ? "Create Account" : "Sign In")}
                   <ArrowRight className="w-4 h-4" />
                 </Button>
+                {!isSignUp && (
+                  <Button
+                    type="button"
+                    variant="link"
+                    className="w-full text-xs text-muted-foreground p-0 h-auto"
+                    onClick={async () => {
+                      if (!email) {
+                        toast({ title: "Enter your email", description: "Type your email address above first.", variant: "destructive" });
+                        return;
+                      }
+                      setLoading(true);
+                      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                        redirectTo: `${window.location.origin}/reset-password`,
+                      });
+                      setLoading(false);
+                      if (error) {
+                        toast({ title: "Error", description: error.message, variant: "destructive" });
+                      } else {
+                        toast({ title: "Check your email", description: "We sent a password reset link to your inbox." });
+                      }
+                    }}
+                  >
+                    Forgot password?
+                  </Button>
+                )}
               </form>
 
               <Button
