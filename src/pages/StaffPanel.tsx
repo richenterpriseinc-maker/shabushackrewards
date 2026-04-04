@@ -143,6 +143,14 @@ const StaffPanel: React.FC = () => {
     }
     setVerified(true);
     setPinError("");
+    // Auto-search if customer param exists
+    const customerParam = searchParams.get("customer");
+    if (customerParam) {
+      setSearchQuery(`shabu:${customerParam}`);
+      setTimeout(() => {
+        document.querySelector<HTMLFormElement>("#staff-search-form")?.requestSubmit();
+      }, 100);
+    }
   };
 
   const handleSearch = async (e: React.FormEvent) => {
