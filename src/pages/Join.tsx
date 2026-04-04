@@ -63,7 +63,7 @@ const JoinPage = () => {
                 <ul className="space-y-3">
                   {[
                     "Everything in Free Rewards",
-                    "15% off every visit",
+                    "10% off every visit",
                     "2x points on every dollar",
                     "Birthday reward (free dish or dessert)",
                     "Early access to new menu items",
