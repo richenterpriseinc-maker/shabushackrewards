@@ -70,7 +70,7 @@ const Index = () => {
                 size="lg"
                 className="text-base bg-secondary-foreground/10 border-secondary-foreground/30 text-secondary-foreground hover:bg-secondary-foreground/20"
               >
-                <Link to="/menu">View Menu</Link>
+                <a href="https://www.shabushack.com" target="_blank" rel="noopener noreferrer">View Menu</a>
               </Button>
             </div>
           </motion.div>
