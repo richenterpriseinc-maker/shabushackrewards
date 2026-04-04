@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Gift, Crown, MapPin, Tag, Coins, Wallet, History, TrendingUp, Utensils, Cake, Loader2, QrCode } from "lucide-react";
+import { Gift, Crown, MapPin, Tag, Coins, Wallet, History, TrendingUp, Utensils, Cake, Loader2, QrCode, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useRewardsData } from "@/hooks/use-rewards-data";
@@ -61,6 +61,17 @@ const RewardsPage = () => {
             <p className="text-muted-foreground text-lg">
               {profile?.name ? `Welcome back, ${profile.name}!` : "Track points, punches, and perks — all in one place."}
             </p>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="mt-3 text-muted-foreground hover:text-foreground"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                navigate("/login");
+              }}
+            >
+              <LogOut className="w-4 h-4 mr-1" /> Sign Out
+            </Button>
           </div>
 
           {/* Stats Row */}
