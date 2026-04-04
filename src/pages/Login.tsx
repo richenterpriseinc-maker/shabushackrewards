@@ -79,9 +79,11 @@ const Login = () => {
     }
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOtp({ phone: formatted });
-      if (error) {
-        toast({ title: "Failed to send code", description: error.message, variant: "destructive" });
+      const { data, error } = await supabase.functions.invoke("send-otp", {
+        body: { phone: formatted },
+      });
+      if (error || data?.error) {
+        toast({ title: "Failed to send code", description: data?.error || error?.message || "Unknown error", variant: "destructive" });
       } else {
         setOtpSent(true);
         toast({ title: "Code sent!", description: `A verification code was sent to ${formatted}.` });
@@ -98,11 +100,20 @@ const Login = () => {
     const formatted = formatPhone(phone);
     setLoading(true);
     try {
-      const { error } = await supabase.auth.verifyOtp({ phone: formatted, token: otp, type: "sms" });
-      if (error) {
-        toast({ title: "Verification failed", description: error.message, variant: "destructive" });
+      const { data, error } = await supabase.functions.invoke("verify-otp", {
+        body: { phone: formatted, code: otp },
+      });
+      if (error || data?.error) {
+        toast({ title: "Verification failed", description: data?.error || error?.message || "Unknown error", variant: "destructive" });
+      } else if (data?.token_hash) {
+        const { error: verifyError } = await supabase.auth.verifyOtp({
+          token_hash: data.token_hash,
+          type: "email",
+        });
+        if (verifyError) {
+          toast({ title: "Verification failed", description: verifyError.message, variant: "destructive" });
+        }
       }
-      // onAuthStateChange will handle redirect
     } catch {
       toast({ title: "Error", description: "Something went wrong. Please try again.", variant: "destructive" });
     } finally {
