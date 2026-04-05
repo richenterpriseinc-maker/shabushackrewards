@@ -13,6 +13,7 @@ const locations = [
     phone: "(916) 585-5714",
     deal: "Loyalty members: 10% off every visit",
     mapUrl: "https://maps.google.com/?q=7419+Laguna+Blvd+%23220+Elk+Grove+CA+95624",
+    yelpUrl: "https://www.yelp.com/search?find_desc=Shabu+Shack&find_loc=7419+Laguna+Blvd+Elk+Grove+CA+95624",
   },
   {
     name: "South San Francisco",
@@ -21,6 +22,7 @@ const locations = [
     phone: "(650) 379-8043",
     deal: "Happy Hour specials daily",
     mapUrl: "https://maps.google.com/?q=200+Grand+Ave+South+San+Francisco+CA+94080",
+    yelpUrl: "https://www.yelp.com/search?find_desc=Shabu+Shack&find_loc=200+Grand+Ave+South+San+Francisco+CA+94080",
   },
   {
     name: "Downtown Sacramento",
@@ -29,6 +31,7 @@ const locations = [
     phone: "(916) 822-4146",
     deal: "VIP Room & Patio available",
     mapUrl: "https://maps.google.com/?q=606+L+Street+Sacramento+CA+95814",
+    yelpUrl: "https://www.yelp.com/search?find_desc=Shabu+Shack&find_loc=606+L+Street+Sacramento+CA+95814",
     badge: "NOW OPEN!",
   },
   {
@@ -38,6 +41,7 @@ const locations = [
     phone: "(530) 298-1678",
     deal: "College night specials",
     mapUrl: "https://maps.google.com/?q=500+1st+Street+Suite+15+Davis+CA+95616",
+    yelpUrl: "https://www.yelp.com/search?find_desc=Shabu+Shack&find_loc=500+1st+Street+Suite+15+Davis+CA+95616",
   },
 ];
 
