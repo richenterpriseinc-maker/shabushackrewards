@@ -392,6 +392,8 @@ const StaffPanel: React.FC = () => {
     }
     setActionLoading(false);
   };
+
+  if (!verified) {
     return (
       <div className="min-h-screen bg-secondary flex items-center justify-center p-4">
         <motion.div
