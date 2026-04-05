@@ -346,7 +346,52 @@ const StaffPanel: React.FC = () => {
     setActionLoading(false);
   };
 
-  if (!verified) {
+  const deductBalance = async () => {
+    if (!customer) return;
+    const amount = parseFloat(deductAmount);
+    if (!amount || amount <= 0) {
+      toast.error("Enter a valid amount");
+      return;
+    }
+    const totalAvailable = customer.prepaidBalance + customer.bonusCredits;
+    if (amount > totalAvailable) {
+      toast.error(`Insufficient balance ($${totalAvailable.toFixed(2)} available)`);
+      return;
+    }
+    setActionLoading(true);
+    try {
+      // Deduct from bonus credits first, then main balance
+      let remaining = amount;
+      let newBonus = customer.bonusCredits;
+      let newBalance = customer.prepaidBalance;
+
+      if (newBonus > 0) {
+        const bonusDeduct = Math.min(remaining, newBonus);
+        newBonus -= bonusDeduct;
+        remaining -= bonusDeduct;
+      }
+      newBalance -= remaining;
+
+      await supabase
+        .from("prepaid_balances")
+        .update({
+          balance: newBalance,
+          bonus_credits: newBonus,
+        })
+        .eq("user_id", customer.userId);
+
+      setCustomer({
+        ...customer,
+        prepaidBalance: newBalance,
+        bonusCredits: newBonus,
+      });
+      setDeductAmount("");
+      toast.success(`$${amount.toFixed(2)} deducted from prepaid balance`);
+    } catch {
+      toast.error("Failed to deduct balance");
+    }
+    setActionLoading(false);
+  };
     return (
       <div className="min-h-screen bg-secondary flex items-center justify-center p-4">
         <motion.div
