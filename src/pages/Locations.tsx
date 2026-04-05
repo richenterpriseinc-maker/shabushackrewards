@@ -61,7 +61,9 @@ const LocationsPage = () => (
               <CardHeader>
                 <CardTitle className="font-display text-2xl flex items-center gap-2 tracking-wider">
                   <MapPin className="w-5 h-5 text-primary" />
-                  {loc.name}
+                  <a href={loc.yelpUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors underline decoration-primary/30 underline-offset-4 hover:decoration-primary">
+                    {loc.name}
+                  </a>
                   {loc.badge && <Badge className="bg-primary text-primary-foreground text-xs">{loc.badge}</Badge>}
                 </CardTitle>
               </CardHeader>
