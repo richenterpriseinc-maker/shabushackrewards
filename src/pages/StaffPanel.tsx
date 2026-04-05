@@ -562,6 +562,14 @@ const StaffPanel: React.FC = () => {
                       </p>
                       <p className="text-[10px] text-muted-foreground uppercase">Balance</p>
                     </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Add Punch */}
+              <Card>
+                <CardHeader className="pb-2 pt-4 px-4">
+                  <CardTitle className="text-sm flex items-center gap-2">
                     <Stamp className="w-4 h-4 text-primary" /> Punch Card
                   </CardTitle>
                 </CardHeader>
