@@ -63,6 +63,7 @@ const StaffPanel: React.FC = () => {
   const [pointsAmount, setPointsAmount] = useState("");
   const [pointsDesc, setPointsDesc] = useState("");
   const [loadAmount, setLoadAmount] = useState("");
+  const [deductAmount, setDeductAmount] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
 
   const handleQrScan = useCallback((decodedText: string) => {
