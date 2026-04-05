@@ -558,18 +558,10 @@ const StaffPanel: React.FC = () => {
                     </div>
                     <div className="bg-muted rounded-lg p-2">
                       <p className="text-lg font-bold text-foreground">
-                        ${customer.prepaidBalance.toFixed(2)}
+                        ${(customer.prepaidBalance + customer.bonusCredits).toFixed(2)}
                       </p>
                       <p className="text-[10px] text-muted-foreground uppercase">Balance</p>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Add Punch */}
-              <Card>
-                <CardHeader className="pb-2 pt-4 px-4">
-                  <CardTitle className="text-sm flex items-center gap-2">
                     <Stamp className="w-4 h-4 text-primary" /> Punch Card
                   </CardTitle>
                 </CardHeader>
