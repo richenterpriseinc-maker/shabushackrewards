@@ -649,32 +649,74 @@ const StaffPanel: React.FC = () => {
                 </CardContent>
               </Card>
 
-              {/* Load Balance */}
+              {/* Prepaid Balance */}
               <Card>
                 <CardHeader className="pb-2 pt-4 px-4">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <CreditCard className="w-4 h-4 text-primary" /> Prepaid Balance
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="px-4 pb-4 space-y-2">
-                  <p className="text-xs text-muted-foreground">
-                    Load $50+ → 10% bonus • Load $100+ → 20% bonus
-                  </p>
-                  <div className="flex gap-2">
-                    <Input
-                      type="number"
-                      placeholder="$ Amount"
-                      value={loadAmount}
-                      onChange={(e) => setLoadAmount(e.target.value)}
-                      className="flex-1"
-                    />
-                    <Button
-                      size="sm"
-                      onClick={loadBalance}
-                      disabled={actionLoading}
-                    >
-                      <Plus className="w-3 h-3 mr-1" /> Load
-                    </Button>
+                <CardContent className="px-4 pb-4 space-y-3">
+                  {/* Balance breakdown */}
+                  <div className="grid grid-cols-2 gap-2 text-center">
+                    <div className="bg-muted rounded-lg p-2">
+                      <p className="text-sm font-bold text-foreground">
+                        ${customer.prepaidBalance.toFixed(2)}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground uppercase">Cash Balance</p>
+                    </div>
+                    <div className="bg-muted rounded-lg p-2">
+                      <p className="text-sm font-bold text-foreground">
+                        ${customer.bonusCredits.toFixed(2)}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground uppercase">Bonus Credits</p>
+                    </div>
+                  </div>
+
+                  {/* Deduct at checkout */}
+                  <div className="border-t border-border pt-3">
+                    <p className="text-xs font-medium text-foreground mb-2">Deduct at Checkout</p>
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        placeholder="$ Amount"
+                        value={deductAmount}
+                        onChange={(e) => setDeductAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={deductBalance}
+                        disabled={actionLoading || (customer.prepaidBalance + customer.bonusCredits) <= 0}
+                      >
+                        <Minus className="w-3 h-3 mr-1" /> Deduct
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Load balance */}
+                  <div className="border-t border-border pt-3">
+                    <p className="text-xs font-medium text-foreground mb-1">Load Balance</p>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      $50+ → 10% bonus • $100+ → 20% bonus
+                    </p>
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        placeholder="$ Amount"
+                        value={loadAmount}
+                        onChange={(e) => setLoadAmount(e.target.value)}
+                        className="flex-1"
+                      />
+                      <Button
+                        size="sm"
+                        onClick={loadBalance}
+                        disabled={actionLoading}
+                      >
+                        <Plus className="w-3 h-3 mr-1" /> Load
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
