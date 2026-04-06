@@ -1,21 +1,38 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Gift, Crown, MapPin, Tag, Coins, Wallet, History, TrendingUp, Utensils, Cake, Loader2, QrCode, LogOut, User } from "lucide-react";
-import { Link } from "react-router-dom";
+import {
+  Flame, Trophy, Target, Zap, Wallet, QrCode, LogOut, User,
+  MapPin, Tag, Cake, Utensils, ChevronRight, Star, Shield, Crown, Loader2,
+} from "lucide-react";
 import { motion } from "framer-motion";
-import { useRewardsData } from "@/hooks/use-rewards-data";
 import { supabase } from "@/integrations/supabase/client";
 import { QRCodeSVG } from "qrcode.react";
+import {
+  useGamification, TIER_PERKS, TIER_COLORS, getNextTier,
+  type TierName,
+} from "@/hooks/use-gamification";
+
+const TIER_ICONS: Record<TierName, typeof Shield> = {
+  bronze: Shield,
+  silver: Star,
+  gold: Crown,
+  diamond: Trophy,
+};
 
 const RewardsPage = () => {
   const navigate = useNavigate();
-  const { profile, punchCard, prepaid, points, activity, isLoading, isAuthenticated } = useRewardsData();
+  const {
+    profile, xp, currentTier, nextTier, xpInfo, streak,
+    challenges, completedChallenges, totalChallenges,
+    prepaid, points, isLoading,
+  } = useGamification();
+
   const [userId, setUserId] = useState<string | null>(null);
   const [showQR, setShowQR] = useState(false);
 
@@ -26,18 +43,10 @@ const RewardsPage = () => {
     });
   }, [navigate]);
 
-  const punches = punchCard?.punches_count ?? 0;
-  const completedCards = punchCard?.completed_cards ?? 0;
-  const total = 10;
   const prepaidBalance = Number(prepaid?.balance ?? 0) + Number(prepaid?.bonus_credits ?? 0);
-  const tier = profile?.membership_tier === "vip" ? "VIP" : "Free";
-
-  const redeemableRewards = [
-    { name: "Free Drink", cost: 200 },
-    { name: "Appetizer", cost: 500 },
-    { name: "Side Dish", cost: 750 },
-    { name: "Free Meal", cost: 1500 },
-  ];
+  const tierColors = TIER_COLORS[currentTier];
+  const TierIcon = TIER_ICONS[currentTier];
+  const perks = TIER_PERKS[currentTier];
 
   if (isLoading) {
     return (
@@ -55,85 +64,201 @@ const RewardsPage = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="pt-24 pb-16">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="text-center mb-12">
-            <h1 className="font-display text-4xl font-bold text-foreground mb-3 tracking-wider">YOUR REWARDS</h1>
-            <p className="text-muted-foreground text-lg">
-              {profile?.name ? `Welcome back, ${profile.name}!` : "Track points, punches, and perks — all in one place."}
-            </p>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="mt-3 text-muted-foreground hover:text-foreground"
-              onClick={async () => {
-                await supabase.auth.signOut();
-                navigate("/login");
-              }}
-            >
-              <LogOut className="w-4 h-4 mr-1" /> Sign Out
-            </Button>
-          </div>
+        <div className="container mx-auto px-4 max-w-lg">
+
+          {/* Hero: Tier + XP */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            <Card className={`mb-6 border-2 ${tierColors.border} overflow-hidden`}>
+              <div className={`bg-gradient-to-r ${tierColors.gradient} p-5 text-white`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <TierIcon className="w-8 h-8" />
+                    <div>
+                      <p className="text-sm opacity-80">Current Tier</p>
+                      <h2 className="text-2xl font-display font-bold tracking-wider uppercase">{currentTier}</h2>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-3xl font-bold">{xp.toLocaleString()}</p>
+                    <p className="text-xs opacity-80">Total XP</p>
+                  </div>
+                </div>
+                {nextTier && (
+                  <div>
+                    <div className="flex justify-between text-xs mb-1 opacity-80">
+                      <span>{currentTier.toUpperCase()}</span>
+                      <span>{xpInfo.needed} XP to {nextTier.toUpperCase()}</span>
+                    </div>
+                    <div className="w-full bg-white/20 rounded-full h-2.5">
+                      <motion.div
+                        className="bg-white rounded-full h-2.5"
+                        initial={{ width: 0 }}
+                        animate={{ width: `${xpInfo.progress}%` }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                      />
+                    </div>
+                  </div>
+                )}
+                {!nextTier && (
+                  <p className="text-sm opacity-80 text-center mt-1">🏆 You've reached the highest tier!</p>
+                )}
+              </div>
+              <CardContent className="py-4">
+                <p className="text-xs text-muted-foreground font-medium mb-2 uppercase tracking-wide">Your Perks</p>
+                <div className="flex flex-wrap gap-2">
+                  {perks.map((perk) => (
+                    <Badge key={perk} variant="secondary" className="text-xs font-normal">{perk}</Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Streak Card */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+            <Card className="mb-6 border-border">
+              <CardContent className="py-5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="relative">
+                      <Flame className={`w-10 h-10 ${streak.current >= 2 ? "text-orange-500" : "text-muted-foreground"}`} />
+                      {streak.current >= 4 && (
+                        <motion.div
+                          className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center"
+                          animate={{ scale: [1, 1.2, 1] }}
+                          transition={{ repeat: Infinity, duration: 1.5 }}
+                        >
+                          <span className="text-[8px] text-white font-bold">🔥</span>
+                        </motion.div>
+                      )}
+                    </div>
+                    <div>
+                      <h3 className="font-display text-lg font-bold text-foreground tracking-wide">
+                        {streak.current > 0 ? `${streak.current}-WEEK STREAK` : "NO STREAK YET"}
+                      </h3>
+                      <p className="text-xs text-muted-foreground">
+                        {streak.current > 0
+                          ? `${streak.multiplier}x XP multiplier active!`
+                          : "Visit weekly to start a streak"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-foreground">{streak.multiplier}x</p>
+                    <p className="text-[10px] text-muted-foreground">multiplier</p>
+                  </div>
+                </div>
+                {/* Streak milestones */}
+                <div className="mt-4 flex gap-2">
+                  {[2, 4, 8].map((milestone) => (
+                    <div
+                      key={milestone}
+                      className={`flex-1 text-center p-2 rounded-lg border text-xs ${
+                        streak.current >= milestone
+                          ? "border-orange-500/50 bg-orange-500/10 text-orange-600"
+                          : "border-border text-muted-foreground"
+                      }`}
+                    >
+                      <p className="font-bold">{milestone}wk</p>
+                      <p>{milestone === 2 ? "1.5x" : milestone === 4 ? "2x" : "3x"}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Monthly Challenges */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <Card className="mb-6 border-border">
+              <CardContent className="py-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Target className="w-5 h-5 text-primary" />
+                    <h3 className="font-display text-lg font-bold text-foreground tracking-wide">MONTHLY CHALLENGES</h3>
+                  </div>
+                  <Badge variant="outline" className="text-xs">
+                    {completedChallenges}/{totalChallenges}
+                  </Badge>
+                </div>
+
+                {challenges.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">No active challenges this month.</p>
+                ) : (
+                  <div className="space-y-4">
+                    {challenges.map((challenge) => (
+                      <div key={challenge.id} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1">
+                            <p className="text-sm font-medium text-foreground">
+                              {challenge.completed ? "✅ " : ""}{challenge.title}
+                            </p>
+                            <p className="text-xs text-muted-foreground">{challenge.description}</p>
+                          </div>
+                          <div className="flex items-center gap-1 ml-3">
+                            <Zap className="w-3 h-3 text-primary" />
+                            <span className="text-xs font-bold text-primary">{challenge.xp_reward} XP</span>
+                          </div>
+                        </div>
+                        <div className="relative">
+                          <Progress value={challenge.progressPercent} className="h-2" />
+                          <p className="text-[10px] text-muted-foreground mt-0.5 text-right">
+                            {challenge.currentValue}/{Number(challenge.goal_value)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {completedChallenges === totalChallenges && totalChallenges > 0 && (
+                  <div className="mt-4 p-3 rounded-lg bg-primary/10 border border-primary/20 text-center">
+                    <p className="text-sm font-bold text-primary">🎉 All challenges completed! +500 bonus XP</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* Stats Row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            {[
-              { icon: Coins, label: "Points", value: points.toLocaleString(), color: "text-primary" },
-              { icon: Gift, label: "Punches", value: `${punches}/${total}`, color: "text-primary" },
-              { icon: Wallet, label: "Balance", value: `$${prepaidBalance.toFixed(2)}`, color: "text-accent" },
-              { icon: Crown, label: "Tier", value: tier, color: "text-accent" },
-            ].map((stat, i) => (
-              <motion.div key={stat.label} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                <Card className="border-border">
-                  <CardContent className="py-4 text-center">
-                    <stat.icon className={`w-6 h-6 mx-auto mb-1 ${stat.color}`} />
-                    <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                    <p className="text-xs text-muted-foreground">{stat.label}</p>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              {[
+                { icon: Zap, label: "Points", value: points.toLocaleString(), color: "text-primary" },
+                { icon: Wallet, label: "Balance", value: `$${prepaidBalance.toFixed(2)}`, color: "text-accent" },
+                { icon: Trophy, label: "Best Streak", value: `${streak.best}wk`, color: "text-orange-500" },
+              ].map((stat, i) => (
+                <Card key={stat.label} className="border-border">
+                  <CardContent className="py-3 text-center">
+                    <stat.icon className={`w-5 h-5 mx-auto mb-1 ${stat.color}`} />
+                    <p className="text-lg font-bold text-foreground">{stat.value}</p>
+                    <p className="text-[10px] text-muted-foreground">{stat.label}</p>
                   </CardContent>
                 </Card>
-              </motion.div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </motion.div>
 
-          {/* QR Code for Staff Scan */}
+          {/* QR Code */}
           {userId && (
-            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-              <Card className="mb-8 border-border">
-                <CardContent className="py-5">
-                  <div className="flex items-center justify-between mb-3">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+              <Card className="mb-6 border-border">
+                <CardContent className="py-4">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <QrCode className="w-5 h-5 text-primary" />
-                      <h3 className="font-display text-lg font-semibold text-foreground tracking-wide">MY QR CODE</h3>
+                      <span className="font-display text-sm font-bold text-foreground tracking-wide">MY QR CODE</span>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => setShowQR(!showQR)}
-                      className="text-xs"
-                    >
+                    <Button size="sm" variant="outline" onClick={() => setShowQR(!showQR)} className="text-xs h-7">
                       {showQR ? "Hide" : "Show"}
                     </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Show this to staff to earn punches, points, and rewards instantly.
-                  </p>
                   {showQR && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="flex flex-col items-center gap-3"
-                    >
+                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-2 mt-3">
                       <div className="bg-white p-4 rounded-xl shadow-inner">
-                        <QRCodeSVG
-                          value={`${window.location.origin}/staff?customer=${userId}`}
-                          size={180}
-                          bgColor="#ffffff"
-                          fgColor="#1a1a1a"
-                          level="M"
-                        />
+                        <QRCodeSVG value={`${window.location.origin}/staff?customer=${userId}`} size={160} bgColor="#ffffff" fgColor="#1a1a1a" level="M" />
                       </div>
-                      <p className="text-[10px] text-muted-foreground font-mono">
-                        {profile?.name || "Member"}
-                      </p>
+                      <p className="text-[10px] text-muted-foreground">{profile?.name || "Member"}</p>
                     </motion.div>
                   )}
                 </CardContent>
@@ -141,204 +266,57 @@ const RewardsPage = () => {
             </motion.div>
           )}
 
-          {/* Punch Card */}
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="mb-8 bg-gradient-to-br from-primary to-secondary p-1 rounded-2xl">
-              <div className="bg-background rounded-xl p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-display text-lg font-semibold text-foreground tracking-wide">PUNCH CARD</span>
-                  <span className="text-sm text-muted-foreground">
-                    {punches} / {total} {completedCards > 0 && `(${completedCards} completed)`}
-                  </span>
+          {/* Birthday CTA */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+            <Card className="mb-6 border-warm-gold bg-warm-gold/5">
+              <CardContent className="py-4 flex items-center gap-4">
+                <Cake className="w-8 h-8 text-warm-gold flex-shrink-0" />
+                <div className="flex-1">
+                  <h3 className="font-display text-base font-bold text-foreground">🎂 Birthday Spin</h3>
+                  <p className="text-xs text-muted-foreground">Spin for a free prize at any location!</p>
                 </div>
-                <div className="grid grid-cols-5 gap-3 mb-4">
-                  {Array.from({ length: total }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`aspect-square rounded-full flex items-center justify-center text-lg border-2 ${
-                        i < punches
-                          ? "bg-primary border-primary text-primary-foreground"
-                          : "border-border text-muted-foreground"
-                      }`}
-                    >
-                      {i < punches ? "🍲" : i + 1}
-                    </div>
-                  ))}
-                </div>
-                <Progress value={(punches / total) * 100} className="mb-2" />
-                <p className="text-center text-sm text-muted-foreground">
-                  {punches >= total
-                    ? <strong className="text-primary">You've earned a free meal! 🎉</strong>
-                    : <>{total - punches} more visits until your <strong className="text-primary">free meal!</strong></>
-                  }
-                </p>
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Points Redemption + Prepaid Balance */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-              <Card className="h-full border-border">
-                <CardContent className="py-5">
-                  <div className="flex items-center gap-2 mb-4">
-                    <TrendingUp className="w-5 h-5 text-primary" />
-                    <h3 className="font-display text-lg font-semibold text-foreground tracking-wide">REDEEM POINTS</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    You have <strong className="text-foreground">{points.toLocaleString()} pts</strong>. Earn {tier === "VIP" ? "2" : "1"} pt per $1 spent.
-                  </p>
-                  <div className="space-y-2">
-                    {redeemableRewards.map((r) => (
-                      <div key={r.name} className="flex items-center justify-between p-2 rounded-lg border border-border">
-                        <span className="text-sm text-foreground">{r.name}</span>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground">{r.cost} pts</span>
-                          <Button size="sm" variant={points >= r.cost ? "default" : "outline"} disabled={points < r.cost} className="text-xs h-7">
-                            Redeem
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.35 }}>
-              <Card className="h-full border-border">
-                <CardContent className="py-5">
-                  <div className="flex items-center gap-2 mb-4">
-                    <Wallet className="w-5 h-5 text-accent" />
-                    <h3 className="font-display text-lg font-semibold text-foreground tracking-wide">PREPAID BALANCE</h3>
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Current balance: <strong className="text-foreground text-lg">${prepaidBalance.toFixed(2)}</strong>
-                  </p>
-                  <p className="text-xs text-muted-foreground mb-4">
-                    Load funds and get bonus credit. The more you load, the more you save!
-                  </p>
-                  <div className="space-y-2">
-                    {[
-                      { load: 50, bonus: 5 },
-                      { load: 100, bonus: 20 },
-                      { load: 200, bonus: 40 },
-                      { load: 500, bonus: 100 },
-                    ].map((t) => (
-                      <div key={t.load} className="flex items-center justify-between p-2 rounded-lg border border-border">
-                        <div>
-                          <span className="text-sm text-foreground font-medium">${t.load}</span>
-                          <span className="text-xs text-primary ml-2">+${t.bonus} bonus</span>
-                        </div>
-                        <Button size="sm" variant="outline" className="text-xs h-7">
-                          Load
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-
-          {/* VIP Upsell */}
-          {tier === "Free" && (
-            <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-              <Card className="mb-8 border-accent bg-accent/5">
-                <CardContent className="py-6 flex flex-col sm:flex-row items-center gap-4">
-                  <Crown className="w-10 h-10 text-accent" />
-                  <div className="flex-1 text-center sm:text-left">
-                    <h3 className="font-display text-xl font-semibold text-foreground mb-1">Upgrade to VIP — $2.49/mo or $24.99/yr</h3>
-                    <p className="text-sm text-muted-foreground">
-                      10% off every visit, birthday reward, early menu access, priority seating, and 2x points.
-                    </p>
-                  </div>
-                  <Button asChild>
-                    <Link to="/join">Upgrade</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {/* Reward History */}
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.45 }}>
-            <Card className="mb-8 border-border">
-              <CardContent className="py-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <History className="w-5 h-5 text-primary" />
-                  <h3 className="font-display text-lg font-semibold text-foreground tracking-wide">RECENT ACTIVITY</h3>
-                </div>
-                {activity.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-4">
-                    No activity yet. Visit a Shabu Shack to start earning rewards!
-                  </p>
-                ) : (
-                  <div className="space-y-3">
-                    {activity.map((entry, i) => (
-                      <div key={i} className="flex items-center justify-between py-2 border-b border-border last:border-0">
-                        <div className="flex items-center gap-3">
-                          <Badge variant={entry.type === "redeem" ? "default" : "secondary"} className="text-xs">
-                            {entry.type === "earn" ? "Points" : entry.type === "redeem" ? "Redeemed" : entry.type === "spin" ? "Birthday" : "Other"}
-                          </Badge>
-                          <span className="text-sm text-foreground">{entry.action}</span>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xs text-muted-foreground">{entry.location}</p>
-                          <p className="text-xs text-muted-foreground">{entry.date}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Birthday Wheel CTA */}
-          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-            <Card className="mb-8 border-warm-gold bg-warm-gold/5">
-              <CardContent className="py-6 flex flex-col sm:flex-row items-center gap-4">
-                <Cake className="w-10 h-10 text-warm-gold" />
-                <div className="flex-1 text-center sm:text-left">
-                  <h3 className="font-display text-xl font-semibold text-foreground mb-1">🎂 Birthday? Spin the Wheel!</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Visit any Shabu Shack on your birthday and spin for a free prize — in-store only!
-                  </p>
-                </div>
-                <Button asChild className="bg-warm-gold hover:bg-warm-gold/90 text-secondary">
-                  <Link to="/birthday">Spin Now</Link>
+                <Button asChild size="sm" className="bg-warm-gold hover:bg-warm-gold/90 text-secondary">
+                  <Link to="/birthday">Spin</Link>
                 </Button>
               </CardContent>
             </Card>
           </motion.div>
 
           {/* Quick Links */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <Card className="border-border hover:shadow-md transition-shadow">
-              <CardContent className="py-5 flex items-center gap-3">
-                <User className="w-6 h-6 text-primary" />
-                <Link to="/profile" className="text-sm font-medium text-foreground hover:text-primary">My Profile</Link>
-              </CardContent>
-            </Card>
-            <Card className="border-border hover:shadow-md transition-shadow">
-              <CardContent className="py-5 flex items-center gap-3">
-                <Tag className="w-6 h-6 text-primary" />
-                <Link to="/deals" className="text-sm font-medium text-foreground hover:text-primary">View Deals</Link>
-              </CardContent>
-            </Card>
-            <Card className="border-border hover:shadow-md transition-shadow">
-              <CardContent className="py-5 flex items-center gap-3">
-                <MapPin className="w-6 h-6 text-primary" />
-                <Link to="/locations" className="text-sm font-medium text-foreground hover:text-primary">Find a Location</Link>
-              </CardContent>
-            </Card>
-            <Card className="border-border hover:shadow-md transition-shadow">
-              <CardContent className="py-5 flex items-center gap-3">
-                <Utensils className="w-6 h-6 text-primary" />
-                <Link to="/menu" className="text-sm font-medium text-foreground hover:text-primary">Browse Menu</Link>
-              </CardContent>
-            </Card>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+            <div className="grid grid-cols-2 gap-3 mb-6">
+              {[
+                { icon: User, label: "Profile", to: "/profile" },
+                { icon: Tag, label: "Deals", to: "/deals" },
+                { icon: MapPin, label: "Locations", to: "/locations" },
+                { icon: Utensils, label: "Menu", to: "/menu" },
+              ].map((link) => (
+                <Card key={link.label} className="border-border hover:shadow-md transition-shadow">
+                  <CardContent className="py-3">
+                    <Link to={link.to} className="flex items-center gap-2 text-sm font-medium text-foreground hover:text-primary">
+                      <link.icon className="w-4 h-4 text-primary" />
+                      {link.label}
+                      <ChevronRight className="w-3 h-3 ml-auto text-muted-foreground" />
+                    </Link>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Sign Out */}
+          <div className="text-center">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground text-xs"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                navigate("/login");
+              }}
+            >
+              <LogOut className="w-3 h-3 mr-1" /> Sign Out
+            </Button>
           </div>
         </div>
       </main>
