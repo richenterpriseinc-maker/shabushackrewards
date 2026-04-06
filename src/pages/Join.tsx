@@ -1,13 +1,46 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Coins, Wallet } from "lucide-react";
+import { Check, Coins, Wallet, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const JoinPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [upgrading, setUpgrading] = useState(false);
+  const [currentTier, setCurrentTier] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user) {
+        supabase.from("profiles").select("membership_tier").eq("user_id", user.id).single().then(({ data }) => {
+          if (data) setCurrentTier(data.membership_tier);
+        });
+      }
+    });
+  }, []);
+
+  const handleUpgrade = async () => {
+    setUpgrading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+    const { error } = await supabase.from("profiles").update({ membership_tier: "vip" }).eq("user_id", user.id);
+    if (error) {
+      toast({ title: "Error", description: "Failed to upgrade. Please try again.", variant: "destructive" });
+    } else {
+      toast({ title: "Welcome to VIP! 🎉", description: "You now have access to all VIP perks." });
+      navigate("/rewards");
+    }
+    setUpgrading(false);
+  };
 
   return (
   <div className="min-h-screen bg-background">
