@@ -58,6 +58,86 @@ export type Database = {
           },
         ]
       }
+      challenge_progress: {
+        Row: {
+          challenge_id: string
+          completed_at: string | null
+          created_at: string
+          current_value: number
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          challenge_id: string
+          completed_at?: string | null
+          created_at?: string
+          current_value?: number
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          challenge_id?: string
+          completed_at?: string | null
+          created_at?: string
+          current_value?: number
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "challenge_progress_challenge_id_fkey"
+            columns: ["challenge_id"]
+            isOneToOne: false
+            referencedRelation: "challenges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      challenges: {
+        Row: {
+          created_at: string
+          description: string | null
+          goal_type: string
+          goal_value: number
+          id: string
+          is_active: boolean
+          month: number
+          title: string
+          updated_at: string
+          xp_reward: number
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          goal_type: string
+          goal_value: number
+          id?: string
+          is_active?: boolean
+          month: number
+          title: string
+          updated_at?: string
+          xp_reward?: number
+          year: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          goal_type?: string
+          goal_value?: number
+          id?: string
+          is_active?: boolean
+          month?: number
+          title?: string
+          updated_at?: string
+          xp_reward?: number
+          year?: number
+        }
+        Relationships: []
+      }
       location_owner_access: {
         Row: {
           created_at: string
@@ -227,6 +307,7 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          current_tier: Database["public"]["Enums"]["reward_tier"]
           date_of_birth: string | null
           favorite_location_id: string | null
           id: string
@@ -236,9 +317,11 @@ export type Database = {
           stripe_customer_id: string | null
           updated_at: string
           user_id: string
+          xp_total: number
         }
         Insert: {
           created_at?: string
+          current_tier?: Database["public"]["Enums"]["reward_tier"]
           date_of_birth?: string | null
           favorite_location_id?: string | null
           id?: string
@@ -248,9 +331,11 @@ export type Database = {
           stripe_customer_id?: string | null
           updated_at?: string
           user_id: string
+          xp_total?: number
         }
         Update: {
           created_at?: string
+          current_tier?: Database["public"]["Enums"]["reward_tier"]
           date_of_birth?: string | null
           favorite_location_id?: string | null
           id?: string
@@ -260,6 +345,7 @@ export type Database = {
           stripe_customer_id?: string | null
           updated_at?: string
           user_id?: string
+          xp_total?: number
         }
         Relationships: [
           {
@@ -369,6 +455,39 @@ export type Database = {
         }
         Relationships: []
       }
+      user_streaks: {
+        Row: {
+          best_streak: number
+          created_at: string
+          current_streak: number
+          id: string
+          last_visit_week: string | null
+          multiplier: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          best_streak?: number
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_visit_week?: string | null
+          multiplier?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          best_streak?: number
+          created_at?: string
+          current_streak?: number
+          id?: string
+          last_visit_week?: string | null
+          multiplier?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       vip_memberships: {
         Row: {
           created_at: string
@@ -465,6 +584,7 @@ export type Database = {
       membership_tier: "free" | "vip"
       points_type: "earn" | "redeem"
       promo_type: "discount" | "points_multiplier" | "free_item" | "flash_deal"
+      reward_tier: "bronze" | "silver" | "gold" | "diamond"
       vip_plan: "monthly" | "yearly"
       vip_status: "active" | "canceled" | "expired"
     }
@@ -598,6 +718,7 @@ export const Constants = {
       membership_tier: ["free", "vip"],
       points_type: ["earn", "redeem"],
       promo_type: ["discount", "points_multiplier", "free_item", "flash_deal"],
+      reward_tier: ["bronze", "silver", "gold", "diamond"],
       vip_plan: ["monthly", "yearly"],
       vip_status: ["active", "canceled", "expired"],
     },
