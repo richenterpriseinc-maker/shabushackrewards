@@ -123,6 +123,19 @@ const StaffPanel: React.FC = () => {
     };
   }, [showScanner, handleQrScan]);
 
+  const staffApiUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/staff-action`;
+
+  const callStaffApi = async (body: Record<string, any>) => {
+    const res = await fetch(staffApiUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+      body: JSON.stringify({ pin, ...body }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Request failed");
+    return data;
+  };
+
   const handlePinLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = pin.trim();
@@ -131,18 +144,7 @@ const StaffPanel: React.FC = () => {
       setPinError("Invalid PIN");
       return;
     }
-    // Find location_id from DB
-    const { data } = await supabase
-      .from("locations")
-      .select("id, name")
-      .eq("pin_code", trimmed)
-      .maybeSingle();
-    if (data) {
-      setLocationId(data.id);
-      setLocationName(data.name);
-    } else {
-      setLocationName(match[0]);
-    }
+    setLocationName(match[0]);
     setVerified(true);
     setPinError("");
     // Auto-search if customer param exists
@@ -162,115 +164,46 @@ const StaffPanel: React.FC = () => {
     setCustomer(null);
 
     try {
-      const query = searchQuery.trim();
-      let profileData: any = null;
-
-      // Check for QR code format: shabu:<user_id>
-      if (query.startsWith("shabu:")) {
-        const qrUserId = query.replace("shabu:", "");
-        const { data: byId } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("user_id", qrUserId)
-          .maybeSingle();
-        profileData = byId;
-      } else {
-        // Try phone match first
-        const { data: byPhone } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("phone", query)
-          .maybeSingle();
-
-        if (byPhone) {
-          profileData = byPhone;
-        } else {
-          // Try name search (partial)
-          const { data: byName } = await supabase
-            .from("profiles")
-            .select("*")
-            .ilike("name", `%${query}%`)
-            .limit(1)
-            .maybeSingle();
-          profileData = byName;
-        }
-      }
-
-      if (!profileData) {
-        toast.error("No customer found with that phone or name");
-        setSearching(false);
-        return;
-      }
-
-      // Fetch related data
-      const userId = profileData.user_id;
-      const [punchRes, pointsRes, prepaidRes] = await Promise.all([
-        supabase.from("punch_cards").select("*").eq("user_id", userId).maybeSingle(),
-        supabase.from("points_transactions").select("type, amount").eq("user_id", userId),
-        supabase.from("prepaid_balances").select("*").eq("user_id", userId).maybeSingle(),
-      ]);
-
-      const totalPoints = (pointsRes.data || []).reduce((sum, t) => {
-        return sum + (t.type === "earn" ? t.amount : -t.amount);
-      }, 0);
-
-      // Get email from auth - we'll show user_id shortened as fallback
+      const data = await callStaffApi({ action: "search", query: searchQuery.trim() });
+      if (data.locationId) setLocationId(data.locationId);
+      if (data.locationName) setLocationName(data.locationName);
       setCustomer({
-        userId,
-        name: profileData.name,
-        phone: profileData.phone,
-        email: userId.slice(0, 8) + "...",
-        tier: profileData.membership_tier,
-        punches: punchRes.data?.punches_count ?? 0,
-        completedCards: punchRes.data?.completed_cards ?? 0,
-        points: Math.max(0, totalPoints),
-        prepaidBalance: Number(prepaidRes.data?.balance ?? 0),
-        bonusCredits: Number(prepaidRes.data?.bonus_credits ?? 0),
+        userId: data.customer.userId,
+        name: data.customer.name,
+        phone: data.customer.phone,
+        email: data.customer.userId.slice(0, 8) + "...",
+        tier: data.customer.tier,
+        punches: data.customer.punches,
+        completedCards: data.customer.completedCards,
+        points: data.customer.points,
+        prepaidBalance: data.customer.prepaidBalance,
+        bonusCredits: data.customer.bonusCredits,
       });
-    } catch (err) {
-      toast.error("Search failed");
-      console.error(err);
+    } catch (err: any) {
+      toast.error(err.message || "Search failed");
     }
     setSearching(false);
   };
 
   const addPunch = async () => {
-    if (!customer || !locationId) return;
+    if (!customer) return;
     setActionLoading(true);
     try {
-      const newPunches = customer.punches + 1;
-      let newCompleted = customer.completedCards;
-      let finalPunches = newPunches;
-      if (newPunches >= 10) {
-        newCompleted += 1;
-        finalPunches = 0;
-      }
-      await supabase
-        .from("punch_cards")
-        .update({
-          punches_count: finalPunches,
-          completed_cards: newCompleted,
-          last_punch_at: new Date().toISOString(),
-        })
-        .eq("user_id", customer.userId);
-
-      // Record visit
-      await supabase.from("visits").insert({
-        user_id: customer.userId,
-        location_id: locationId,
-        amount_spent: 0,
-        points_earned: 0,
-      } as any);
-
+      const data = await callStaffApi({
+        action: "add_punch",
+        userId: customer.userId,
+        punches: customer.punches,
+        completedCards: customer.completedCards,
+      });
       setCustomer({
         ...customer,
-        punches: finalPunches,
-        completedCards: newCompleted,
+        punches: data.punches,
+        completedCards: data.completedCards,
       });
       toast.success(
-        finalPunches === 0
-          ? "🎉 Punch card completed! Free reward earned!"
-          : `Punch added (${finalPunches}/10)`
+        data.punches === 0
+          ? `🎉 Punch card completed! +${data.xpEarned} XP earned!`
+          : `Punch added (${data.punches}/10) +${data.xpEarned} XP`
       );
     } catch {
       toast.error("Failed to add punch");
@@ -291,21 +224,18 @@ const StaffPanel: React.FC = () => {
     }
     setActionLoading(true);
     try {
-      await supabase.from("points_transactions").insert({
-        user_id: customer.userId,
+      await callStaffApi({
+        action: "add_points",
+        userId: customer.userId,
         amount,
         type,
         description: pointsDesc || (type === "earn" ? "Staff awarded" : "Staff redeemed"),
-      } as any);
-
-      const newPoints =
-        type === "earn" ? customer.points + amount : customer.points - amount;
+      });
+      const newPoints = type === "earn" ? customer.points + amount : customer.points - amount;
       setCustomer({ ...customer, points: Math.max(0, newPoints) });
       setPointsAmount("");
       setPointsDesc("");
-      toast.success(
-        type === "earn" ? `+${amount} points added` : `${amount} points redeemed`
-      );
+      toast.success(type === "earn" ? `+${amount} points added` : `${amount} points redeemed`);
     } catch {
       toast.error("Failed to update points");
     }
@@ -321,24 +251,21 @@ const StaffPanel: React.FC = () => {
     }
     setActionLoading(true);
     try {
-      const bonus = amount >= 100 ? amount * 0.2 : amount >= 50 ? amount * 0.1 : 0;
-      await supabase
-        .from("prepaid_balances")
-        .update({
-          balance: customer.prepaidBalance + amount,
-          bonus_credits: customer.bonusCredits + bonus,
-          last_load_at: new Date().toISOString(),
-        })
-        .eq("user_id", customer.userId);
-
+      const data = await callStaffApi({
+        action: "load_balance",
+        userId: customer.userId,
+        amount,
+        currentBalance: customer.prepaidBalance,
+        currentBonus: customer.bonusCredits,
+      });
       setCustomer({
         ...customer,
-        prepaidBalance: customer.prepaidBalance + amount,
-        bonusCredits: customer.bonusCredits + bonus,
+        prepaidBalance: data.balance,
+        bonusCredits: data.bonusCredits,
       });
       setLoadAmount("");
       toast.success(
-        `$${amount.toFixed(2)} loaded${bonus > 0 ? ` + $${bonus.toFixed(2)} bonus!` : ""}`
+        `$${amount.toFixed(2)} loaded${data.bonusAdded > 0 ? ` + $${data.bonusAdded.toFixed(2)} bonus!` : ""}`
       );
     } catch {
       toast.error("Failed to load balance");
@@ -360,30 +287,17 @@ const StaffPanel: React.FC = () => {
     }
     setActionLoading(true);
     try {
-      // Deduct from bonus credits first, then main balance
-      let remaining = amount;
-      let newBonus = customer.bonusCredits;
-      let newBalance = customer.prepaidBalance;
-
-      if (newBonus > 0) {
-        const bonusDeduct = Math.min(remaining, newBonus);
-        newBonus -= bonusDeduct;
-        remaining -= bonusDeduct;
-      }
-      newBalance -= remaining;
-
-      await supabase
-        .from("prepaid_balances")
-        .update({
-          balance: newBalance,
-          bonus_credits: newBonus,
-        })
-        .eq("user_id", customer.userId);
-
+      const data = await callStaffApi({
+        action: "deduct_balance",
+        userId: customer.userId,
+        amount,
+        currentBalance: customer.prepaidBalance,
+        currentBonus: customer.bonusCredits,
+      });
       setCustomer({
         ...customer,
-        prepaidBalance: newBalance,
-        bonusCredits: newBonus,
+        prepaidBalance: data.balance,
+        bonusCredits: data.bonusCredits,
       });
       setDeductAmount("");
       toast.success(`$${amount.toFixed(2)} deducted from prepaid balance`);
