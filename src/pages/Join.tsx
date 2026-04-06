@@ -109,8 +109,8 @@ const JoinPage = () => {
                     </li>
                   ))}
                 </ul>
-                <Button className="w-full" onClick={() => navigate("/login")}>
-                  Subscribe to VIP
+                <Button className="w-full" onClick={handleUpgrade} disabled={upgrading || currentTier === "vip"}>
+                  {upgrading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Upgrading...</> : currentTier === "vip" ? "Already VIP ✓" : "Subscribe to VIP"}
                 </Button>
               </CardContent>
             </Card>
