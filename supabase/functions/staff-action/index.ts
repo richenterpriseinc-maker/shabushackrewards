@@ -197,10 +197,12 @@ Deno.serve(async (req) => {
         if (prof) {
           const newXp = (prof.xp_total || 0) + xpEarned;
           const newTier = newXp >= 4000 ? "diamond" : newXp >= 1500 ? "gold" : newXp >= 500 ? "silver" : "bronze";
-          await supabase
+          const { error: xpErr } = await supabase
             .from("profiles")
             .update({ xp_total: newXp, current_tier: newTier })
             .eq("user_id", userId);
+          if (xpErr) console.error("XP update error:", xpErr);
+          else console.log(`XP updated: ${newXp} (tier: ${newTier}) for ${userId}`);
         }
 
         // Update challenge progress for visit-type challenges
