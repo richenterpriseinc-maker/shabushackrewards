@@ -188,25 +188,20 @@ Deno.serve(async (req) => {
           .maybeSingle();
         
         const xpEarned = Math.round(50 * (streakData?.multiplier || 1));
-        await supabase.rpc("increment_xp", { _user_id: userId, _amount: xpEarned }).catch(() => {
-          // Fallback: direct update
-          supabase
+        // Direct XP update
+        const { data: prof } = await supabase
+          .from("profiles")
+          .select("xp_total")
+          .eq("user_id", userId)
+          .maybeSingle();
+        if (prof) {
+          const newXp = (prof.xp_total || 0) + xpEarned;
+          const newTier = newXp >= 4000 ? "diamond" : newXp >= 1500 ? "gold" : newXp >= 500 ? "silver" : "bronze";
+          await supabase
             .from("profiles")
-            .select("xp_total")
-            .eq("user_id", userId)
-            .maybeSingle()
-            .then(({ data: prof }) => {
-              if (prof) {
-                const newXp = (prof.xp_total || 0) + xpEarned;
-                const newTier = newXp >= 4000 ? "diamond" : newXp >= 1500 ? "gold" : newXp >= 500 ? "silver" : "bronze";
-                supabase
-                  .from("profiles")
-                  .update({ xp_total: newXp, current_tier: newTier })
-                  .eq("user_id", userId)
-                  .then(() => {});
-              }
-            });
-        });
+            .update({ xp_total: newXp, current_tier: newTier })
+            .eq("user_id", userId);
+        }
 
         // Update challenge progress for visit-type challenges
         const currentMonth = now.getMonth() + 1;
