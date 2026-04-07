@@ -178,6 +178,14 @@ Deno.serve(async (req) => {
               })
               .eq("user_id", userId);
           }
+        } else {
+          await supabase.from("user_streaks").insert({
+            user_id: userId,
+            current_streak: 1,
+            best_streak: 1,
+            last_visit_week: weekKey,
+            multiplier: 1,
+          });
         }
 
         // Award XP (base 50 per visit)
