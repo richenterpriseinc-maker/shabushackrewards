@@ -304,6 +304,44 @@ export type Database = {
         }
         Relationships: []
       }
+      prepaid_transactions: {
+        Row: {
+          amount: number
+          bonus_amount: number
+          created_at: string
+          id: string
+          location_id: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          bonus_amount?: number
+          created_at?: string
+          id?: string
+          location_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          bonus_amount?: number
+          created_at?: string
+          id?: string
+          location_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prepaid_transactions_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
