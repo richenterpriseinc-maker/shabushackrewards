@@ -293,6 +293,15 @@ Deno.serve(async (req) => {
           })
           .eq("user_id", userId);
 
+        // Log transaction
+        await supabase.from("prepaid_transactions").insert({
+          user_id: userId,
+          location_id: locationId,
+          type: "load",
+          amount,
+          bonus_amount: bonus,
+        });
+
         return new Response(
           JSON.stringify({
             balance: currentBalance + amount,
