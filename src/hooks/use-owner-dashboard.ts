@@ -92,6 +92,9 @@ export function useOwnerDashboard() {
     visits: visitsQuery.data ?? [],
     todayVisits,
     promotions: promotionsQuery.data ?? [],
+    prepaidTransactions: prepaidTxQuery.data ?? [],
+    prepaidDeductions,
+    prepaidLoads,
     stats,
     isLoading: locationAccessQuery.isLoading,
   };
