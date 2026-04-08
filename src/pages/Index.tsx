@@ -46,7 +46,7 @@ const Index = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/75 to-secondary/40" />
         </div>
 
-        <div className="relative container mx-auto px-4 py-24 md:py-40">
+        <div className="relative container mx-auto px-4 py-16 md:py-40">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
