@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Tag, Gift, MapPin, User } from "lucide-react";
+import { Home, Tag, Gift, MapPin, User, LayoutDashboard } from "lucide-react";
 import { useAuthReady } from "@/hooks/use-auth-ready";
 
 const MobileBottomNav = () => {
@@ -8,6 +8,7 @@ const MobileBottomNav = () => {
 
   const navItems = user
     ? [
+        { to: "/dashboard", icon: LayoutDashboard, label: "Home" },
         { to: "/rewards", icon: Gift, label: "Rewards" },
         { to: "/deals", icon: Tag, label: "Deals" },
         { to: "/locations", icon: MapPin, label: "Locations" },

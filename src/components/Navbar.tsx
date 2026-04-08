@@ -65,7 +65,7 @@ const Navbar = () => {
         <div className="flex md:hidden items-center gap-2">
           {isReady && user ? (
             <Button asChild size="sm" variant="outline" className="h-9 px-3 text-xs gap-1.5">
-              <Link to="/rewards">My Rewards</Link>
+              <Link to="/dashboard">Dashboard</Link>
             </Button>
           ) : (
             <Button asChild size="sm" className="h-9 px-3 text-xs">
