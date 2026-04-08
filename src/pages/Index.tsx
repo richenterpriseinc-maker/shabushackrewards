@@ -10,13 +10,13 @@ import heroImage from "@/assets/shabu-hero.jpg";
 const benefits = [
   {
     icon: Gift,
-    title: "Points + Punches",
-    description: "Earn 1 pt per $1 spent and collect punches. 10 visits = a free meal!",
+    title: "Earn Points",
+    description: "Get 1 point per visit. Collect 10 points and earn a free entrée!",
   },
   {
     icon: Star,
-    title: "VIP Membership",
-    description: "10% off every visit, 2x points, birthday rewards, and priority seating.",
+    title: "Level Up",
+    description: "Rise through Bronze, Silver, Gold, and Diamond tiers for bigger perks.",
   },
   {
     icon: Utensils,
@@ -62,7 +62,7 @@ const Index = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button asChild size="lg" className="text-base">
-                <Link to="/join">Join for Free</Link>
+                <Link to="/login">Join for Free</Link>
               </Button>
               <Button
                 asChild
@@ -118,7 +118,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Punch Card Preview */}
+      {/* Points Preview */}
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center gap-12">
@@ -129,13 +129,13 @@ const Index = () => {
               className="flex-1"
             >
               <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4 tracking-wider">
-                YOUR DIGITAL PUNCH CARD
+                10 POINTS = FREE ENTRÉE
               </h2>
               <p className="text-muted-foreground text-lg mb-6">
-                No more paper cards. Track your progress digitally across all 4 locations. Every 10th visit earns you a free meal!
+                No paper cards needed. Track your points digitally across all 4 locations. Every 10th point earns you a free entrée!
               </p>
               <Button asChild>
-                <Link to="/join">Start Earning</Link>
+                <Link to="/login">Start Earning</Link>
               </Button>
             </motion.div>
 
@@ -148,7 +148,7 @@ const Index = () => {
               <Card className="bg-gradient-to-br from-primary to-secondary p-1 rounded-2xl">
                 <div className="bg-background rounded-xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-display text-lg font-semibold text-foreground tracking-wider">PUNCH CARD</span>
+                    <span className="font-display text-lg font-semibold text-foreground tracking-wider">YOUR POINTS</span>
                     <span className="text-sm text-muted-foreground">7 / 10</span>
                   </div>
                   <div className="grid grid-cols-5 gap-3 mb-4">
@@ -161,12 +161,12 @@ const Index = () => {
                             : "border-border text-muted-foreground"
                         }`}
                       >
-                        {i < 7 ? "🍲" : i + 1}
+                        {i < 7 ? <Star className="w-5 h-5 fill-current" /> : i + 1}
                       </div>
                     ))}
                   </div>
                   <p className="text-center text-sm text-muted-foreground">
-                    3 more visits until your <strong className="text-primary">free meal!</strong>
+                    3 more points until your <strong className="text-primary">free entrée!</strong>
                   </p>
                 </div>
               </Card>
@@ -195,7 +195,7 @@ const Index = () => {
               variant="secondary"
               className="text-base"
             >
-              <Link to="/join">Join Shabu Shack Rewards</Link>
+              <Link to="/login">Join Shabu Shack Rewards</Link>
             </Button>
           </motion.div>
         </div>

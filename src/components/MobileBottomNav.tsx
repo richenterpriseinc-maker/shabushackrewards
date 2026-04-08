@@ -17,7 +17,7 @@ const MobileBottomNav = () => {
         { to: "/", icon: Home, label: "Home" },
         { to: "/deals", icon: Tag, label: "Deals" },
         { to: "/locations", icon: MapPin, label: "Locations" },
-        { to: "/join", icon: Gift, label: "Join" },
+        { to: "/login", icon: Gift, label: "Join" },
       ];
 
   return (
