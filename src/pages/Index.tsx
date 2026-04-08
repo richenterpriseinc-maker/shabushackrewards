@@ -195,7 +195,7 @@ const Index = () => {
               variant="secondary"
               className="text-base"
             >
-              <Link to="/join">Join Shabu Shack Rewards</Link>
+              <Link to="/login">Join Shabu Shack Rewards</Link>
             </Button>
           </motion.div>
         </div>
