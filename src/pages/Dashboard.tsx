@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import OnboardingBanner from "@/components/OnboardingBanner";
 import Footer from "@/components/Footer";
 import { useAuthReady } from "@/hooks/use-auth-ready";
 import { useGamification, TIER_COLORS, getNextTier, type TierName } from "@/hooks/use-gamification";
@@ -70,6 +71,11 @@ const Dashboard = () => {
             </h1>
             <p className="text-sm text-muted-foreground mt-1">Here's your rewards snapshot</p>
           </motion.div>
+
+          {/* Onboarding */}
+          {profile && (
+            <OnboardingBanner profile={{ user_id: profile.user_id, date_of_birth: profile.date_of_birth, favorite_location_id: profile.favorite_location_id }} />
+          )}
 
           {/* Stats Row */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
