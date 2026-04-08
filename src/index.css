@@ -99,9 +99,22 @@
 
   body {
     @apply bg-background text-foreground font-sans;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4 {
     font-family: 'Bebas Neue', sans-serif;
+  }
+}
+
+@layer utilities {
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pb-mobile-nav {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
   }
 }
