@@ -121,6 +121,7 @@ const StaffPanel: React.FC = () => {
   const [loadAmount, setLoadAmount] = useState("");
   const [deductAmount, setDeductAmount] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   useEffect(() => {
     if (verified && locationName) {
@@ -292,6 +293,11 @@ const StaffPanel: React.FC = () => {
         points: data.points,
         freeEntrees: data.freeEntrees,
       });
+      if (data.points === 0) {
+        // 10th point reached — show celebration!
+        setShowCelebration(true);
+        setTimeout(() => setShowCelebration(false), 4000);
+      }
       toast.success(
         data.points === 0
           ? `🎉 Free entrée earned! +${data.xpEarned} XP`
@@ -428,6 +434,67 @@ const StaffPanel: React.FC = () => {
   // ─── Staff Panel ───
   return (
     <div className="min-h-screen bg-background">
+      {/* 🎉 Celebration Overlay */}
+      <AnimatePresence>
+        {showCelebration && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-secondary/80 backdrop-blur-sm"
+            onClick={() => setShowCelebration(false)}
+          >
+            {/* Confetti particles */}
+            {Array.from({ length: 40 }).map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-3 h-3 rounded-full"
+                style={{
+                  backgroundColor: ["#e53e3e", "#dd6b20", "#d69e2e", "#38a169", "#3182ce", "#805ad5", "#d53f8c"][i % 7],
+                  left: `${Math.random() * 100}%`,
+                  top: "-5%",
+                }}
+                animate={{
+                  y: [0, window.innerHeight * 1.2],
+                  x: [0, (Math.random() - 0.5) * 200],
+                  rotate: [0, Math.random() * 720],
+                  opacity: [1, 1, 0],
+                }}
+                transition={{
+                  duration: 2 + Math.random() * 2,
+                  delay: Math.random() * 0.8,
+                  ease: "easeOut",
+                }}
+              />
+            ))}
+            <motion.div
+              initial={{ scale: 0, rotate: -10 }}
+              animate={{ scale: 1, rotate: 0 }}
+              exit={{ scale: 0 }}
+              transition={{ type: "spring", damping: 12, stiffness: 200, delay: 0.2 }}
+              className="bg-background rounded-2xl p-8 shadow-2xl text-center max-w-xs mx-4 relative z-10"
+            >
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ repeat: Infinity, duration: 1.5 }}
+                className="text-6xl mb-4"
+              >
+                🎉
+              </motion.div>
+              <h2 className="font-display text-2xl font-bold text-foreground tracking-wider mb-2">
+                FREE ENTRÉE!
+              </h2>
+              <p className="text-muted-foreground text-sm mb-1">
+                {customer?.name || "Customer"} earned a free entrée!
+              </p>
+              <p className="text-primary font-bold text-lg">
+                10 points completed 🍲
+              </p>
+              <p className="text-xs text-muted-foreground mt-3">Tap anywhere to dismiss</p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Header */}
       <div className="sticky top-0 z-50 bg-background border-b px-3 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
