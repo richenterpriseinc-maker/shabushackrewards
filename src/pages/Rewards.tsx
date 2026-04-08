@@ -35,13 +35,14 @@ const RewardsPage = () => {
   } = useGamification();
 
   const { user, isReady } = useAuthReady();
+  const [showQR, setShowQR] = useState(false);
+
+  const userId = user?.id ?? null;
 
   if (isReady && !user) {
     navigate("/login", { replace: true });
     return null;
   }
-
-  const userId = user?.id ?? null;
 
   const prepaidBalance = Number(prepaid?.balance ?? 0) + Number(prepaid?.bonus_credits ?? 0);
   const tierColors = TIER_COLORS[currentTier];
