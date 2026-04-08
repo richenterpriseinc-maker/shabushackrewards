@@ -12,7 +12,6 @@ import {
   Plus,
   Minus,
   CreditCard,
-  Gift,
   Stamp,
   LogOut,
   User,
@@ -22,6 +21,7 @@ import {
   Clock,
   ChevronRight,
   RotateCcw,
+  Star,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -38,9 +38,8 @@ interface CustomerData {
   phone: string | null;
   email: string;
   tier: string;
-  punches: number;
-  completedCards: number;
   points: number;
+  freeEntrees: number;
   prepaidBalance: number;
   bonusCredits: number;
 }
@@ -76,7 +75,6 @@ function getRecentCustomers(locationName: string): RecentCustomer[] {
     const raw = localStorage.getItem(`${RECENT_KEY}_${locationName}`);
     if (!raw) return [];
     const list: RecentCustomer[] = JSON.parse(raw);
-    // Keep last 24 hours only
     const cutoff = Date.now() - 24 * 60 * 60 * 1000;
     return list.filter((c) => c.timestamp > cutoff).slice(0, 10);
   } catch {
@@ -102,7 +100,6 @@ function saveRecentCustomer(locationName: string, customer: CustomerData) {
 const StaffPanel: React.FC = () => {
   const [searchParams] = useSearchParams();
 
-  // Session state — restore from localStorage for tablet persistence
   const storedSession = getStoredSession();
   const [pin, setPin] = useState(storedSession?.pin || "");
   const [pinError, setPinError] = useState("");
@@ -121,13 +118,10 @@ const StaffPanel: React.FC = () => {
   const scannerContainerId = "qr-scanner-region";
 
   // Action states
-  const [pointsAmount, setPointsAmount] = useState("");
-  const [pointsDesc, setPointsDesc] = useState("");
   const [loadAmount, setLoadAmount] = useState("");
   const [deductAmount, setDeductAmount] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
 
-  // Load recent customers when location changes
   useEffect(() => {
     if (verified && locationName) {
       setRecentCustomers(getRecentCustomers(locationName));
@@ -218,7 +212,6 @@ const StaffPanel: React.FC = () => {
     setVerified(true);
     setPinError("");
 
-    // Persist session for tablet mode
     localStorage.setItem(
       SESSION_KEY,
       JSON.stringify({
@@ -229,7 +222,6 @@ const StaffPanel: React.FC = () => {
       })
     );
 
-    // Auto-search if customer param exists
     const customerParam = searchParams.get("customer");
     if (customerParam) {
       setSearchQuery(`shabu:${customerParam}`);
@@ -249,7 +241,6 @@ const StaffPanel: React.FC = () => {
       const data = await callStaffApi({ action: "search", query: searchQuery.trim() });
       if (data.locationId) {
         setLocationId(data.locationId);
-        // Update stored session with locationId
         const session = getStoredSession();
         if (session) {
           localStorage.setItem(
@@ -265,14 +256,12 @@ const StaffPanel: React.FC = () => {
         phone: data.customer.phone,
         email: data.customer.userId.slice(0, 8) + "...",
         tier: data.customer.tier,
-        punches: data.customer.punches,
-        completedCards: data.customer.completedCards,
         points: data.customer.points,
+        freeEntrees: data.customer.freeEntrees,
         prepaidBalance: data.customer.prepaidBalance,
         bonusCredits: data.customer.bonusCredits,
       };
       setCustomer(c);
-      // Save to recent
       saveRecentCustomer(locationName, c);
       setRecentCustomers(getRecentCustomers(locationName));
     } catch (err: any) {
@@ -282,66 +271,34 @@ const StaffPanel: React.FC = () => {
   };
 
   const lookupRecent = (recent: RecentCustomer) => {
-    // Use userId for exact lookup
     setSearchQuery(`shabu:${recent.userId}`);
     setTimeout(() => {
       document.querySelector<HTMLFormElement>("#staff-search-form")?.requestSubmit();
     }, 50);
   };
 
-  const addPunch = async () => {
+  const addPoint = async () => {
     if (!customer) return;
     setActionLoading(true);
     try {
       const data = await callStaffApi({
-        action: "add_punch",
+        action: "add_point",
         userId: customer.userId,
-        punches: customer.punches,
-        completedCards: customer.completedCards,
+        points: customer.points,
+        freeEntrees: customer.freeEntrees,
       });
       setCustomer({
         ...customer,
-        punches: data.punches,
-        completedCards: data.completedCards,
+        points: data.points,
+        freeEntrees: data.freeEntrees,
       });
       toast.success(
-        data.punches === 0
-          ? `🎉 Punch card completed! +${data.xpEarned} XP earned!`
-          : `Punch added (${data.punches}/10) +${data.xpEarned} XP`
+        data.points === 0
+          ? `🎉 Free entrée earned! +${data.xpEarned} XP`
+          : `Point added (${data.points}/10) +${data.xpEarned} XP`
       );
     } catch {
-      toast.error("Failed to add punch");
-    }
-    setActionLoading(false);
-  };
-
-  const addPoints = async (type: "earn" | "redeem") => {
-    if (!customer) return;
-    const amount = parseInt(pointsAmount);
-    if (!amount || amount <= 0) {
-      toast.error("Enter a valid amount");
-      return;
-    }
-    if (type === "redeem" && amount > customer.points) {
-      toast.error("Not enough points");
-      return;
-    }
-    setActionLoading(true);
-    try {
-      await callStaffApi({
-        action: "add_points",
-        userId: customer.userId,
-        amount,
-        type,
-        description: pointsDesc || (type === "earn" ? "Staff awarded" : "Staff redeemed"),
-      });
-      const newPoints = type === "earn" ? customer.points + amount : customer.points - amount;
-      setCustomer({ ...customer, points: Math.max(0, newPoints) });
-      setPointsAmount("");
-      setPointsDesc("");
-      toast.success(type === "earn" ? `+${amount} points added` : `${amount} points redeemed`);
-    } catch {
-      toast.error("Failed to update points");
+      toast.error("Failed to add point");
     }
     setActionLoading(false);
   };
@@ -414,8 +371,6 @@ const StaffPanel: React.FC = () => {
   const clearCustomer = () => {
     setCustomer(null);
     setSearchQuery("");
-    setPointsAmount("");
-    setPointsDesc("");
     setLoadAmount("");
     setDeductAmount("");
   };
@@ -425,53 +380,42 @@ const StaffPanel: React.FC = () => {
     setVerified(false);
     setPin("");
     setCustomer(null);
-    setSearchQuery("");
     setLocationName("");
     setLocationId(null);
   };
 
-  // ─── PIN Login Screen ───
+  // ─── PIN Screen ───
   if (!verified) {
     return (
-      <div className="min-h-screen bg-secondary flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-sm"
-        >
-          <Card className="border-border bg-card">
-            <CardContent className="pt-8 pb-6 px-6">
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Lock className="w-8 h-8 text-primary" />
-                </div>
-                <h1 className="font-display text-3xl tracking-wide">Staff Login</h1>
-                <p className="text-muted-foreground text-sm mt-1">
-                  Enter your location PIN to access the staff panel
-                </p>
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+          <Card className="w-full max-w-sm">
+            <CardContent className="p-6 text-center space-y-4">
+              <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <Lock className="w-7 h-7 text-primary" />
               </div>
-              <form onSubmit={handlePinLogin} className="space-y-4">
+              <h1 className="font-display text-2xl font-bold tracking-wider uppercase">
+                Staff Login
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Enter your location PIN to access the staff panel
+              </p>
+              <form onSubmit={handlePinLogin} className="space-y-3">
                 <Input
-                  type="text"
+                  type="password"
                   inputMode="numeric"
                   maxLength={4}
                   placeholder="4-digit PIN"
                   value={pin}
                   onChange={(e) => {
-                    setPin(e.target.value.replace(/\D/g, "").slice(0, 4));
+                    setPin(e.target.value);
                     setPinError("");
                   }}
-                  className="text-center text-3xl tracking-[0.6em] font-mono h-14"
+                  className="text-center text-xl tracking-[0.3em] h-14"
                 />
-                {pinError && (
-                  <p className="text-destructive text-sm text-center">{pinError}</p>
-                )}
-                <Button
-                  type="submit"
-                  disabled={pin.length < 4}
-                  className="w-full font-display text-lg tracking-wider h-12"
-                >
-                  Login
+                {pinError && <p className="text-sm text-destructive">{pinError}</p>}
+                <Button type="submit" className="w-full h-12 font-display tracking-wider">
+                  LOGIN
                 </Button>
               </form>
             </CardContent>
@@ -481,25 +425,27 @@ const StaffPanel: React.FC = () => {
     );
   }
 
-  // ─── Main Staff Panel (single-screen) ───
+  // ─── Staff Panel ───
   return (
-    <div className="min-h-screen bg-secondary text-foreground pb-safe-bottom">
-      {/* Compact Header */}
-      <div className="bg-card border-b border-border px-4 py-2 flex items-center justify-between sticky top-0 z-10">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="sticky top-0 z-50 bg-background border-b px-3 py-2 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <MapPin className="w-4 h-4 text-primary" />
-          <span className="font-display text-base tracking-wide">{locationName}</span>
-          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+          <span className="font-display text-sm font-bold tracking-wider uppercase">
+            Shabu Shack {locationName}
+          </span>
+          <Badge variant="outline" className="text-[10px] h-5">
             Staff
           </Badge>
         </div>
-        <Button variant="ghost" size="sm" onClick={handleLogout} className="h-8 px-2">
+        <Button variant="ghost" size="sm" onClick={handleLogout} className="h-8 w-8 p-0">
           <LogOut className="w-4 h-4" />
         </Button>
       </div>
 
       <div className="max-w-lg mx-auto p-3 space-y-3">
-        {/* Search Bar — always visible */}
+        {/* Search Bar */}
         <Card>
           <CardContent className="p-3 space-y-2">
             <form id="staff-search-form" onSubmit={handleSearch} className="flex gap-2">
@@ -538,7 +484,7 @@ const StaffPanel: React.FC = () => {
               )}
             </AnimatePresence>
 
-            {/* Recent Customers — show when no customer is loaded */}
+            {/* Recent Customers */}
             {!customer && recentCustomers.length > 0 && (
               <div>
                 <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1.5 flex items-center gap-1">
@@ -562,7 +508,7 @@ const StaffPanel: React.FC = () => {
           </CardContent>
         </Card>
 
-        {/* Customer Card + Actions — single unified view */}
+        {/* Customer Card + Actions */}
         <AnimatePresence>
           {customer && (
             <motion.div
@@ -571,7 +517,6 @@ const StaffPanel: React.FC = () => {
               exit={{ opacity: 0 }}
               className="space-y-3"
             >
-              {/* Customer Info + Quick Actions */}
               <Card>
                 <CardContent className="p-3">
                   {/* Customer header */}
@@ -609,14 +554,12 @@ const StaffPanel: React.FC = () => {
                   {/* Stats Row */}
                   <div className="grid grid-cols-3 gap-2 text-center mb-3">
                     <div className="bg-muted rounded-lg p-2">
-                      <p className="text-lg font-bold text-foreground">{customer.points}</p>
+                      <p className="text-lg font-bold text-foreground">{customer.points}/10</p>
                       <p className="text-[10px] text-muted-foreground uppercase">Points</p>
                     </div>
                     <div className="bg-muted rounded-lg p-2">
-                      <p className="text-lg font-bold text-foreground">
-                        {customer.punches}/10
-                      </p>
-                      <p className="text-[10px] text-muted-foreground uppercase">Punches</p>
+                      <p className="text-lg font-bold text-foreground">{customer.freeEntrees}</p>
+                      <p className="text-[10px] text-muted-foreground uppercase">Free Entrées</p>
                     </div>
                     <div className="bg-muted rounded-lg p-2">
                       <p className="text-lg font-bold text-foreground">
@@ -626,144 +569,98 @@ const StaffPanel: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* ─── Record Visit (primary action, prominent) ─── */}
+                  {/* Record Visit — primary action */}
                   <Button
-                    onClick={addPunch}
+                    onClick={addPoint}
                     disabled={actionLoading}
                     className="w-full h-12 text-base font-display tracking-wide"
                   >
                     <Stamp className="w-5 h-5 mr-2" />
-                    Record Visit (+50 XP)
+                    Add Point (+50 XP)
                   </Button>
 
-                  {/* Punch card visual */}
-                  <div className="flex items-center justify-center gap-1 mt-2">
+                  {/* Points progress visual */}
+                  <div className="flex items-center justify-center gap-1.5 mt-2">
                     {Array.from({ length: 10 }).map((_, i) => (
                       <div
                         key={i}
-                        className={`w-5 h-5 rounded-full border-2 ${
-                          i < customer.punches
+                        className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          i < customer.points
                             ? "bg-primary border-primary"
                             : "border-border"
                         }`}
-                      />
+                      >
+                        {i < customer.points && (
+                          <Star className="w-3 h-3 text-primary-foreground fill-current" />
+                        )}
+                      </div>
                     ))}
                   </div>
-                  {customer.completedCards > 0 && (
-                    <p className="text-xs text-muted-foreground text-center mt-1">
-                      {customer.completedCards} card(s) completed
-                    </p>
-                  )}
+                  <p className="text-xs text-muted-foreground text-center mt-1">
+                    {customer.points === 0 && customer.freeEntrees > 0
+                      ? `${customer.freeEntrees} free entrée${customer.freeEntrees > 1 ? "s" : ""} earned!`
+                      : customer.points >= 9
+                        ? "🔥 One more point for a free entrée!"
+                        : `${10 - customer.points} more point${10 - customer.points === 1 ? "" : "s"} to free entrée`}
+                  </p>
                 </CardContent>
               </Card>
 
-              {/* Prepaid & Points — collapsed into tabs-like sections */}
-              <div className="grid grid-cols-1 gap-3">
-                {/* Prepaid Balance */}
-                <Card>
-                  <CardContent className="p-3 space-y-2">
-                    <div className="flex items-center gap-2 mb-1">
-                      <CreditCard className="w-4 h-4 text-primary" />
-                      <span className="text-sm font-semibold">Prepaid</span>
-                      <span className="text-xs text-muted-foreground ml-auto">
-                        ${customer.prepaidBalance.toFixed(2)} cash + ${customer.bonusCredits.toFixed(2)} bonus
-                      </span>
-                    </div>
+              {/* Prepaid Balance */}
+              <Card>
+                <CardContent className="p-3 space-y-2">
+                  <div className="flex items-center gap-2 mb-1">
+                    <CreditCard className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-semibold">Prepaid</span>
+                    <span className="text-xs text-muted-foreground ml-auto">
+                      ${customer.prepaidBalance.toFixed(2)} cash + ${customer.bonusCredits.toFixed(2)} bonus
+                    </span>
+                  </div>
 
-                    {/* Deduct */}
-                    <div className="flex gap-2">
-                      <Input
-                        type="number"
-                        placeholder="$ Deduct"
-                        value={deductAmount}
-                        onChange={(e) => setDeductAmount(e.target.value)}
-                        className="flex-1 h-10"
-                      />
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={deductBalance}
-                        disabled={
-                          actionLoading ||
-                          customer.prepaidBalance + customer.bonusCredits <= 0
-                        }
-                        className="h-10 px-4"
-                      >
-                        <Minus className="w-3 h-3 mr-1" /> Use
-                      </Button>
-                    </div>
+                  <div className="flex gap-2">
+                    <Input
+                      type="number"
+                      placeholder="$ Deduct"
+                      value={deductAmount}
+                      onChange={(e) => setDeductAmount(e.target.value)}
+                      className="flex-1 h-10"
+                    />
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={deductBalance}
+                      disabled={
+                        actionLoading ||
+                        customer.prepaidBalance + customer.bonusCredits <= 0
+                      }
+                      className="h-10 px-4"
+                    >
+                      <Minus className="w-3 h-3 mr-1" /> Use
+                    </Button>
+                  </div>
 
-                    {/* Load */}
-                    <div className="flex gap-2">
-                      <Input
-                        type="number"
-                        placeholder="$ Load"
-                        value={loadAmount}
-                        onChange={(e) => setLoadAmount(e.target.value)}
-                        className="flex-1 h-10"
-                      />
-                      <Button
-                        size="sm"
-                        onClick={loadBalance}
-                        disabled={actionLoading}
-                        className="h-10 px-4"
-                      >
-                        <Plus className="w-3 h-3 mr-1" /> Load
-                      </Button>
-                    </div>
-                    <p className="text-[10px] text-muted-foreground">
-                      $50+ → 10% bonus • $100+ → 20% bonus
-                    </p>
-                  </CardContent>
-                </Card>
-
-                {/* Points */}
-                <Card>
-                  <CardContent className="p-3 space-y-2">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Gift className="w-4 h-4 text-warm-gold" />
-                      <span className="text-sm font-semibold">Points</span>
-                      <span className="text-xs text-muted-foreground ml-auto">
-                        {customer.points} available
-                      </span>
-                    </div>
-                    <div className="flex gap-2">
-                      <Input
-                        type="number"
-                        placeholder="Amount"
-                        value={pointsAmount}
-                        onChange={(e) => setPointsAmount(e.target.value)}
-                        className="w-20 h-10"
-                      />
-                      <Input
-                        placeholder="Note (optional)"
-                        value={pointsDesc}
-                        onChange={(e) => setPointsDesc(e.target.value)}
-                        className="flex-1 h-10"
-                      />
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => addPoints("earn")}
-                        disabled={actionLoading}
-                        className="flex-1 h-10"
-                      >
-                        <Plus className="w-3 h-3 mr-1" /> Award
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => addPoints("redeem")}
-                        disabled={actionLoading}
-                        className="flex-1 h-10"
-                      >
-                        <Minus className="w-3 h-3 mr-1" /> Redeem
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  <div className="flex gap-2">
+                    <Input
+                      type="number"
+                      placeholder="$ Load"
+                      value={loadAmount}
+                      onChange={(e) => setLoadAmount(e.target.value)}
+                      className="flex-1 h-10"
+                    />
+                    <Button
+                      size="sm"
+                      onClick={loadBalance}
+                      disabled={actionLoading}
+                      className="h-10 px-4"
+                    >
+                      <Plus className="w-3 h-3 mr-1" /> Load
+                    </Button>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">
+                    $50+ → 10% bonus • $100+ → 20% bonus
+                  </p>
+                </CardContent>
+              </Card>
             </motion.div>
           )}
         </AnimatePresence>
