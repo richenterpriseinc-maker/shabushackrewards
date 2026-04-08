@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuthReady } from "@/hooks/use-auth-ready";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -14,29 +15,35 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
-import { User, CalendarIcon, MapPin, Save, ArrowLeft, Loader2 } from "lucide-react";
+import { User, CalendarIcon, MapPin, Save, ArrowLeft, Loader2, LogOut } from "lucide-react";
 
 const Profile = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user, isReady } = useAuthReady();
   const [saving, setSaving] = useState(false);
   const [name, setName] = useState("");
   const [dob, setDob] = useState<Date | undefined>();
   const [favoriteLocationId, setFavoriteLocationId] = useState<string>("");
 
+  useEffect(() => {
+    if (isReady && !user) navigate("/login", { replace: true });
+  }, [isReady, user, navigate]);
+
   const profileQuery = useQuery({
     queryKey: ["profile"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", authUser.id)
         .single();
       if (error) throw error;
       return data;
     },
+    enabled: isReady && !!user,
   });
 
   const locationsQuery = useQuery({
@@ -53,12 +60,6 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/login");
-    });
-  }, [navigate]);
-
-  useEffect(() => {
     if (profileQuery.data) {
       setName(profileQuery.data.name || "");
       setDob(profileQuery.data.date_of_birth ? new Date(profileQuery.data.date_of_birth + "T00:00:00") : undefined);
@@ -69,8 +70,8 @@ const Profile = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) throw new Error("Not authenticated");
 
       const updates: Record<string, unknown> = {
         name: name.trim() || null,
@@ -81,7 +82,7 @@ const Profile = () => {
       const { error } = await supabase
         .from("profiles")
         .update(updates)
-        .eq("user_id", user.id);
+        .eq("user_id", authUser.id);
 
       if (error) throw error;
 
@@ -94,7 +95,12 @@ const Profile = () => {
     }
   };
 
-  if (profileQuery.isLoading) {
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    navigate("/login");
+  };
+
+  if (!isReady || profileQuery.isLoading) {
     return (
       <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
         <Navbar />
@@ -218,6 +224,16 @@ const Profile = () => {
                   <Save className="w-4 h-4" />
                 )}
                 {saving ? "Saving..." : "Save Changes"}
+              </Button>
+
+              {/* Sign Out */}
+              <Button
+                variant="outline"
+                onClick={handleSignOut}
+                className="w-full h-12 text-base gap-2 text-muted-foreground hover:text-destructive border-border"
+              >
+                <LogOut className="w-4 h-4" />
+                Sign Out
               </Button>
             </CardContent>
           </Card>

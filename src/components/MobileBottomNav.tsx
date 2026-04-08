@@ -1,15 +1,24 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, Tag, Gift, MapPin } from "lucide-react";
-
-const navItems = [
-  { to: "/", icon: Home, label: "Home" },
-  { to: "/deals", icon: Tag, label: "Deals" },
-  { to: "/rewards", icon: Gift, label: "Rewards" },
-  { to: "/locations", icon: MapPin, label: "Locations" },
-];
+import { Home, Tag, Gift, MapPin, User } from "lucide-react";
+import { useAuthReady } from "@/hooks/use-auth-ready";
 
 const MobileBottomNav = () => {
   const { pathname } = useLocation();
+  const { user } = useAuthReady();
+
+  const navItems = user
+    ? [
+        { to: "/rewards", icon: Gift, label: "Rewards" },
+        { to: "/deals", icon: Tag, label: "Deals" },
+        { to: "/locations", icon: MapPin, label: "Locations" },
+        { to: "/profile", icon: User, label: "Profile" },
+      ]
+    : [
+        { to: "/", icon: Home, label: "Home" },
+        { to: "/deals", icon: Tag, label: "Deals" },
+        { to: "/locations", icon: MapPin, label: "Locations" },
+        { to: "/join", icon: Gift, label: "Join" },
+      ];
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-secondary/95 backdrop-blur-md border-t border-border safe-bottom" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
