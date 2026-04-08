@@ -55,7 +55,7 @@ const Navbar = () => {
             </div>
           ) : (
             <Button asChild size="sm">
-              <Link to="/join">Join Now</Link>
+              <Link to="/login">Join Now</Link>
             </Button>
           )}
         </div>
