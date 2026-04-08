@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import OnboardingBanner from "@/components/OnboardingBanner";
 import Footer from "@/components/Footer";
 import { useAuthReady } from "@/hooks/use-auth-ready";
 import { useGamification, TIER_COLORS, getNextTier, type TierName } from "@/hooks/use-gamification";
