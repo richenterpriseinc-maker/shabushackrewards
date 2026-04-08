@@ -10,13 +10,13 @@ import heroImage from "@/assets/shabu-hero.jpg";
 const benefits = [
   {
     icon: Gift,
-    title: "Points + Punches",
-    description: "Earn 1 pt per $1 spent and collect punches. 10 visits = a free meal!",
+    title: "Earn Points",
+    description: "Get 1 point per visit. Collect 10 points and earn a free entrée!",
   },
   {
     icon: Star,
-    title: "VIP Membership",
-    description: "10% off every visit, 2x points, birthday rewards, and priority seating.",
+    title: "Level Up",
+    description: "Rise through Bronze, Silver, Gold, and Diamond tiers for bigger perks.",
   },
   {
     icon: Utensils,
