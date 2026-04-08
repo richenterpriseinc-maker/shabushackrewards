@@ -36,7 +36,7 @@ const Index = () => {
       <Navbar />
 
       {/* Hero */}
-      <section className="relative pt-16 overflow-hidden">
+      <section className="relative pt-14 md:pt-16 overflow-hidden">
         <div className="absolute inset-0">
           <img
             src={heroImage}
