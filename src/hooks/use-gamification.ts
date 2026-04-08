@@ -193,7 +193,7 @@ export function useGamification() {
   const completedChallenges = challengesWithProgress.filter((c) => c.completed).length;
   const totalChallenges = challengesWithProgress.length;
 
-  const isLoading = profileQuery.isLoading || streakQuery.isLoading || challengesQuery.isLoading || progressQuery.isLoading;
+  const isLoading = profileQuery.isLoading || streakQuery.isLoading || challengesQuery.isLoading || progressQuery.isLoading || punchCardQuery.isLoading;
 
   return {
     profile,
@@ -207,6 +207,7 @@ export function useGamification() {
     totalChallenges,
     prepaid: prepaidQuery.data,
     points: pointsQuery.data ?? 0,
+    punchCard: punchCardQuery.data,
     isLoading,
     isAuthenticated: !profileQuery.isError,
     TIER_THRESHOLDS,
