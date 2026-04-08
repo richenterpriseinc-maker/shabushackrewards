@@ -57,7 +57,7 @@ const Index = () => {
               NORCAL'S #1 <br />
               <span className="text-primary">HOTPOT</span>
             </h1>
-            <p className="text-lg md:text-xl text-secondary-foreground/80 mb-8">
+            <p className="text-base md:text-xl text-secondary-foreground/80 mb-6">
               Join Shabu Shack Rewards and earn free meals, exclusive deals, and VIP perks every time you dine with us.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
