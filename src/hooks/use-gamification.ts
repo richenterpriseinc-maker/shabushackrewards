@@ -133,6 +133,21 @@ export function useGamification() {
     },
   });
 
+  const punchCardQuery = useQuery({
+    queryKey: ["punch_card"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+      const { data, error } = await supabase
+        .from("punch_cards")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const pointsQuery = useQuery({
     queryKey: ["points_total"],
     queryFn: async () => {
