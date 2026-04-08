@@ -22,10 +22,10 @@ const Footer = () => (
         </div>
         <div>
           <h4 className="font-display text-lg font-semibold mb-3 tracking-wider">EXPLORE</h4>
-          <div className="space-y-2 text-sm opacity-80">
-            <Link to="/deals" className="block hover:opacity-100 transition-opacity">Deals</Link>
-            <Link to="/rewards" className="block hover:opacity-100 transition-opacity">Rewards</Link>
-            <Link to="/join" className="block hover:opacity-100 transition-opacity">Join Now</Link>
+          <div className="space-y-1 text-sm opacity-80">
+            <Link to="/deals" className="block hover:opacity-100 transition-opacity py-1.5 min-h-[44px] flex items-center">Deals</Link>
+            <Link to="/rewards" className="block hover:opacity-100 transition-opacity py-1.5 min-h-[44px] flex items-center">Rewards</Link>
+            <Link to="/join" className="block hover:opacity-100 transition-opacity py-1.5 min-h-[44px] flex items-center">Join Now</Link>
           </div>
         </div>
         <div>
