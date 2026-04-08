@@ -53,7 +53,7 @@ const Index = () => {
             transition={{ duration: 0.7 }}
             className="max-w-xl"
           >
-            <h1 className="font-display text-5xl md:text-7xl font-bold text-secondary-foreground mb-4 leading-none tracking-wider">
+            <h1 className="font-display text-4xl md:text-7xl font-bold text-secondary-foreground mb-3 leading-none tracking-wider">
               NORCAL'S #1 <br />
               <span className="text-primary">HOTPOT</span>
             </h1>
