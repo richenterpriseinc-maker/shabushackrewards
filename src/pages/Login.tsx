@@ -64,6 +64,10 @@ const Login = () => {
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSignUp && !name.trim()) {
+      toast({ title: "Missing name", description: "Please enter your name.", variant: "destructive" });
+      return;
+    }
     if (!email || !password) {
       toast({ title: "Missing fields", description: "Please enter your email and password.", variant: "destructive" });
       return;
@@ -78,7 +82,10 @@ const Login = () => {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: { full_name: name.trim() },
+          },
         });
         if (error) {
           toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
