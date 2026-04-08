@@ -26,6 +26,7 @@ const OnboardingBanner = ({ profile }: OnboardingBannerProps) => {
     !profile.date_of_birth ? "birthday" : !profile.favorite_location_id ? "location" : "done"
   );
   const [dob, setDob] = useState<Date | undefined>();
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [locationId, setLocationId] = useState("");
   const [saving, setSaving] = useState(false);
   const [dismissed, setDismissed] = useState(false);
