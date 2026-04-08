@@ -1,0 +1,39 @@
+import { Link, useLocation } from "react-router-dom";
+import { Home, Tag, Gift, MapPin } from "lucide-react";
+
+const navItems = [
+  { to: "/", icon: Home, label: "Home" },
+  { to: "/deals", icon: Tag, label: "Deals" },
+  { to: "/rewards", icon: Gift, label: "Rewards" },
+  { to: "/locations", icon: MapPin, label: "Locations" },
+];
+
+const MobileBottomNav = () => {
+  const { pathname } = useLocation();
+
+  return (
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-secondary/95 backdrop-blur-md border-t border-border safe-bottom">
+      <div className="flex items-stretch justify-around">
+        {navItems.map((item) => {
+          const isActive = pathname === item.to || (item.to !== "/" && pathname.startsWith(item.to));
+          return (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`flex flex-col items-center justify-center gap-0.5 py-2 px-3 min-h-[56px] flex-1 transition-colors ${
+                isActive
+                  ? "text-primary"
+                  : "text-secondary-foreground/60 active:text-primary"
+              }`}
+            >
+              <item.icon className="w-5 h-5" />
+              <span className="text-[10px] font-medium">{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+  );
+};
+
+export default MobileBottomNav;
