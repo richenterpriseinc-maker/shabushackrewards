@@ -121,6 +121,7 @@ const StaffPanel: React.FC = () => {
   const [loadAmount, setLoadAmount] = useState("");
   const [deductAmount, setDeductAmount] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   useEffect(() => {
     if (verified && locationName) {
