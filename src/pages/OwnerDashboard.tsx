@@ -282,6 +282,85 @@ const OwnerDashboard = () => {
             </motion.div>
           </div>
 
+          {/* Monthly Prepaid Revenue Report */}
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }}>
+            <Card className="mt-6 border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="font-display text-lg tracking-wide flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-primary" />
+                  PREPAID REVENUE REPORT
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {prepaidTransactions.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">No prepaid transactions yet.</p>
+                ) : (
+                  <>
+                    {/* Summary */}
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <div className="p-3 rounded-lg bg-muted/50 text-center">
+                        <p className="text-2xl font-bold text-foreground">${stats.prepaidLoads.toFixed(2)}</p>
+                        <p className="text-xs text-muted-foreground">Total Loaded</p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-muted/50 text-center">
+                        <p className="text-2xl font-bold text-primary">${stats.prepaidRedemptions.toFixed(2)}</p>
+                        <p className="text-xs text-muted-foreground">Total Redeemed</p>
+                      </div>
+                    </div>
+                    {/* Monthly breakdown */}
+                    <div className="space-y-3 max-h-80 overflow-y-auto">
+                      {(() => {
+                        const monthlyMap = new Map<string, { loads: number; deductions: number; bonuses: number }>();
+                        prepaidTransactions.forEach((tx) => {
+                          const d = new Date(tx.created_at);
+                          const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+                          const entry = monthlyMap.get(key) || { loads: 0, deductions: 0, bonuses: 0 };
+                          if (tx.type === "load") {
+                            entry.loads += Number(tx.amount);
+                            entry.bonuses += Number(tx.bonus_amount);
+                          } else {
+                            entry.deductions += Number(tx.amount);
+                          }
+                          monthlyMap.set(key, entry);
+                        });
+                        return Array.from(monthlyMap.entries())
+                          .sort((a, b) => b[0].localeCompare(a[0]))
+                          .map(([month, data]) => {
+                            const [y, m] = month.split("-");
+                            const label = new Date(Number(y), Number(m) - 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+                            return (
+                              <div key={month} className="p-3 rounded-lg border border-border">
+                                <div className="flex items-center justify-between mb-2">
+                                  <p className="text-sm font-semibold text-foreground flex items-center gap-2">
+                                    <Clock className="w-4 h-4 text-muted-foreground" />
+                                    {label}
+                                  </p>
+                                </div>
+                                <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                                  <div>
+                                    <p className="font-medium text-foreground">${data.loads.toFixed(2)}</p>
+                                    <p className="text-muted-foreground">Loaded</p>
+                                  </div>
+                                  <div>
+                                    <p className="font-medium text-primary">${data.deductions.toFixed(2)}</p>
+                                    <p className="text-muted-foreground">Redeemed</p>
+                                  </div>
+                                  <div>
+                                    <p className="font-medium text-accent">${data.bonuses.toFixed(2)}</p>
+                                    <p className="text-muted-foreground">Bonuses</p>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          });
+                      })()}
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
           {/* Location Info */}
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
             <Card className="mt-6 border-border">
