@@ -122,6 +122,8 @@ const StaffPanel: React.FC = () => {
   const [deductAmount, setDeductAmount] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
+  const [confirmAdd, setConfirmAdd] = useState(false);
+  const confirmTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (verified && locationName) {
@@ -636,14 +638,25 @@ const StaffPanel: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Record Visit — primary action */}
+                  {/* Record Visit — primary action with confirmation */}
                   <Button
-                    onClick={addPoint}
+                    onClick={() => {
+                      if (!confirmAdd) {
+                        setConfirmAdd(true);
+                        if (confirmTimer.current) clearTimeout(confirmTimer.current);
+                        confirmTimer.current = setTimeout(() => setConfirmAdd(false), 3000);
+                        return;
+                      }
+                      setConfirmAdd(false);
+                      if (confirmTimer.current) clearTimeout(confirmTimer.current);
+                      addPoint();
+                    }}
                     disabled={actionLoading}
-                    className="w-full h-12 text-base font-display tracking-wide"
+                    variant={confirmAdd ? "destructive" : "default"}
+                    className={`w-full h-12 text-base font-display tracking-wide transition-all ${confirmAdd ? "animate-pulse" : ""}`}
                   >
                     <Stamp className="w-5 h-5 mr-2" />
-                    Add Point (+50 XP)
+                    {confirmAdd ? "Tap Again to Confirm" : "Add Point (+50 XP)"}
                   </Button>
 
                   {/* Points progress visual */}
