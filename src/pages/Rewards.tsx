@@ -117,37 +117,37 @@ const RewardsPage = () => {
             </Card>
           </motion.div>
 
-          {/* Punch Card: 10 Visits = Free Entrée */}
+          {/* Points Progress: 10 Points = Free Entrée */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
             <Card className="mb-6 border-primary/20">
               <CardContent className="py-5">
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
                     <Utensils className="w-5 h-5 text-primary" />
-                    <h3 className="font-display text-lg font-bold text-foreground tracking-wide">FREE ENTRÉE CARD</h3>
+                    <h3 className="font-display text-lg font-bold text-foreground tracking-wide">FREE ENTRÉE PROGRESS</h3>
                   </div>
-                  {completedCards > 0 && (
-                    <Badge variant="secondary" className="text-xs">{completedCards} redeemed</Badge>
+                  {freeEntrees > 0 && (
+                    <Badge variant="secondary" className="text-xs">{freeEntrees} earned</Badge>
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground mb-3">
-                  {punches === 0
-                    ? "Visit 10 times to earn a free entrée!"
-                    : punches >= 9
-                      ? "🔥 One more visit for your free entrée!"
-                      : `${10 - punches} more visit${10 - punches === 1 ? "" : "s"} to go!`}
+                  {currentPoints === 0
+                    ? "Earn 10 points to get a free entrée!"
+                    : currentPoints >= 9
+                      ? "🔥 One more point for your free entrée!"
+                      : `${10 - currentPoints} more point${10 - currentPoints === 1 ? "" : "s"} to go!`}
                 </p>
                 <div className="grid grid-cols-5 gap-2">
                   {Array.from({ length: 10 }).map((_, i) => (
                     <div
                       key={i}
                       className={`aspect-square rounded-lg border-2 flex items-center justify-center transition-all ${
-                        i < punches
+                        i < currentPoints
                           ? "border-primary bg-primary/15 text-primary"
                           : "border-border bg-muted/30 text-muted-foreground/30"
                       }`}
                     >
-                      {i < punches ? (
+                      {i < currentPoints ? (
                         <Star className="w-5 h-5 fill-current" />
                       ) : i === 9 ? (
                         <Utensils className="w-5 h-5" />
