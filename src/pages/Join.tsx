@@ -8,7 +8,7 @@ const JoinPage = () => {
 
   useEffect(() => {
     if (isReady) {
-      navigate(user ? "/rewards" : "/login", { replace: true });
+      navigate(user ? "/dashboard" : "/login", { replace: true });
     }
   }, [isReady, user, navigate]);
 
