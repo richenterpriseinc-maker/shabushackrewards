@@ -293,6 +293,11 @@ const StaffPanel: React.FC = () => {
         points: data.points,
         freeEntrees: data.freeEntrees,
       });
+      if (data.points === 0) {
+        // 10th point reached — show celebration!
+        setShowCelebration(true);
+        setTimeout(() => setShowCelebration(false), 4000);
+      }
       toast.success(
         data.points === 0
           ? `🎉 Free entrée earned! +${data.xpEarned} XP`
