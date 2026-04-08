@@ -30,11 +30,11 @@ const Footer = () => (
         </div>
         <div>
           <h4 className="font-display text-lg font-semibold mb-3 tracking-wider">CONNECT</h4>
-          <div className="space-y-2 text-sm opacity-80">
-            <a href="https://www.instagram.com/shabushack/" target="_blank" rel="noopener noreferrer" className="block hover:opacity-100 transition-opacity">Instagram</a>
-            <a href="https://www.facebook.com/shabushack/" target="_blank" rel="noopener noreferrer" className="block hover:opacity-100 transition-opacity">Facebook</a>
-            <a href="https://www.yelp.com/biz/shabu-shack" target="_blank" rel="noopener noreferrer" className="block hover:opacity-100 transition-opacity">Yelp</a>
-            <a href="mailto:info@shabushack.com" className="block hover:opacity-100 transition-opacity">info@shabushack.com</a>
+          <div className="space-y-1 text-sm opacity-80">
+            <a href="https://www.instagram.com/shabushack/" target="_blank" rel="noopener noreferrer" className="block hover:opacity-100 transition-opacity py-1.5 min-h-[44px] flex items-center">Instagram</a>
+            <a href="https://www.facebook.com/shabushack/" target="_blank" rel="noopener noreferrer" className="block hover:opacity-100 transition-opacity py-1.5 min-h-[44px] flex items-center">Facebook</a>
+            <a href="https://www.yelp.com/biz/shabu-shack" target="_blank" rel="noopener noreferrer" className="block hover:opacity-100 transition-opacity py-1.5 min-h-[44px] flex items-center">Yelp</a>
+            <a href="mailto:info@shabushack.com" className="block hover:opacity-100 transition-opacity py-1.5 min-h-[44px] flex items-center">info@shabushack.com</a>
           </div>
         </div>
       </div>
