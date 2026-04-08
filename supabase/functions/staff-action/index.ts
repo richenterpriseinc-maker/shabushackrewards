@@ -69,7 +69,6 @@ Deno.serve(async (req) => {
           if (byPhone) {
             profileData = byPhone;
           } else if (/^\d{4}$/.test(query)) {
-            // Last 4 digits shortcut — match phones ending with these digits
             const { data: byPartial } = await supabase
               .from("profiles")
               .select("*")
@@ -78,7 +77,6 @@ Deno.serve(async (req) => {
               .maybeSingle();
             profileData = byPartial;
           } else {
-            // Try name
             const { data: byName } = await supabase
               .from("profiles")
               .select("*")
@@ -97,16 +95,11 @@ Deno.serve(async (req) => {
         }
 
         const userId = profileData.user_id;
-        const [punchRes, pointsRes, prepaidRes, streakRes] = await Promise.all([
+        const [punchRes, prepaidRes, streakRes] = await Promise.all([
           supabase.from("punch_cards").select("*").eq("user_id", userId).maybeSingle(),
-          supabase.from("points_transactions").select("type, amount").eq("user_id", userId),
           supabase.from("prepaid_balances").select("*").eq("user_id", userId).maybeSingle(),
           supabase.from("user_streaks").select("*").eq("user_id", userId).maybeSingle(),
         ]);
-
-        const totalPoints = (pointsRes.data || []).reduce((sum: number, t: any) => {
-          return sum + (t.type === "earn" ? t.amount : -t.amount);
-        }, 0);
 
         return new Response(
           JSON.stringify({
@@ -117,9 +110,8 @@ Deno.serve(async (req) => {
               tier: profileData.membership_tier,
               currentTier: profileData.current_tier,
               xpTotal: profileData.xp_total,
-              punches: punchRes.data?.punches_count ?? 0,
-              completedCards: punchRes.data?.completed_cards ?? 0,
-              points: Math.max(0, totalPoints),
+              points: punchRes.data?.punches_count ?? 0,
+              freeEntrees: punchRes.data?.completed_cards ?? 0,
               prepaidBalance: Number(prepaidRes.data?.balance ?? 0),
               bonusCredits: Number(prepaidRes.data?.bonus_credits ?? 0),
               streak: streakRes.data?.current_streak ?? 0,
@@ -131,20 +123,20 @@ Deno.serve(async (req) => {
         );
       }
 
-      case "add_punch": {
-        const { userId, punches, completedCards } = params;
-        let newPunches = punches + 1;
-        let newCompleted = completedCards;
-        if (newPunches >= 10) {
-          newCompleted += 1;
-          newPunches = 0;
+      case "add_point": {
+        const { userId, points, freeEntrees } = params;
+        let newPoints = points + 1;
+        let newFreeEntrees = freeEntrees;
+        if (newPoints >= 10) {
+          newFreeEntrees += 1;
+          newPoints = 0;
         }
 
         await supabase
           .from("punch_cards")
           .update({
-            punches_count: newPunches,
-            completed_cards: newCompleted,
+            punches_count: newPoints,
+            completed_cards: newFreeEntrees,
             last_punch_at: new Date().toISOString(),
           })
           .eq("user_id", userId);
@@ -205,7 +197,6 @@ Deno.serve(async (req) => {
           .maybeSingle();
         
         const xpEarned = Math.round(50 * (streakData?.multiplier || 1));
-        // Direct XP update
         const { data: prof } = await supabase
           .from("profiles")
           .select("xp_total")
@@ -214,12 +205,10 @@ Deno.serve(async (req) => {
         if (prof) {
           const newXp = (prof.xp_total || 0) + xpEarned;
           const newTier = newXp >= 4000 ? "diamond" : newXp >= 1500 ? "gold" : newXp >= 500 ? "silver" : "bronze";
-          const { error: xpErr } = await supabase
+          await supabase
             .from("profiles")
             .update({ xp_total: newXp, current_tier: newTier })
             .eq("user_id", userId);
-          if (xpErr) console.error("XP update error:", xpErr);
-          else console.log(`XP updated: ${newXp} (tier: ${newTier}) for ${userId}`);
         }
 
         // Update challenge progress for visit-type challenges
@@ -266,26 +255,11 @@ Deno.serve(async (req) => {
 
         return new Response(
           JSON.stringify({
-            punches: newPunches,
-            completedCards: newCompleted,
+            points: newPoints,
+            freeEntrees: newFreeEntrees,
             xpEarned,
-            message: newPunches === 0 ? "Punch card completed! Free reward earned!" : `Punch added (${newPunches}/10)`,
+            message: newPoints === 0 ? "🎉 10 points reached! Free entrée earned!" : `Point added (${newPoints}/10)`,
           }),
-          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-
-      case "add_points": {
-        const { userId, amount, type, description } = params;
-        await supabase.from("points_transactions").insert({
-          user_id: userId,
-          amount,
-          type,
-          description: description || (type === "earn" ? "Staff awarded" : "Staff redeemed"),
-        });
-
-        return new Response(
-          JSON.stringify({ success: true }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
@@ -302,7 +276,6 @@ Deno.serve(async (req) => {
           })
           .eq("user_id", userId);
 
-        // Log transaction
         await supabase.from("prepaid_transactions").insert({
           user_id: userId,
           location_id: locationId,
@@ -339,7 +312,6 @@ Deno.serve(async (req) => {
           .update({ balance: newBalance, bonus_credits: newBonus })
           .eq("user_id", userId);
 
-        // Log transaction
         await supabase.from("prepaid_transactions").insert({
           user_id: userId,
           location_id: locationId,
