@@ -221,14 +221,13 @@ const Login = () => {
                 )}
               </form>
 
-              <Button
+              <button
                 type="button"
-                variant="ghost"
-                className="w-full text-sm"
+                className="w-full text-sm font-medium py-2 rounded-md border border-border bg-transparent text-foreground hover:bg-muted transition-colors"
                 onClick={() => setIsSignUp(!isSignUp)}
               >
                 {isSignUp ? "Already have an account? Sign in" : "Don't have an account? Sign up"}
-              </Button>
+              </button>
 
               <p className="text-xs text-center text-muted-foreground">
                 By signing in, you agree to our Terms of Service and Privacy Policy.
