@@ -12,7 +12,7 @@ const MobileBottomNav = () => {
   const { pathname } = useLocation();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-secondary/95 backdrop-blur-md border-t border-border safe-bottom">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-secondary/95 backdrop-blur-md border-t border-border safe-bottom" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
       <div className="flex items-stretch justify-around">
         {navItems.map((item) => {
           const isActive = pathname === item.to || (item.to !== "/" && pathname.startsWith(item.to));
@@ -20,7 +20,7 @@ const MobileBottomNav = () => {
             <Link
               key={item.to}
               to={item.to}
-              className={`flex flex-col items-center justify-center gap-0.5 py-2 px-3 min-h-[56px] flex-1 transition-colors ${
+              className={`flex flex-col items-center justify-center gap-0.5 py-3 px-3 min-h-[60px] flex-1 transition-colors ${
                 isActive
                   ? "text-primary"
                   : "text-secondary-foreground/60 active:text-primary"
