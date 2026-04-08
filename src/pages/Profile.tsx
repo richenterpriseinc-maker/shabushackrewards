@@ -96,7 +96,7 @@ const Profile = () => {
 
   if (profileQuery.isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
         <Navbar />
         <main className="pt-24 pb-16 flex items-center justify-center min-h-[60vh]">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -107,7 +107,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
       <Navbar />
       <main className="container mx-auto px-4 pt-24 pb-16 max-w-lg">
         <motion.div
