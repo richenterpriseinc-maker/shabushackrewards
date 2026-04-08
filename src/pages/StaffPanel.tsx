@@ -638,11 +638,22 @@ const StaffPanel: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Record Visit — primary action */}
+                  {/* Record Visit — primary action with confirmation */}
                   <Button
-                    onClick={addPoint}
+                    onClick={() => {
+                      if (!confirmAdd) {
+                        setConfirmAdd(true);
+                        if (confirmTimer.current) clearTimeout(confirmTimer.current);
+                        confirmTimer.current = setTimeout(() => setConfirmAdd(false), 3000);
+                        return;
+                      }
+                      setConfirmAdd(false);
+                      if (confirmTimer.current) clearTimeout(confirmTimer.current);
+                      addPoint();
+                    }}
                     disabled={actionLoading}
-                    className="w-full h-12 text-base font-display tracking-wide"
+                    variant={confirmAdd ? "destructive" : "default"}
+                    className={`w-full h-12 text-base font-display tracking-wide transition-all ${confirmAdd ? "animate-pulse" : ""}`}
                   >
                     <Stamp className="w-5 h-5 mr-2" />
                     Add Point (+50 XP)
