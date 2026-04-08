@@ -656,7 +656,7 @@ const StaffPanel: React.FC = () => {
                     className={`w-full h-12 text-base font-display tracking-wide transition-all ${confirmAdd ? "animate-pulse" : ""}`}
                   >
                     <Stamp className="w-5 h-5 mr-2" />
-                    Add Point (+50 XP)
+                    {confirmAdd ? "Tap Again to Confirm" : "Add Point (+50 XP)"}
                   </Button>
 
                   {/* Points progress visual */}
