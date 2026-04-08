@@ -14,10 +14,10 @@ const TIER_ORDER = ["bronze", "silver", "gold", "diamond"] as const;
 export type TierName = (typeof TIER_ORDER)[number];
 
 export const TIER_PERKS: Record<TierName, string[]> = {
-  bronze: ["Earn 1 pt per $1", "Monthly challenges", "Birthday spin"],
-  silver: ["Earn 1.5x pts", "5% off every visit", "Priority seating"],
-  gold: ["Earn 2x pts", "10% off every visit", "Free appetizer monthly", "Early menu access"],
-  diamond: ["Earn 3x pts", "15% off every visit", "Free meal monthly", "Double birthday spin", "VIP events"],
+  bronze: ["10 visits = free entrée", "Monthly challenges", "Birthday spin"],
+  silver: ["10 visits = free entrée", "5% off every visit", "Priority seating"],
+  gold: ["10 visits = free entrée", "10% off every visit", "Free appetizer monthly", "Early menu access"],
+  diamond: ["10 visits = free entrée", "15% off every visit", "Free meal monthly", "Double birthday spin", "VIP events"],
 };
 
 export const TIER_COLORS: Record<TierName, { bg: string; text: string; border: string; gradient: string }> = {
@@ -133,6 +133,21 @@ export function useGamification() {
     },
   });
 
+  const punchCardQuery = useQuery({
+    queryKey: ["punch_card"],
+    queryFn: async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated");
+      const { data, error } = await supabase
+        .from("punch_cards")
+        .select("*")
+        .eq("user_id", user.id)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
   const pointsQuery = useQuery({
     queryKey: ["points_total"],
     queryFn: async () => {
@@ -178,7 +193,7 @@ export function useGamification() {
   const completedChallenges = challengesWithProgress.filter((c) => c.completed).length;
   const totalChallenges = challengesWithProgress.length;
 
-  const isLoading = profileQuery.isLoading || streakQuery.isLoading || challengesQuery.isLoading || progressQuery.isLoading;
+  const isLoading = profileQuery.isLoading || streakQuery.isLoading || challengesQuery.isLoading || progressQuery.isLoading || punchCardQuery.isLoading;
 
   return {
     profile,
@@ -192,6 +207,7 @@ export function useGamification() {
     totalChallenges,
     prepaid: prepaidQuery.data,
     points: pointsQuery.data ?? 0,
+    punchCard: punchCardQuery.data,
     isLoading,
     isAuthenticated: !profileQuery.isError,
     TIER_THRESHOLDS,

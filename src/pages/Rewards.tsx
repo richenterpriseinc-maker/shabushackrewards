@@ -30,7 +30,7 @@ const RewardsPage = () => {
   const {
     profile, xp, currentTier, nextTier, xpInfo, streak,
     challenges, completedChallenges, totalChallenges,
-    prepaid, points, isLoading,
+    prepaid, points, punchCard, isLoading,
   } = useGamification();
 
   const [userId, setUserId] = useState<string | null>(null);
@@ -47,6 +47,8 @@ const RewardsPage = () => {
   const tierColors = TIER_COLORS[currentTier];
   const TierIcon = TIER_ICONS[currentTier];
   const perks = TIER_PERKS[currentTier];
+  const punches = punchCard?.punches_count ?? 0;
+  const completedCards = punchCard?.completed_cards ?? 0;
 
   if (isLoading) {
     return (
@@ -114,7 +116,50 @@ const RewardsPage = () => {
             </Card>
           </motion.div>
 
-          {/* Streak Card */}
+          {/* Punch Card: 10 Visits = Free Entrée */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
+            <Card className="mb-6 border-primary/20">
+              <CardContent className="py-5">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Utensils className="w-5 h-5 text-primary" />
+                    <h3 className="font-display text-lg font-bold text-foreground tracking-wide">FREE ENTRÉE CARD</h3>
+                  </div>
+                  {completedCards > 0 && (
+                    <Badge variant="secondary" className="text-xs">{completedCards} redeemed</Badge>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground mb-3">
+                  {punches === 0
+                    ? "Visit 10 times to earn a free entrée!"
+                    : punches >= 9
+                      ? "🔥 One more visit for your free entrée!"
+                      : `${10 - punches} more visit${10 - punches === 1 ? "" : "s"} to go!`}
+                </p>
+                <div className="grid grid-cols-5 gap-2">
+                  {Array.from({ length: 10 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`aspect-square rounded-lg border-2 flex items-center justify-center transition-all ${
+                        i < punches
+                          ? "border-primary bg-primary/15 text-primary"
+                          : "border-border bg-muted/30 text-muted-foreground/30"
+                      }`}
+                    >
+                      {i < punches ? (
+                        <Star className="w-5 h-5 fill-current" />
+                      ) : i === 9 ? (
+                        <Utensils className="w-5 h-5" />
+                      ) : (
+                        <span className="text-xs font-bold">{i + 1}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
             <Card className="mb-6 border-border">
               <CardContent className="py-5">
@@ -224,7 +269,7 @@ const RewardsPage = () => {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <div className="grid grid-cols-3 gap-3 mb-6">
               {[
-                { icon: Zap, label: "Points", value: points.toLocaleString(), color: "text-primary" },
+                { icon: Utensils, label: "Visits", value: `${punches}/10`, color: "text-primary" },
                 { icon: Wallet, label: "Balance", value: `$${prepaidBalance.toFixed(2)}`, color: "text-accent" },
                 { icon: Trophy, label: "Best Streak", value: `${streak.best}wk`, color: "text-orange-500" },
               ].map((stat, i) => (
