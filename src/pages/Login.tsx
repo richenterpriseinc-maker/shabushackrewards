@@ -21,26 +21,9 @@ const Login = () => {
   const [isSignUp, setIsSignUp] = useState(false);
 
   useEffect(() => {
-    let mounted = true;
-
-    // Restore session from storage first
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (mounted && session) navigate("/rewards", { replace: true });
+      if (session) navigate("/rewards", { replace: true });
     });
-
-    // Then listen for subsequent auth changes (sign-in, sign-out)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!mounted) return;
-      // Only redirect on actual sign-in events, not INITIAL_SESSION
-      if (event === "SIGNED_IN" && session) {
-        navigate("/rewards", { replace: true });
-      }
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
   }, [navigate]);
 
   const handleGoogleSignIn = async () => {
