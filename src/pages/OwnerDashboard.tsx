@@ -76,7 +76,7 @@ const OwnerDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
         <Navbar />
         <main className="pt-24 pb-16 flex items-center justify-center min-h-[60vh]">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -88,7 +88,7 @@ const OwnerDashboard = () => {
 
   if (!isOwner) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
         <Navbar />
         <main className="pt-24 pb-16 flex items-center justify-center min-h-[60vh]">
           <Card className="max-w-md w-full mx-4">
@@ -107,7 +107,7 @@ const OwnerDashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4 max-w-5xl">

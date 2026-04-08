@@ -46,7 +46,7 @@ const locations = [
 ];
 
 const LocationsPage = () => (
-  <div className="min-h-screen bg-background">
+  <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
     <Navbar />
     <main className="pt-24 pb-16">
       <div className="container mx-auto px-4">

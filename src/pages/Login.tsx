@@ -106,7 +106,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
       <Navbar />
       <main className="container mx-auto px-4 py-16 flex items-center justify-center min-h-[70vh]">
         <motion.div

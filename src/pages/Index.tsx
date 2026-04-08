@@ -32,11 +32,11 @@ const benefits = [
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
       <Navbar />
 
       {/* Hero */}
-      <section className="relative pt-16 overflow-hidden">
+      <section className="relative pt-14 md:pt-16 overflow-hidden">
         <div className="absolute inset-0">
           <img
             src={heroImage}
@@ -46,18 +46,18 @@ const Index = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/75 to-secondary/40" />
         </div>
 
-        <div className="relative container mx-auto px-4 py-24 md:py-40">
+        <div className="relative container mx-auto px-4 py-16 md:py-40">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
             className="max-w-xl"
           >
-            <h1 className="font-display text-5xl md:text-7xl font-bold text-secondary-foreground mb-4 leading-none tracking-wider">
+            <h1 className="font-display text-4xl md:text-7xl font-bold text-secondary-foreground mb-3 leading-none tracking-wider">
               NORCAL'S #1 <br />
               <span className="text-primary">HOTPOT</span>
             </h1>
-            <p className="text-lg md:text-xl text-secondary-foreground/80 mb-8">
+            <p className="text-base md:text-xl text-secondary-foreground/80 mb-6">
               Join Shabu Shack Rewards and earn free meals, exclusive deals, and VIP perks every time you dine with us.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
