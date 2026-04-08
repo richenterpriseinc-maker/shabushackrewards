@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
             .maybeSingle();
           profileData = data;
         } else {
-          // Try phone
+          // Try exact phone match first
           const { data: byPhone } = await supabase
             .from("profiles")
             .select("*")
@@ -68,6 +68,15 @@ Deno.serve(async (req) => {
             .maybeSingle();
           if (byPhone) {
             profileData = byPhone;
+          } else if (/^\d{4}$/.test(query)) {
+            // Last 4 digits shortcut — match phones ending with these digits
+            const { data: byPartial } = await supabase
+              .from("profiles")
+              .select("*")
+              .like("phone", `%${query}`)
+              .limit(1)
+              .maybeSingle();
+            profileData = byPartial;
           } else {
             // Try name
             const { data: byName } = await supabase
