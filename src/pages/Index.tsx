@@ -32,7 +32,7 @@ const benefits = [
 
 const Index = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
       <Navbar />
 
       {/* Hero */}
