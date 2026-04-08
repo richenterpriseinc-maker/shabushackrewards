@@ -223,7 +223,7 @@ const Login = () => {
 
               <Button
                 type="button"
-                variant="ghost"
+                variant="outline"
                 className="w-full text-sm"
                 onClick={() => setIsSignUp(!isSignUp)}
               >
