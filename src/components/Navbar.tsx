@@ -12,6 +12,7 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const links = [
+    { to: "/dashboard", label: "Dashboard" },
     { to: "/deals", label: "Deals" },
     { to: "/locations", label: "Locations" },
     { to: "/rewards", label: "Rewards" },
