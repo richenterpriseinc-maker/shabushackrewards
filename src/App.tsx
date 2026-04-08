@@ -17,6 +17,8 @@ import OwnerDashboard from "./pages/OwnerDashboard";
 import StaffPanel from "./pages/StaffPanel";
 import ResetPassword from "./pages/ResetPassword";
 import Profile from "./pages/Profile";
+import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import MobileBottomNav from "./components/MobileBottomNav";
@@ -30,8 +32,8 @@ function AuthRedirectHandler() {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session && location.pathname !== "/rewards") {
-        navigate("/rewards", { replace: true });
+      if (event === "SIGNED_IN" && session && location.pathname !== "/dashboard") {
+        navigate("/dashboard", { replace: true });
       }
     });
     return () => subscription.unsubscribe();
@@ -61,6 +63,8 @@ const App = () => (
           <Route path="/staff" element={<StaffPanel />} />
           <Route path="/reset-password" element={<ResetPassword />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <MobileBottomNav />

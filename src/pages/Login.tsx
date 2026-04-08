@@ -22,7 +22,7 @@ const Login = () => {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) navigate("/rewards", { replace: true });
+      if (session) navigate("/dashboard", { replace: true });
     });
   }, [navigate]);
 
