@@ -20,7 +20,7 @@ const MobileBottomNav = () => {
             <Link
               key={item.to}
               to={item.to}
-              className={`flex flex-col items-center justify-center gap-0.5 py-2 px-3 min-h-[56px] flex-1 transition-colors ${
+              className={`flex flex-col items-center justify-center gap-0.5 py-3 px-3 min-h-[60px] flex-1 transition-colors ${
                 isActive
                   ? "text-primary"
                   : "text-secondary-foreground/60 active:text-primary"
