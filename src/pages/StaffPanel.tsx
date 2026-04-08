@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import {
@@ -19,6 +19,9 @@ import {
   MapPin,
   Camera,
   X,
+  Clock,
+  ChevronRight,
+  RotateCcw,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -42,17 +45,75 @@ interface CustomerData {
   bonusCredits: number;
 }
 
+interface RecentCustomer {
+  userId: string;
+  name: string | null;
+  phone: string | null;
+  timestamp: number;
+}
+
+const SESSION_KEY = "staff_session";
+const RECENT_KEY = "staff_recent_customers";
+const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours for tablet mode
+
+function getStoredSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    const session = JSON.parse(raw);
+    if (Date.now() - session.timestamp > SESSION_DURATION) {
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return session;
+  } catch {
+    return null;
+  }
+}
+
+function getRecentCustomers(locationName: string): RecentCustomer[] {
+  try {
+    const raw = localStorage.getItem(`${RECENT_KEY}_${locationName}`);
+    if (!raw) return [];
+    const list: RecentCustomer[] = JSON.parse(raw);
+    // Keep last 24 hours only
+    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
+    return list.filter((c) => c.timestamp > cutoff).slice(0, 10);
+  } catch {
+    return [];
+  }
+}
+
+function saveRecentCustomer(locationName: string, customer: CustomerData) {
+  const existing = getRecentCustomers(locationName);
+  const filtered = existing.filter((c) => c.userId !== customer.userId);
+  const updated: RecentCustomer[] = [
+    {
+      userId: customer.userId,
+      name: customer.name,
+      phone: customer.phone,
+      timestamp: Date.now(),
+    },
+    ...filtered,
+  ].slice(0, 10);
+  localStorage.setItem(`${RECENT_KEY}_${locationName}`, JSON.stringify(updated));
+}
+
 const StaffPanel: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const [pin, setPin] = useState("");
+
+  // Session state — restore from localStorage for tablet persistence
+  const storedSession = getStoredSession();
+  const [pin, setPin] = useState(storedSession?.pin || "");
   const [pinError, setPinError] = useState("");
-  const [verified, setVerified] = useState(false);
-  const [locationName, setLocationName] = useState("");
-  const [locationId, setLocationId] = useState<string | null>(null);
+  const [verified, setVerified] = useState(!!storedSession);
+  const [locationName, setLocationName] = useState(storedSession?.locationName || "");
+  const [locationId, setLocationId] = useState<string | null>(storedSession?.locationId || null);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [searching, setSearching] = useState(false);
   const [customer, setCustomer] = useState<CustomerData | null>(null);
+  const [recentCustomers, setRecentCustomers] = useState<RecentCustomer[]>([]);
 
   // Scanner state
   const [showScanner, setShowScanner] = useState(false);
@@ -66,10 +127,16 @@ const StaffPanel: React.FC = () => {
   const [deductAmount, setDeductAmount] = useState("");
   const [actionLoading, setActionLoading] = useState(false);
 
+  // Load recent customers when location changes
+  useEffect(() => {
+    if (verified && locationName) {
+      setRecentCustomers(getRecentCustomers(locationName));
+    }
+  }, [verified, locationName]);
+
   const handleQrScan = useCallback((decodedText: string) => {
     setSearchQuery(decodedText);
     setShowScanner(false);
-    // Auto-submit search
     setTimeout(() => {
       const form = document.querySelector<HTMLFormElement>("#staff-search-form");
       form?.requestSubmit();
@@ -106,7 +173,7 @@ const StaffPanel: React.FC = () => {
           handleQrScan(decodedText);
           scanner.clear().catch(() => {});
         },
-        () => {} // ignore errors
+        () => {}
       );
 
       scannerRef.current = scanner;
@@ -128,7 +195,10 @@ const StaffPanel: React.FC = () => {
   const callStaffApi = async (body: Record<string, any>) => {
     const res = await fetch(staffApiUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json", "apikey": import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+      headers: {
+        "Content-Type": "application/json",
+        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+      },
       body: JSON.stringify({ pin, ...body }),
     });
     const data = await res.json();
@@ -147,6 +217,18 @@ const StaffPanel: React.FC = () => {
     setLocationName(match[0]);
     setVerified(true);
     setPinError("");
+
+    // Persist session for tablet mode
+    localStorage.setItem(
+      SESSION_KEY,
+      JSON.stringify({
+        pin: trimmed,
+        locationName: match[0],
+        locationId: null,
+        timestamp: Date.now(),
+      })
+    );
+
     // Auto-search if customer param exists
     const customerParam = searchParams.get("customer");
     if (customerParam) {
@@ -165,9 +247,19 @@ const StaffPanel: React.FC = () => {
 
     try {
       const data = await callStaffApi({ action: "search", query: searchQuery.trim() });
-      if (data.locationId) setLocationId(data.locationId);
+      if (data.locationId) {
+        setLocationId(data.locationId);
+        // Update stored session with locationId
+        const session = getStoredSession();
+        if (session) {
+          localStorage.setItem(
+            SESSION_KEY,
+            JSON.stringify({ ...session, locationId: data.locationId })
+          );
+        }
+      }
       if (data.locationName) setLocationName(data.locationName);
-      setCustomer({
+      const c: CustomerData = {
         userId: data.customer.userId,
         name: data.customer.name,
         phone: data.customer.phone,
@@ -178,11 +270,23 @@ const StaffPanel: React.FC = () => {
         points: data.customer.points,
         prepaidBalance: data.customer.prepaidBalance,
         bonusCredits: data.customer.bonusCredits,
-      });
+      };
+      setCustomer(c);
+      // Save to recent
+      saveRecentCustomer(locationName, c);
+      setRecentCustomers(getRecentCustomers(locationName));
     } catch (err: any) {
       toast.error(err.message || "Search failed");
     }
     setSearching(false);
+  };
+
+  const lookupRecent = (recent: RecentCustomer) => {
+    // Use userId for exact lookup
+    setSearchQuery(`shabu:${recent.userId}`);
+    setTimeout(() => {
+      document.querySelector<HTMLFormElement>("#staff-search-form")?.requestSubmit();
+    }, 50);
   };
 
   const addPunch = async () => {
@@ -307,6 +411,26 @@ const StaffPanel: React.FC = () => {
     setActionLoading(false);
   };
 
+  const clearCustomer = () => {
+    setCustomer(null);
+    setSearchQuery("");
+    setPointsAmount("");
+    setPointsDesc("");
+    setLoadAmount("");
+    setDeductAmount("");
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem(SESSION_KEY);
+    setVerified(false);
+    setPin("");
+    setCustomer(null);
+    setSearchQuery("");
+    setLocationName("");
+    setLocationId(null);
+  };
+
+  // ─── PIN Login Screen ───
   if (!verified) {
     return (
       <div className="min-h-screen bg-secondary flex items-center justify-center p-4">
@@ -316,18 +440,16 @@ const StaffPanel: React.FC = () => {
           className="w-full max-w-sm"
         >
           <Card className="border-border bg-card">
-            <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
-                <Lock className="w-8 h-8 text-primary" />
+            <CardContent className="pt-8 pb-6 px-6">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Lock className="w-8 h-8 text-primary" />
+                </div>
+                <h1 className="font-display text-3xl tracking-wide">Staff Login</h1>
+                <p className="text-muted-foreground text-sm mt-1">
+                  Enter your location PIN to access the staff panel
+                </p>
               </div>
-              <CardTitle className="font-display text-3xl tracking-wide">
-                Staff Login
-              </CardTitle>
-              <p className="text-muted-foreground text-sm">
-                Enter your location PIN to access the staff panel
-              </p>
-            </CardHeader>
-            <CardContent>
               <form onSubmit={handlePinLogin} className="space-y-4">
                 <Input
                   type="text"
@@ -359,52 +481,46 @@ const StaffPanel: React.FC = () => {
     );
   }
 
+  // ─── Main Staff Panel (single-screen) ───
   return (
-    <div className="min-h-screen bg-secondary text-foreground">
-      {/* Header */}
-      <div className="bg-card border-b border-border px-4 py-3 flex items-center justify-between">
+    <div className="min-h-screen bg-secondary text-foreground pb-safe-bottom">
+      {/* Compact Header */}
+      <div className="bg-card border-b border-border px-4 py-2 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2">
           <MapPin className="w-4 h-4 text-primary" />
-          <span className="font-display text-lg tracking-wide">{locationName}</span>
-          <Badge variant="outline" className="text-xs">
+          <span className="font-display text-base tracking-wide">{locationName}</span>
+          <Badge variant="outline" className="text-[10px] px-1.5 py-0">
             Staff
           </Badge>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => {
-            setVerified(false);
-            setPin("");
-            setCustomer(null);
-            setSearchQuery("");
-          }}
-        >
-          <LogOut className="w-4 h-4 mr-1" /> Exit
+        <Button variant="ghost" size="sm" onClick={handleLogout} className="h-8 px-2">
+          <LogOut className="w-4 h-4" />
         </Button>
       </div>
 
-      <div className="max-w-lg mx-auto p-4 space-y-4">
-        {/* Customer Search */}
+      <div className="max-w-lg mx-auto p-3 space-y-3">
+        {/* Search Bar — always visible */}
         <Card>
-          <CardContent className="pt-4 space-y-3">
+          <CardContent className="p-3 space-y-2">
             <form id="staff-search-form" onSubmit={handleSearch} className="flex gap-2">
               <Input
-                placeholder="Phone, name, or scan QR..."
+                placeholder="Phone, name, or last 4 digits..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1"
+                className="flex-1 h-12 text-base"
+                inputMode="search"
               />
               <Button
                 type="button"
                 size="icon"
                 variant={showScanner ? "destructive" : "outline"}
                 onClick={() => setShowScanner(!showScanner)}
+                className="h-12 w-12 shrink-0"
               >
-                {showScanner ? <X className="w-4 h-4" /> : <Camera className="w-4 h-4" />}
+                {showScanner ? <X className="w-5 h-5" /> : <Camera className="w-5 h-5" />}
               </Button>
-              <Button type="submit" disabled={searching} size="icon">
-                <Search className="w-4 h-4" />
+              <Button type="submit" disabled={searching} size="icon" className="h-12 w-12 shrink-0">
+                <Search className="w-5 h-5" />
               </Button>
             </form>
 
@@ -421,26 +537,50 @@ const StaffPanel: React.FC = () => {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Recent Customers — show when no customer is loaded */}
+            {!customer && recentCustomers.length > 0 && (
+              <div>
+                <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-1.5 flex items-center gap-1">
+                  <Clock className="w-3 h-3" /> Recent
+                </p>
+                <div className="flex flex-wrap gap-1.5">
+                  {recentCustomers.map((rc) => (
+                    <button
+                      key={rc.userId}
+                      onClick={() => lookupRecent(rc)}
+                      className="flex items-center gap-1.5 bg-muted hover:bg-muted/80 rounded-full px-3 py-1.5 text-xs font-medium text-foreground transition-colors min-h-[36px]"
+                    >
+                      <User className="w-3 h-3 text-muted-foreground" />
+                      {rc.name || rc.phone || "Unknown"}
+                      <ChevronRight className="w-3 h-3 text-muted-foreground" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
+        {/* Customer Card + Actions — single unified view */}
         <AnimatePresence>
           {customer && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="space-y-4"
+              className="space-y-3"
             >
-              {/* Customer Info */}
+              {/* Customer Info + Quick Actions */}
               <Card>
-                <CardContent className="pt-4">
+                <CardContent className="p-3">
+                  {/* Customer header */}
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                       <User className="w-5 h-5 text-primary" />
                     </div>
-                    <div className="flex-1">
-                      <p className="font-semibold text-foreground">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-foreground truncate">
                         {customer.name || "Unknown"}
                       </p>
                       <p className="text-xs text-muted-foreground">
@@ -456,10 +596,18 @@ const StaffPanel: React.FC = () => {
                     >
                       {customer.tier.toUpperCase()}
                     </Badge>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={clearCustomer}
+                      className="h-8 w-8 p-0 shrink-0"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </Button>
                   </div>
 
                   {/* Stats Row */}
-                  <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="grid grid-cols-3 gap-2 text-center mb-3">
                     <div className="bg-muted rounded-lg p-2">
                       <p className="text-lg font-bold text-foreground">{customer.points}</p>
                       <p className="text-[10px] text-muted-foreground uppercase">Points</p>
@@ -477,163 +625,145 @@ const StaffPanel: React.FC = () => {
                       <p className="text-[10px] text-muted-foreground uppercase">Balance</p>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
 
-              {/* Add Punch */}
-              <Card>
-                <CardHeader className="pb-2 pt-4 px-4">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <Stamp className="w-4 h-4 text-primary" /> Punch Card
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="px-4 pb-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex gap-1">
-                      {Array.from({ length: 10 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`w-6 h-6 rounded-full border-2 ${
-                            i < customer.punches
-                              ? "bg-primary border-primary"
-                              : "border-border"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    <Button
-                      size="sm"
-                      onClick={addPunch}
-                      disabled={actionLoading}
-                      className="ml-3"
-                    >
-                      <Plus className="w-3 h-3 mr-1" /> Punch
-                    </Button>
+                  {/* ─── Record Visit (primary action, prominent) ─── */}
+                  <Button
+                    onClick={addPunch}
+                    disabled={actionLoading}
+                    className="w-full h-12 text-base font-display tracking-wide"
+                  >
+                    <Stamp className="w-5 h-5 mr-2" />
+                    Record Visit (+50 XP)
+                  </Button>
+
+                  {/* Punch card visual */}
+                  <div className="flex items-center justify-center gap-1 mt-2">
+                    {Array.from({ length: 10 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className={`w-5 h-5 rounded-full border-2 ${
+                          i < customer.punches
+                            ? "bg-primary border-primary"
+                            : "border-border"
+                        }`}
+                      />
+                    ))}
                   </div>
                   {customer.completedCards > 0 && (
-                    <p className="text-xs text-muted-foreground mt-2">
+                    <p className="text-xs text-muted-foreground text-center mt-1">
                       {customer.completedCards} card(s) completed
                     </p>
                   )}
                 </CardContent>
               </Card>
 
-              {/* Points */}
-              <Card>
-                <CardHeader className="pb-2 pt-4 px-4">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <Gift className="w-4 h-4 text-warm-gold" /> Points
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="px-4 pb-4 space-y-2">
-                  <div className="flex gap-2">
-                    <Input
-                      type="number"
-                      placeholder="Amount"
-                      value={pointsAmount}
-                      onChange={(e) => setPointsAmount(e.target.value)}
-                      className="w-24"
-                    />
-                    <Input
-                      placeholder="Note (optional)"
-                      value={pointsDesc}
-                      onChange={(e) => setPointsDesc(e.target.value)}
-                      className="flex-1"
-                    />
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      onClick={() => addPoints("earn")}
-                      disabled={actionLoading}
-                      className="flex-1"
-                    >
-                      <Plus className="w-3 h-3 mr-1" /> Award
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => addPoints("redeem")}
-                      disabled={actionLoading}
-                      className="flex-1"
-                    >
-                      <Minus className="w-3 h-3 mr-1" /> Redeem
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Prepaid Balance */}
-              <Card>
-                <CardHeader className="pb-2 pt-4 px-4">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-primary" /> Prepaid Balance
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="px-4 pb-4 space-y-3">
-                  {/* Balance breakdown */}
-                  <div className="grid grid-cols-2 gap-2 text-center">
-                    <div className="bg-muted rounded-lg p-2">
-                      <p className="text-sm font-bold text-foreground">
-                        ${customer.prepaidBalance.toFixed(2)}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground uppercase">Cash Balance</p>
+              {/* Prepaid & Points — collapsed into tabs-like sections */}
+              <div className="grid grid-cols-1 gap-3">
+                {/* Prepaid Balance */}
+                <Card>
+                  <CardContent className="p-3 space-y-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <CreditCard className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-semibold">Prepaid</span>
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        ${customer.prepaidBalance.toFixed(2)} cash + ${customer.bonusCredits.toFixed(2)} bonus
+                      </span>
                     </div>
-                    <div className="bg-muted rounded-lg p-2">
-                      <p className="text-sm font-bold text-foreground">
-                        ${customer.bonusCredits.toFixed(2)}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground uppercase">Bonus Credits</p>
-                    </div>
-                  </div>
 
-                  {/* Deduct at checkout */}
-                  <div className="border-t border-border pt-3">
-                    <p className="text-xs font-medium text-foreground mb-2">Deduct at Checkout</p>
+                    {/* Deduct */}
                     <div className="flex gap-2">
                       <Input
                         type="number"
-                        placeholder="$ Amount"
+                        placeholder="$ Deduct"
                         value={deductAmount}
                         onChange={(e) => setDeductAmount(e.target.value)}
-                        className="flex-1"
+                        className="flex-1 h-10"
                       />
                       <Button
                         size="sm"
                         variant="destructive"
                         onClick={deductBalance}
-                        disabled={actionLoading || (customer.prepaidBalance + customer.bonusCredits) <= 0}
+                        disabled={
+                          actionLoading ||
+                          customer.prepaidBalance + customer.bonusCredits <= 0
+                        }
+                        className="h-10 px-4"
                       >
-                        <Minus className="w-3 h-3 mr-1" /> Deduct
+                        <Minus className="w-3 h-3 mr-1" /> Use
                       </Button>
                     </div>
-                  </div>
 
-                  {/* Load balance */}
-                  <div className="border-t border-border pt-3">
-                    <p className="text-xs font-medium text-foreground mb-1">Load Balance</p>
-                    <p className="text-xs text-muted-foreground mb-2">
-                      $50+ → 10% bonus • $100+ → 20% bonus
-                    </p>
+                    {/* Load */}
                     <div className="flex gap-2">
                       <Input
                         type="number"
-                        placeholder="$ Amount"
+                        placeholder="$ Load"
                         value={loadAmount}
                         onChange={(e) => setLoadAmount(e.target.value)}
-                        className="flex-1"
+                        className="flex-1 h-10"
                       />
                       <Button
                         size="sm"
                         onClick={loadBalance}
                         disabled={actionLoading}
+                        className="h-10 px-4"
                       >
                         <Plus className="w-3 h-3 mr-1" /> Load
                       </Button>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                    <p className="text-[10px] text-muted-foreground">
+                      $50+ → 10% bonus • $100+ → 20% bonus
+                    </p>
+                  </CardContent>
+                </Card>
+
+                {/* Points */}
+                <Card>
+                  <CardContent className="p-3 space-y-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Gift className="w-4 h-4 text-warm-gold" />
+                      <span className="text-sm font-semibold">Points</span>
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        {customer.points} available
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Input
+                        type="number"
+                        placeholder="Amount"
+                        value={pointsAmount}
+                        onChange={(e) => setPointsAmount(e.target.value)}
+                        className="w-20 h-10"
+                      />
+                      <Input
+                        placeholder="Note (optional)"
+                        value={pointsDesc}
+                        onChange={(e) => setPointsDesc(e.target.value)}
+                        className="flex-1 h-10"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => addPoints("earn")}
+                        disabled={actionLoading}
+                        className="flex-1 h-10"
+                      >
+                        <Plus className="w-3 h-3 mr-1" /> Award
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => addPoints("redeem")}
+                        disabled={actionLoading}
+                        className="flex-1 h-10"
+                      >
+                        <Minus className="w-3 h-3 mr-1" /> Redeem
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
