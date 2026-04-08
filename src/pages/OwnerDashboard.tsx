@@ -25,7 +25,7 @@ const OwnerDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { isOwner, location, locationId, visits, todayVisits, promotions, stats, isLoading } = useOwnerDashboard();
+  const { isOwner, location, locationId, visits, todayVisits, promotions, prepaidTransactions, prepaidDeductions, prepaidLoads, stats, isLoading } = useOwnerDashboard();
   const [promoDialogOpen, setPromoDialogOpen] = useState(false);
   const [newPromo, setNewPromo] = useState({
     title: "",
