@@ -48,8 +48,8 @@ const RewardsPage = () => {
   const tierColors = TIER_COLORS[currentTier];
   const TierIcon = TIER_ICONS[currentTier];
   const perks = TIER_PERKS[currentTier];
-  const punches = punchCard?.punches_count ?? 0;
-  const completedCards = punchCard?.completed_cards ?? 0;
+  const currentPoints = punchCard?.punches_count ?? 0;
+  const freeEntrees = punchCard?.completed_cards ?? 0;
 
   if (isLoading) {
     return (
