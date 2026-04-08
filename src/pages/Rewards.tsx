@@ -270,7 +270,7 @@ const RewardsPage = () => {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <div className="grid grid-cols-3 gap-3 mb-6">
               {[
-                { icon: Utensils, label: "Visits", value: `${punches}/10`, color: "text-primary" },
+                { icon: Utensils, label: "Points", value: `${currentPoints}/10`, color: "text-primary" },
                 { icon: Wallet, label: "Balance", value: `$${prepaidBalance.toFixed(2)}`, color: "text-accent" },
                 { icon: Trophy, label: "Best Streak", value: `${streak.best}wk`, color: "text-orange-500" },
               ].map((stat, i) => (
