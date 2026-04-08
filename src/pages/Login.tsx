@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { useToast } from "@/components/ui/use-toast";
-import { Mail, Lock, ArrowRight } from "lucide-react";
+import { Mail, Lock, ArrowRight, User } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,6 +17,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
 
   useEffect(() => {
@@ -63,6 +64,10 @@ const Login = () => {
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSignUp && !name.trim()) {
+      toast({ title: "Missing name", description: "Please enter your name.", variant: "destructive" });
+      return;
+    }
     if (!email || !password) {
       toast({ title: "Missing fields", description: "Please enter your email and password.", variant: "destructive" });
       return;
@@ -77,7 +82,10 @@ const Login = () => {
         const { error } = await supabase.auth.signUp({
           email,
           password,
-          options: { emailRedirectTo: window.location.origin },
+          options: {
+            emailRedirectTo: window.location.origin,
+            data: { full_name: name.trim() },
+          },
         });
         if (error) {
           toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
@@ -145,6 +153,20 @@ const Login = () => {
 
               {/* Email/Password */}
               <form onSubmit={handleEmailAuth} className="space-y-3">
+                {isSignUp && (
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      type="text"
+                      placeholder="Your name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="pl-10 h-12"
+                      maxLength={100}
+                      required
+                    />
+                  </div>
+                )}
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
