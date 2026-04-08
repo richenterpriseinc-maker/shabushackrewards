@@ -26,6 +26,7 @@ const OnboardingBanner = ({ profile }: OnboardingBannerProps) => {
     !profile.date_of_birth ? "birthday" : !profile.favorite_location_id ? "location" : "done"
   );
   const [dob, setDob] = useState<Date | undefined>();
+  const [calendarOpen, setCalendarOpen] = useState(false);
   const [locationId, setLocationId] = useState("");
   const [saving, setSaving] = useState(false);
   const [dismissed, setDismissed] = useState(false);
@@ -159,7 +160,7 @@ const OnboardingBanner = ({ profile }: OnboardingBannerProps) => {
                     <p className="text-xs text-muted-foreground">We'll give you a free birthday spin! 🎉</p>
                   </div>
                 </div>
-                <Popover>
+                <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
@@ -172,11 +173,11 @@ const OnboardingBanner = ({ profile }: OnboardingBannerProps) => {
                       {dob ? format(dob, "MMMM d, yyyy") : "Select your birthday"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
+                  <PopoverContent className="w-auto p-0" align="center" side="bottom">
                     <Calendar
                       mode="single"
                       selected={dob}
-                      onSelect={setDob}
+                      onSelect={(date) => { setDob(date); setCalendarOpen(false); }}
                       disabled={(date) =>
                         date > new Date() || date < new Date("1920-01-01")
                       }
