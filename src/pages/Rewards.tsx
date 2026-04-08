@@ -34,15 +34,14 @@ const RewardsPage = () => {
     prepaid, points, punchCard, isLoading,
   } = useGamification();
 
-  const [userId, setUserId] = useState<string | null>(null);
-  const [showQR, setShowQR] = useState(false);
+  const { user, isReady } = useAuthReady();
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/login");
-      else setUserId(session.user.id);
-    });
-  }, [navigate]);
+  if (isReady && !user) {
+    navigate("/login", { replace: true });
+    return null;
+  }
+
+  const userId = user?.id ?? null;
 
   const prepaidBalance = Number(prepaid?.balance ?? 0) + Number(prepaid?.bonus_credits ?? 0);
   const tierColors = TIER_COLORS[currentTier];
