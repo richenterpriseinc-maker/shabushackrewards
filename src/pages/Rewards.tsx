@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { useAuthReady } from "@/hooks/use-auth-ready";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -33,15 +34,15 @@ const RewardsPage = () => {
     prepaid, points, punchCard, isLoading,
   } = useGamification();
 
-  const [userId, setUserId] = useState<string | null>(null);
+  const { user, isReady } = useAuthReady();
   const [showQR, setShowQR] = useState(false);
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) navigate("/login");
-      else setUserId(session.user.id);
-    });
-  }, [navigate]);
+  const userId = user?.id ?? null;
+
+  if (isReady && !user) {
+    navigate("/login", { replace: true });
+    return null;
+  }
 
   const prepaidBalance = Number(prepaid?.balance ?? 0) + Number(prepaid?.bonus_credits ?? 0);
   const tierColors = TIER_COLORS[currentTier];

@@ -1,17 +1,27 @@
-import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Menu, X, User, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useAuthReady } from "@/hooks/use-auth-ready";
+import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/shabu-shack-logo.png";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, isReady } = useAuthReady();
+  const navigate = useNavigate();
 
   const links = [
     { to: "/deals", label: "Deals" },
     { to: "/locations", label: "Locations" },
     { to: "/rewards", label: "Rewards" },
   ];
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setMobileOpen(false);
+    navigate("/login");
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-secondary/95 backdrop-blur-md border-b border-border">
@@ -31,16 +41,36 @@ const Navbar = () => {
               {l.label}
             </Link>
           ))}
-          <Button asChild size="sm">
-            <Link to="/join">Join Now</Link>
-          </Button>
+          {isReady && user ? (
+            <div className="flex items-center gap-3">
+              <Button asChild size="sm" variant="outline">
+                <Link to="/profile" className="gap-2">
+                  <User className="w-4 h-4" />
+                  Profile
+                </Link>
+              </Button>
+              <Button size="sm" variant="ghost" onClick={handleSignOut} className="gap-2 text-muted-foreground">
+                <LogOut className="w-4 h-4" />
+              </Button>
+            </div>
+          ) : (
+            <Button asChild size="sm">
+              <Link to="/join">Join Now</Link>
+            </Button>
+          )}
         </div>
 
-        {/* Mobile: just Join button + hamburger */}
+        {/* Mobile: context-aware button + hamburger */}
         <div className="flex md:hidden items-center gap-2">
-          <Button asChild size="sm" className="h-9 px-3 text-xs">
-            <Link to="/join">Join</Link>
-          </Button>
+          {isReady && user ? (
+            <Button asChild size="sm" variant="outline" className="h-9 px-3 text-xs gap-1.5">
+              <Link to="/rewards">My Rewards</Link>
+            </Button>
+          ) : (
+            <Button asChild size="sm" className="h-9 px-3 text-xs">
+              <Link to="/join">Join</Link>
+            </Button>
+          )}
           <button
             className="text-secondary-foreground p-2 -mr-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
             onClick={() => setMobileOpen(!mobileOpen)}
@@ -64,6 +94,23 @@ const Navbar = () => {
               {l.label}
             </Link>
           ))}
+          {isReady && user && (
+            <>
+              <Link
+                to="/profile"
+                className="flex items-center gap-2 text-sm font-medium text-secondary-foreground/70 hover:text-primary uppercase tracking-wide min-h-[44px] px-2"
+                onClick={() => setMobileOpen(false)}
+              >
+                <User className="w-4 h-4" /> Profile
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="flex items-center gap-2 text-sm font-medium text-destructive/80 hover:text-destructive uppercase tracking-wide min-h-[44px] px-2 w-full text-left"
+              >
+                <LogOut className="w-4 h-4" /> Sign Out
+              </button>
+            </>
+          )}
         </div>
       )}
     </nav>

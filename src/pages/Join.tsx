@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Check, Flame, Target, Zap, Shield, Star, Crown, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 import { TIER_PERKS, TIER_COLORS, type TierName } from "@/hooks/use-gamification";
+import { useAuthReady } from "@/hooks/use-auth-ready";
 
 const TIERS: { name: TierName; xp: string; icon: typeof Shield }[] = [
   { name: "bronze", xp: "0 XP", icon: Shield },
@@ -16,6 +18,11 @@ const TIERS: { name: TierName; xp: string; icon: typeof Shield }[] = [
 
 const JoinPage = () => {
   const navigate = useNavigate();
+  const { user, isReady } = useAuthReady();
+
+  useEffect(() => {
+    if (isReady && user) navigate("/rewards", { replace: true });
+  }, [isReady, user, navigate]);
 
   return (
     <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
