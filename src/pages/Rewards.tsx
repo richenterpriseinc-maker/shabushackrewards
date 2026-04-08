@@ -30,7 +30,7 @@ const RewardsPage = () => {
   const {
     profile, xp, currentTier, nextTier, xpInfo, streak,
     challenges, completedChallenges, totalChallenges,
-    prepaid, points, isLoading,
+    prepaid, points, punchCard, isLoading,
   } = useGamification();
 
   const [userId, setUserId] = useState<string | null>(null);
