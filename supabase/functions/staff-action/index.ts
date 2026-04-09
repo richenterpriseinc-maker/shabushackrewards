@@ -253,11 +253,14 @@ Deno.serve(async (req) => {
           }
         }
 
+        const multiplier = streakData?.multiplier || 1;
         return new Response(
           JSON.stringify({
             points: newPoints,
             freeEntrees: newFreeEntrees,
             xpEarned,
+            baseXp: 50,
+            streakMultiplier: multiplier,
             message: newPoints === 0 ? "🎉 10 points reached! Free entrée earned!" : `Point added (${newPoints}/10)`,
           }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
