@@ -300,10 +300,13 @@ const StaffPanel: React.FC = () => {
         setShowCelebration(true);
         setTimeout(() => setShowCelebration(false), 4000);
       }
+      const xpBreakdown = data.streakMultiplier > 1
+        ? `${data.baseXp} base XP × ${data.streakMultiplier}x streak = ${data.xpEarned} XP`
+        : `+${data.xpEarned} XP`;
       toast.success(
         data.points === 0
-          ? `🎉 Free entrée earned! +${data.xpEarned} XP`
-          : `Point added (${data.points}/10) +${data.xpEarned} XP`
+          ? `🎉 Free entrée earned! ${xpBreakdown}`
+          : `Point added (${data.points}/10) ${xpBreakdown}`
       );
     } catch {
       toast.error("Failed to add point");
