@@ -161,6 +161,37 @@ const RewardsPage = () => {
             </Card>
           </motion.div>
 
+          {/* How It Works Explainer */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
+            <Card className="mb-6 border-border bg-muted/30">
+              <CardContent className="py-5">
+                <h3 className="font-display text-sm font-bold text-foreground tracking-wide uppercase mb-3">How It Works</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Utensils className="w-4 h-4 text-primary" />
+                      <span className="text-xs font-bold text-primary uppercase">Punch Card</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground leading-snug">
+                      Each <span className="font-semibold text-foreground">visit</span> = 1 punch. Collect <span className="font-semibold text-foreground">10 punches</span> for a free entrée.
+                    </p>
+                    <p className="text-[10px] text-muted-foreground mt-1.5 italic">Only visits count — no shortcuts!</p>
+                  </div>
+                  <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Zap className="w-4 h-4 text-orange-500" />
+                      <span className="text-xs font-bold text-orange-500 uppercase">XP &amp; Tiers</span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground leading-snug">
+                      Earn <span className="font-semibold text-foreground">XP</span> from visits, streaks &amp; challenges to unlock higher tiers &amp; perks.
+                    </p>
+                    <p className="text-[10px] text-muted-foreground mt-1.5 italic">More ways to earn — more rewards!</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
             <Card className="mb-6 border-border">
               <CardContent className="py-5">
