@@ -222,7 +222,8 @@ const RewardsPage = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-bold text-foreground">{streak.multiplier}x</p>
-                    <p className="text-[10px] text-muted-foreground">multiplier</p>
+                    <p className="text-[10px] text-muted-foreground">XP multiplier only</p>
+                    <p className="text-[9px] text-muted-foreground/70 italic">punch card unaffected</p>
                   </div>
                 </div>
                 {/* Streak milestones */}
