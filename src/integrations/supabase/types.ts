@@ -206,6 +206,39 @@ export type Database = {
         }
         Relationships: []
       }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          link: string | null
+          message: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string | null
+          title: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          link?: string | null
+          message?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       phone_otps: {
         Row: {
           code: string
@@ -652,6 +685,7 @@ export type Database = {
     Enums: {
       app_role: "admin" | "location_owner" | "user"
       membership_tier: "free" | "vip"
+      notification_type: "deal" | "milestone" | "general"
       points_type: "earn" | "redeem"
       promo_type: "discount" | "points_multiplier" | "free_item" | "flash_deal"
       reward_tier: "bronze" | "silver" | "gold" | "diamond"
@@ -786,6 +820,7 @@ export const Constants = {
     Enums: {
       app_role: ["admin", "location_owner", "user"],
       membership_tier: ["free", "vip"],
+      notification_type: ["deal", "milestone", "general"],
       points_type: ["earn", "redeem"],
       promo_type: ["discount", "points_multiplier", "free_item", "flash_deal"],
       reward_tier: ["bronze", "silver", "gold", "diamond"],
