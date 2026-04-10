@@ -141,14 +141,25 @@ Deno.serve(async (req) => {
           })
           .eq("user_id", userId);
 
+        let visitId: string | null = null;
         if (locationId) {
-          await supabase.from("visits").insert({
+          const { data: visitData } = await supabase.from("visits").insert({
             user_id: userId,
             location_id: locationId,
             amount_spent: 0,
-            points_earned: 0,
-          });
+            points_earned: 1,
+          }).select("id").single();
+          visitId = visitData?.id ?? null;
         }
+
+        // Record in points_transactions
+        await supabase.from("points_transactions").insert({
+          user_id: userId,
+          type: "earn",
+          amount: 1,
+          description: `Visit at ${locationName || "Shabu Shack"}`,
+          related_visit_id: visitId,
+        });
 
         // Update streak
         const now = new Date();
