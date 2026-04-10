@@ -104,6 +104,19 @@ const AdminDashboard = () => {
     enabled: roleQuery.data === true,
   });
 
+  // Reward redemptions
+  const redemptionsQuery = useQuery({
+    queryKey: ["admin-redemptions-total"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reward_redemptions")
+        .select("id");
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: roleQuery.data === true,
+  });
+
   useEffect(() => {
     if (isReady && !user) navigate("/login", { replace: true });
   }, [isReady, user, navigate]);
@@ -137,6 +150,7 @@ const AdminDashboard = () => {
   const punchCards = punchCardsQuery.data || [];
   const visits = visitsQuery.data || [];
   const prepaidTx = prepaidQuery.data || [];
+  const totalRedemptions = redemptionsQuery.data?.length ?? 0;
 
   // Metrics
   const totalMembers = profiles.length;
@@ -195,6 +209,7 @@ const AdminDashboard = () => {
               {[
                 { icon: Users, label: "Total Members", value: totalMembers.toLocaleString(), sub: `${recentSignups} new (30d)` },
                 { icon: Utensils, label: "Total Visits", value: totalVisits.toLocaleString(), sub: `${todayVisits} today` },
+                { icon: Gift, label: "Redemptions", value: totalRedemptions.toLocaleString(), sub: "free entrées" },
                 { icon: DollarSign, label: "Prepaid Loaded", value: `$${totalLoaded.toFixed(0)}`, sub: "all time" },
                 { icon: TrendingUp, label: "Prepaid Redeemed", value: `$${totalRedeemed.toFixed(0)}`, sub: "all time" },
               ].map((m) => (
