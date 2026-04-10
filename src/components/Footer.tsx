@@ -13,11 +13,11 @@ const Footer = () => (
         </div>
         <div>
           <h4 className="font-display text-lg font-semibold mb-3 tracking-wider">LOCATIONS</h4>
-          <div className="space-y-2 text-sm opacity-80">
-            <p>Elk Grove</p>
-            <p>South San Francisco</p>
-            <p>Downtown Sacramento</p>
-            <p>Davis</p>
+          <div className="space-y-1 text-sm opacity-80">
+            <Link to="/locations" className="block hover:opacity-100 transition-opacity py-1.5 min-h-[44px] flex items-center">Elk Grove</Link>
+            <Link to="/locations" className="block hover:opacity-100 transition-opacity py-1.5 min-h-[44px] flex items-center">South San Francisco</Link>
+            <Link to="/locations" className="block hover:opacity-100 transition-opacity py-1.5 min-h-[44px] flex items-center">Downtown Sacramento</Link>
+            <Link to="/locations" className="block hover:opacity-100 transition-opacity py-1.5 min-h-[44px] flex items-center">Davis</Link>
           </div>
         </div>
         <div>
