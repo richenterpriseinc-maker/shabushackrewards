@@ -67,6 +67,29 @@ export function useOwnerDashboard() {
     },
   });
 
+  // Reward redemptions for this location
+  const redemptionsQuery = useQuery({
+    queryKey: ["owner_redemptions", locationId],
+    enabled: !!locationId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reward_redemptions")
+        .select("id, user_id, redeemed_at, staff_note")
+        .eq("location_id", locationId!)
+        .order("redeemed_at", { ascending: false })
+        .limit(50);
+      if (error) throw error;
+      // Fetch profile names for each redemption
+      const userIds = [...new Set((data || []).map(r => r.user_id))];
+      const { data: profiles } = await supabase
+        .from("profiles")
+        .select("user_id, name")
+        .in("user_id", userIds.length > 0 ? userIds : ["none"]);
+      const nameMap = new Map((profiles || []).map(p => [p.user_id, p.name]));
+      return (data || []).map(r => ({ ...r, customer_name: nameMap.get(r.user_id) || "Guest" }));
+    },
+  });
+
   const prepaidDeductions = prepaidTxQuery.data?.filter(t => t.type === "deduct") ?? [];
   const prepaidLoads = prepaidTxQuery.data?.filter(t => t.type === "load") ?? [];
 
@@ -79,6 +102,7 @@ export function useOwnerDashboard() {
     activePromotions: promotionsQuery.data?.filter(p => p.is_active).length ?? 0,
     prepaidRedemptions: prepaidDeductions.reduce((sum, t) => sum + Number(t.amount), 0),
     prepaidLoads: prepaidLoads.reduce((sum, t) => sum + Number(t.amount), 0),
+    totalRewardRedemptions: redemptionsQuery.data?.length ?? 0,
   };
 
   // Today's visits
@@ -95,6 +119,7 @@ export function useOwnerDashboard() {
     prepaidTransactions: prepaidTxQuery.data ?? [],
     prepaidDeductions,
     prepaidLoads,
+    redemptions: redemptionsQuery.data ?? [],
     stats,
     isLoading: locationAccessQuery.isLoading,
   };
