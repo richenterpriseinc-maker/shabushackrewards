@@ -22,6 +22,7 @@ import {
   ChevronRight,
   RotateCcw,
   Star,
+  Gift,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -310,6 +311,25 @@ const StaffPanel: React.FC = () => {
       );
     } catch {
       toast.error("Failed to add point");
+    }
+    setActionLoading(false);
+  };
+
+  const redeemReward = async () => {
+    if (!customer) return;
+    setActionLoading(true);
+    try {
+      const data = await callStaffApi({
+        action: "redeem_reward",
+        userId: customer.userId,
+      });
+      setCustomer({
+        ...customer,
+        freeEntrees: data.freeEntrees,
+      });
+      toast.success(`🍲 Free entrée redeemed! ${data.freeEntrees} remaining`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to redeem reward");
     }
     setActionLoading(false);
   };
@@ -686,6 +706,19 @@ const StaffPanel: React.FC = () => {
                         ? "🔥 One more point for a free entrée!"
                         : `${10 - customer.points} more point${10 - customer.points === 1 ? "" : "s"} to free entrée`}
                   </p>
+
+                  {/* Redeem Free Entrée */}
+                  {customer.freeEntrees > 0 && (
+                    <Button
+                      onClick={redeemReward}
+                      disabled={actionLoading}
+                      variant="outline"
+                      className="w-full h-10 mt-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground font-display tracking-wide"
+                    >
+                      <Gift className="w-4 h-4 mr-2" />
+                      Redeem Free Entrée ({customer.freeEntrees} available)
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
 

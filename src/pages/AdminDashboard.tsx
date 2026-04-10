@@ -16,7 +16,7 @@ import { motion } from "framer-motion";
 import {
   Users, TrendingUp, Utensils, DollarSign, Search,
   Loader2, ShieldAlert, Shield, Crown, Star, Trophy,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, Gift,
 } from "lucide-react";
 
 const TIER_ICON_MAP: Record<string, typeof Shield> = {
@@ -104,6 +104,19 @@ const AdminDashboard = () => {
     enabled: roleQuery.data === true,
   });
 
+  // Reward redemptions
+  const redemptionsQuery = useQuery({
+    queryKey: ["admin-redemptions-total"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reward_redemptions")
+        .select("id");
+      if (error) throw error;
+      return data || [];
+    },
+    enabled: roleQuery.data === true,
+  });
+
   useEffect(() => {
     if (isReady && !user) navigate("/login", { replace: true });
   }, [isReady, user, navigate]);
@@ -137,6 +150,7 @@ const AdminDashboard = () => {
   const punchCards = punchCardsQuery.data || [];
   const visits = visitsQuery.data || [];
   const prepaidTx = prepaidQuery.data || [];
+  const totalRedemptions = redemptionsQuery.data?.length ?? 0;
 
   // Metrics
   const totalMembers = profiles.length;
@@ -191,10 +205,11 @@ const AdminDashboard = () => {
 
           {/* Metric Cards */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
               {[
                 { icon: Users, label: "Total Members", value: totalMembers.toLocaleString(), sub: `${recentSignups} new (30d)` },
                 { icon: Utensils, label: "Total Visits", value: totalVisits.toLocaleString(), sub: `${todayVisits} today` },
+                { icon: Gift, label: "Redemptions", value: totalRedemptions.toLocaleString(), sub: "free entrées" },
                 { icon: DollarSign, label: "Prepaid Loaded", value: `$${totalLoaded.toFixed(0)}`, sub: "all time" },
                 { icon: TrendingUp, label: "Prepaid Redeemed", value: `$${totalRedeemed.toFixed(0)}`, sub: "all time" },
               ].map((m) => (

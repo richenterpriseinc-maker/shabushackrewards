@@ -18,14 +18,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   MapPin, Users, DollarSign, Coins, TrendingUp, Tag, Plus,
-  Loader2, ShieldAlert, Calendar, Clock
+  Loader2, ShieldAlert, Calendar, Clock, Gift
 } from "lucide-react";
 
 const OwnerDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { isOwner, location, locationId, visits, todayVisits, promotions, prepaidTransactions, prepaidDeductions, prepaidLoads, stats, isLoading } = useOwnerDashboard();
+  const { isOwner, location, locationId, visits, todayVisits, promotions, prepaidTransactions, prepaidDeductions, prepaidLoads, redemptions, stats, isLoading } = useOwnerDashboard();
   const [promoDialogOpen, setPromoDialogOpen] = useState(false);
   const [newPromo, setNewPromo] = useState({
     title: "",
@@ -123,12 +123,13 @@ const OwnerDashboard = () => {
           </div>
 
           {/* Stats Row */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
             {[
               { icon: Calendar, label: "Today", value: todayVisits.length.toString(), color: "text-primary" },
               { icon: Users, label: "Total Visits", value: stats.totalVisits.toString(), color: "text-primary" },
               { icon: Users, label: "Unique Guests", value: stats.uniqueCustomers.toString(), color: "text-accent" },
               { icon: DollarSign, label: "Revenue", value: `$${stats.totalRevenue.toFixed(0)}`, color: "text-accent" },
+              { icon: Gift, label: "Redemptions", value: stats.totalRewardRedemptions.toString(), color: "text-primary" },
               { icon: Tag, label: "Active Deals", value: stats.activePromotions.toString(), color: "text-primary" },
             ].map((stat, i) => (
               <motion.div key={stat.label} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
@@ -281,6 +282,39 @@ const OwnerDashboard = () => {
               </Card>
             </motion.div>
           </div>
+
+          {/* Recent Reward Redemptions */}
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.36 }}>
+            <Card className="mt-6 border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="font-display text-lg tracking-wide flex items-center gap-2">
+                  <Gift className="w-5 h-5 text-primary" />
+                  RECENT REDEMPTIONS
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {redemptions.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">No reward redemptions yet.</p>
+                ) : (
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {redemptions.map((r: any) => (
+                      <div key={r.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                        <div>
+                          <p className="text-sm font-medium text-foreground">{r.customer_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(r.redeemed_at).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                          </p>
+                        </div>
+                        <Badge variant="outline" className="text-xs gap-1">
+                          <Gift className="w-3 h-3" /> Free Entrée
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* Monthly Prepaid Revenue Report */}
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }}>
