@@ -16,7 +16,7 @@ import { motion } from "framer-motion";
 import {
   Users, TrendingUp, Utensils, DollarSign, Search,
   Loader2, ShieldAlert, Shield, Crown, Star, Trophy,
-  ChevronLeft, ChevronRight,
+  ChevronLeft, ChevronRight, Gift,
 } from "lucide-react";
 
 const TIER_ICON_MAP: Record<string, typeof Shield> = {

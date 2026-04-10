@@ -283,6 +283,39 @@ const OwnerDashboard = () => {
             </motion.div>
           </div>
 
+          {/* Recent Reward Redemptions */}
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.36 }}>
+            <Card className="mt-6 border-border">
+              <CardHeader className="pb-3">
+                <CardTitle className="font-display text-lg tracking-wide flex items-center gap-2">
+                  <Gift className="w-5 h-5 text-primary" />
+                  RECENT REDEMPTIONS
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {redemptions.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">No reward redemptions yet.</p>
+                ) : (
+                  <div className="space-y-2 max-h-80 overflow-y-auto">
+                    {redemptions.map((r: any) => (
+                      <div key={r.id} className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                        <div>
+                          <p className="text-sm font-medium text-foreground">{r.customer_name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(r.redeemed_at).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+                          </p>
+                        </div>
+                        <Badge variant="outline" className="text-xs gap-1">
+                          <Gift className="w-3 h-3" /> Free Entrée
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
           {/* Monthly Prepaid Revenue Report */}
           <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.38 }}>
             <Card className="mt-6 border-border">
