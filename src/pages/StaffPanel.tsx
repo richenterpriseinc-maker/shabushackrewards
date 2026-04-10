@@ -315,7 +315,25 @@ const StaffPanel: React.FC = () => {
     setActionLoading(false);
   };
 
-  const loadBalance = async () => {
+  const redeemReward = async () => {
+    if (!customer) return;
+    setActionLoading(true);
+    try {
+      const data = await callStaffApi({
+        action: "redeem_reward",
+        userId: customer.userId,
+      });
+      setCustomer({
+        ...customer,
+        freeEntrees: data.freeEntrees,
+      });
+      toast.success(`🍲 Free entrée redeemed! ${data.freeEntrees} remaining`);
+    } catch (err: any) {
+      toast.error(err.message || "Failed to redeem reward");
+    }
+    setActionLoading(false);
+  };
+
     if (!customer) return;
     const amount = parseFloat(loadAmount);
     if (!amount || amount <= 0) {
