@@ -1,54 +1,37 @@
 
-# Gamified Rewards System
 
-## Overview
-Replace the current punch card + points system with a gaming-style rewards engine built around **monthly challenges**, **visit streaks**, and **tier progression**.
+## Plan: Track and Display Reward Redemptions
 
-## Core Mechanics
+### Problem
+When a customer earns a free entrée (10 punches), the `completed_cards` counter increments but there's no record of when, where, or by whom the reward was actually redeemed. Owners and admins have no visibility into redemption activity.
 
-### 1. Tier Progression (replaces membership_tier)
-- **Bronze** → **Silver** → **Gold** → **Diamond**
-- Advance by earning XP from challenges and streaks
-- Each tier unlocks better perks (e.g. Gold = 15% off every visit, Diamond = 20% + birthday double spin)
-- Tiers reset annually to keep customers engaged (or soft-decay if inactive)
+### Solution
 
-### 2. Monthly Challenges
-- Rotating set of 3-4 challenges each month, e.g.:
-  - "Visit 4 times this month" → 200 XP
-  - "Try 2 different locations" → 150 XP
-  - "Spend $50+ in a single visit" → 100 XP
-- Progress bars show completion status
-- Completing all challenges = bonus milestone reward
+**1. New `reward_redemptions` table** (migration)
+- Columns: `id`, `user_id`, `location_id`, `redeemed_at` (default now()), `staff_note` (optional text)
+- RLS: owners see their location's redemptions, admins see all, users see their own
 
-### 3. Visit Streaks
-- Track consecutive weeks with at least 1 visit
-- Streak multiplier: 2 weeks = 1.5x XP, 4 weeks = 2x XP, 8+ weeks = 3x XP
-- Breaking a streak resets the multiplier (but not tier progress)
-- Visual flame/fire indicator showing current streak
+**2. Add "Redeem Reward" action to Staff Panel**
+- New button appears when a customer has `freeEntrees >= 1`
+- Calls a new `"redeem_reward"` action in the `staff-action` edge function
+- Edge function: decrements `completed_cards` by 1, inserts a row into `reward_redemptions`, returns updated count
+- Staff sees a confirmation toast with customer name and remaining free entrées
 
-## Database Changes
-- **New table: `challenges`** — monthly challenge definitions (title, description, goal_type, goal_value, xp_reward, month/year)
-- **New table: `challenge_progress`** — per-user progress on each challenge (user_id, challenge_id, current_value, completed_at)
-- **New table: `user_streaks`** — tracks current streak, best streak, last_visit_week, multiplier
-- **Modify `profiles`** — add `xp_total`, `current_tier` (bronze/silver/gold/diamond) columns
-- **Remove reliance on**: punch_cards table (keep data but stop using in UI)
+**3. Show redemptions in Owner Dashboard**
+- Fetch `reward_redemptions` for the location in `useOwnerDashboard`
+- Add a stat card showing total redemptions count
+- Add a "Recent Redemptions" section (table with customer name, date/time)
 
-## UI Changes
-- **Rewards page** → completely redesigned:
-  - Hero section: current tier + XP progress bar to next tier
-  - Active streak display with flame animation
-  - Monthly challenges grid with progress bars
-  - Reward perks list for current tier
-- **Navbar/Profile**: show tier badge icon
+**4. Show redemptions in Admin Dashboard**
+- Fetch all `reward_redemptions` with profile names
+- Add a total redemptions metric card
+- Optionally show in the member detail row
 
-## What Stays
-- Visit tracking (visits table) — used as the data source for challenges/streaks
-- Prepaid balance — independent feature, unchanged
-- Birthday wheel — stays as-is
-- VIP membership — replaced by tier system
+### Files changed
+- **New migration**: create `reward_redemptions` table + RLS policies
+- `supabase/functions/staff-action/index.ts`: add `"redeem_reward"` case
+- `src/pages/StaffPanel.tsx`: add Redeem button + handler
+- `src/hooks/use-owner-dashboard.ts`: fetch redemptions, add stats
+- `src/pages/OwnerDashboard.tsx`: render redemptions section
+- `src/pages/AdminDashboard.tsx`: add redemption metric
 
-## Implementation Order
-1. Database migration (new tables + profile columns)
-2. Rewards page redesign with new UI
-3. Challenge/streak logic hooks
-4. Staff panel updates (visits still recorded same way, XP auto-calculated)
