@@ -161,6 +161,17 @@ Deno.serve(async (req) => {
           related_visit_id: visitId,
         });
 
+        // 🔔 Notification: Free entrée earned
+        if (newPoints === 0) {
+          await supabase.from("notifications").insert({
+            user_id: userId,
+            title: "🎉 Free Entrée Earned!",
+            message: `You've collected 10 points and earned a free entrée! Redeem it at any location.`,
+            type: "milestone",
+            link: "/rewards",
+          });
+        }
+
         // Update streak
         const now = new Date();
         const weekKey = `${now.getFullYear()}-W${String(Math.ceil((now.getTime() - new Date(now.getFullYear(), 0, 1).getTime()) / 604800000)).padStart(2, "0")}`;
@@ -189,6 +200,33 @@ Deno.serve(async (req) => {
                 multiplier,
               })
               .eq("user_id", userId);
+
+            // 🔔 Notification: Streak milestones
+            if (newStreak === 2) {
+              await supabase.from("notifications").insert({
+                user_id: userId,
+                title: "🔥 2-Week Streak!",
+                message: "You're on fire! Keep visiting weekly to boost your XP multiplier.",
+                type: "milestone",
+                link: "/rewards",
+              });
+            } else if (newStreak === 4) {
+              await supabase.from("notifications").insert({
+                user_id: userId,
+                title: "🔥🔥 4-Week Streak — 2x XP!",
+                message: "Your XP multiplier just doubled! Keep the streak alive.",
+                type: "milestone",
+                link: "/rewards",
+              });
+            } else if (newStreak === 8) {
+              await supabase.from("notifications").insert({
+                user_id: userId,
+                title: "🔥🔥🔥 8-Week Streak — 3x XP!",
+                message: "Legendary! You're earning triple XP on every visit.",
+                type: "milestone",
+                link: "/rewards",
+              });
+            }
           }
         } else {
           await supabase.from("user_streaks").insert({
@@ -210,16 +248,30 @@ Deno.serve(async (req) => {
         const xpEarned = Math.round(50 * (streakData?.multiplier || 1));
         const { data: prof } = await supabase
           .from("profiles")
-          .select("xp_total")
+          .select("xp_total, current_tier")
           .eq("user_id", userId)
           .maybeSingle();
         if (prof) {
+          const oldTier = prof.current_tier;
           const newXp = (prof.xp_total || 0) + xpEarned;
           const newTier = newXp >= 4000 ? "diamond" : newXp >= 1500 ? "gold" : newXp >= 500 ? "silver" : "bronze";
           await supabase
             .from("profiles")
             .update({ xp_total: newXp, current_tier: newTier })
             .eq("user_id", userId);
+
+          // 🔔 Notification: Tier upgrade
+          if (newTier !== oldTier) {
+            const tierNames: Record<string, string> = { silver: "Silver", gold: "Gold", diamond: "Diamond" };
+            const tierEmoji: Record<string, string> = { silver: "🥈", gold: "🥇", diamond: "💎" };
+            await supabase.from("notifications").insert({
+              user_id: userId,
+              title: `${tierEmoji[newTier] || "🏆"} ${tierNames[newTier] || newTier} Tier Reached!`,
+              message: `Congratulations! You've leveled up to ${tierNames[newTier] || newTier}. Check out your new perks!`,
+              type: "milestone",
+              link: "/rewards",
+            });
+          }
         }
 
         // Update challenge progress for visit-type challenges
@@ -227,7 +279,7 @@ Deno.serve(async (req) => {
         const currentYear = now.getFullYear();
         const { data: challenges } = await supabase
           .from("challenges")
-          .select("id, goal_type, goal_value, xp_reward")
+          .select("id, goal_type, goal_value, xp_reward, title")
           .eq("is_active", true)
           .eq("month", currentMonth)
           .eq("year", currentYear);
@@ -252,13 +304,34 @@ Deno.serve(async (req) => {
                     ...(completed ? { completed_at: new Date().toISOString() } : {}),
                   })
                   .eq("id", progress.id);
+
+                // 🔔 Notification: Challenge completed
+                if (completed) {
+                  await supabase.from("notifications").insert({
+                    user_id: userId,
+                    title: "🏅 Challenge Complete!",
+                    message: `You finished "${challenge.title}" and earned ${challenge.xp_reward} XP!`,
+                    type: "milestone",
+                    link: "/rewards",
+                  });
+                }
               } else {
+                const firstComplete = 1 >= challenge.goal_value;
                 await supabase.from("challenge_progress").insert({
                   user_id: userId,
                   challenge_id: challenge.id,
                   current_value: 1,
-                  ...(1 >= challenge.goal_value ? { completed_at: new Date().toISOString() } : {}),
+                  ...(firstComplete ? { completed_at: new Date().toISOString() } : {}),
                 });
+                if (firstComplete) {
+                  await supabase.from("notifications").insert({
+                    user_id: userId,
+                    title: "🏅 Challenge Complete!",
+                    message: `You finished "${challenge.title}" and earned ${challenge.xp_reward} XP!`,
+                    type: "milestone",
+                    link: "/rewards",
+                  });
+                }
               }
             }
           }
