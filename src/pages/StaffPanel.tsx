@@ -334,6 +334,7 @@ const StaffPanel: React.FC = () => {
     setActionLoading(false);
   };
 
+  const loadBalance = async () => {
     if (!customer) return;
     const amount = parseFloat(loadAmount);
     if (!amount || amount <= 0) {
