@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthReady } from "@/hooks/use-auth-ready";
 import { supabase } from "@/integrations/supabase/client";
 import logo from "@/assets/shabu-shack-logo.png";
+import NotificationBell from "@/components/NotificationBell";
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -44,6 +45,7 @@ const Navbar = () => {
           ))}
           {isReady && user ? (
             <div className="flex items-center gap-3">
+              <NotificationBell />
               <Button asChild size="sm" variant="outline">
                 <Link to="/profile" className="gap-2">
                   <User className="w-4 h-4" />
@@ -69,9 +71,12 @@ const Navbar = () => {
             </Button>
           )}
           {isReady && user && (
-            <Button asChild size="sm" variant="outline" className="h-9 px-3 text-xs gap-1.5">
-              <Link to="/dashboard">Dashboard</Link>
-            </Button>
+            <>
+              <NotificationBell />
+              <Button asChild size="sm" variant="outline" className="h-9 px-3 text-xs gap-1.5">
+                <Link to="/dashboard">Dashboard</Link>
+              </Button>
+            </>
           )}
           <button
             className="text-secondary-foreground p-2 -mr-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
