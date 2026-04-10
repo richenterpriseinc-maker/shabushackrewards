@@ -329,6 +329,44 @@ Deno.serve(async (req) => {
         );
       }
 
+      case "redeem_reward": {
+        const { userId } = params;
+
+        // Get current punch card
+        const { data: pc } = await supabase
+          .from("punch_cards")
+          .select("completed_cards")
+          .eq("user_id", userId)
+          .maybeSingle();
+
+        if (!pc || pc.completed_cards < 1) {
+          return new Response(JSON.stringify({ error: "No free entrées to redeem" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Decrement completed_cards
+        await supabase
+          .from("punch_cards")
+          .update({ completed_cards: pc.completed_cards - 1 })
+          .eq("user_id", userId);
+
+        // Record the redemption
+        await supabase.from("reward_redemptions").insert({
+          user_id: userId,
+          location_id: locationId,
+        });
+
+        return new Response(
+          JSON.stringify({
+            freeEntrees: pc.completed_cards - 1,
+            message: "Free entrée redeemed!",
+          }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
       default:
         return new Response(JSON.stringify({ error: "Unknown action" }), {
           status: 400,
