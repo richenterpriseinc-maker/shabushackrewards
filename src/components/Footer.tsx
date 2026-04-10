@@ -2,9 +2,9 @@ import { Link } from "react-router-dom";
 import logo from "@/assets/shabu-shack-logo.png";
 
 const Footer = () => (
-  <footer className="bg-secondary text-secondary-foreground py-12">
-    <div className="container mx-auto px-4">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+  <footer className="bg-secondary text-secondary-foreground py-10">
+    <div className="container mx-auto px-4 max-w-lg md:max-w-5xl">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
         <div>
           <img src={logo} alt="Shabu Shack" className="h-12 mb-4" />
           <p className="text-sm opacity-80">

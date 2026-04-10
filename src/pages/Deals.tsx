@@ -53,13 +53,13 @@ const DealsPage = () => (
   <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
     <Navbar />
     <main className="pt-24 pb-16">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h1 className="font-display text-4xl font-bold text-foreground mb-3">Deals & Promotions</h1>
-          <p className="text-muted-foreground text-lg">Exclusive offers to make every visit even better.</p>
+      <div className="container mx-auto px-4 max-w-lg md:max-w-5xl">
+        <div className="text-center mb-8">
+          <h1 className="font-display text-3xl font-bold text-foreground mb-2 tracking-wider">DEALS & PROMOTIONS</h1>
+          <p className="text-muted-foreground text-sm">Exclusive offers to make every visit even better.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {deals.map((deal) => (
             <Card key={deal.title} className="border-border hover:shadow-lg transition-shadow">
               <CardHeader className="pb-2">
