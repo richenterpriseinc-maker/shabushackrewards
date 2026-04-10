@@ -22,6 +22,7 @@ import {
   ChevronRight,
   RotateCcw,
   Star,
+  Gift,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
