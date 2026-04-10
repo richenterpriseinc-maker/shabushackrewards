@@ -475,6 +475,38 @@ export type Database = {
         }
         Relationships: []
       }
+      reward_redemptions: {
+        Row: {
+          id: string
+          location_id: string
+          redeemed_at: string
+          staff_note: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          location_id: string
+          redeemed_at?: string
+          staff_note?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          location_id?: string
+          redeemed_at?: string
+          staff_note?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reward_redemptions_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
