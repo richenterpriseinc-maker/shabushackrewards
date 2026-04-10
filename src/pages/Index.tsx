@@ -46,7 +46,7 @@ const Index = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/75 to-secondary/40" />
         </div>
 
-        <div className="relative container mx-auto px-4 py-16 md:py-40">
+        <div className="relative container mx-auto px-4 py-16 md:py-40 flex flex-col items-center md:items-start text-center md:text-left">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -60,7 +60,7 @@ const Index = () => {
             <p className="text-base md:text-xl text-secondary-foreground/80 mb-6">
               Join Shabu Shack Rewards and earn free meals, exclusive deals, and VIP perks every time you dine with us.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 max-w-xs mx-auto md:mx-0 sm:max-w-none">
               <Button asChild size="lg" className="text-base">
                 <Link to="/login">Join for Free</Link>
               </Button>
@@ -78,18 +78,18 @@ const Index = () => {
       </section>
 
       {/* Benefits */}
-      <section className="py-20 bg-card">
-        <div className="container mx-auto px-4">
+      <section className="py-16 bg-card">
+        <div className="container mx-auto px-4 max-w-lg md:max-w-5xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-14"
+            className="text-center mb-10"
           >
-            <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4 tracking-wider">
+            <h2 className="font-display text-2xl md:text-5xl font-bold text-foreground mb-3 tracking-wider">
               WHY JOIN SHABU SHACK REWARDS?
             </h2>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            <p className="text-muted-foreground text-sm md:text-lg">
               Every visit brings you closer to something delicious.
             </p>
           </motion.div>
@@ -119,20 +119,20 @@ const Index = () => {
       </section>
 
       {/* Points Preview */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center gap-12">
+      <section className="py-16">
+        <div className="container mx-auto px-4 max-w-lg md:max-w-5xl">
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="flex-1"
+              className="flex-1 text-center md:text-left"
             >
-              <h2 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-4 tracking-wider">
+              <h2 className="font-display text-2xl md:text-5xl font-bold text-foreground mb-3 tracking-wider">
                 10 POINTS = FREE ENTRÉE
               </h2>
-              <p className="text-muted-foreground text-lg mb-6">
-                No paper cards needed. Track your points digitally across all 4 locations. Every 10th point earns you a free entrée!
+              <p className="text-muted-foreground text-sm md:text-lg mb-6">
+                No paper cards needed. Track your points digitally across all 4 locations.
               </p>
               <Button asChild>
                 <Link to="/login">Start Earning</Link>
@@ -143,7 +143,7 @@ const Index = () => {
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="flex-1 w-full max-w-md"
+              className="flex-1 w-full max-w-sm md:max-w-md"
             >
               <Card className="bg-gradient-to-br from-primary to-secondary p-1 rounded-2xl">
                 <div className="bg-background rounded-xl p-6">
@@ -176,17 +176,17 @@ const Index = () => {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-primary text-primary-foreground">
-        <div className="container mx-auto px-4 text-center">
+      <section className="py-16 bg-primary text-primary-foreground">
+        <div className="container mx-auto px-4 max-w-lg md:max-w-3xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="font-display text-3xl md:text-5xl font-bold mb-4 tracking-wider">
+            <h2 className="font-display text-2xl md:text-5xl font-bold mb-3 tracking-wider">
               READY TO START EARNING?
             </h2>
-            <p className="text-lg opacity-90 mb-8 max-w-lg mx-auto">
+            <p className="text-sm md:text-lg opacity-90 mb-6 max-w-lg mx-auto">
               Join thousands of shabu lovers across NorCal and get rewarded for every visit.
             </p>
             <Button

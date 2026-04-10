@@ -49,13 +49,13 @@ const LocationsPage = () => (
   <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
     <Navbar />
     <main className="pt-24 pb-16">
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-3 tracking-wider">OUR LOCATIONS</h1>
-          <p className="text-muted-foreground text-lg">4 NorCal spots serving up warmth and flavor.</p>
+      <div className="container mx-auto px-4 max-w-lg md:max-w-4xl">
+        <div className="text-center mb-8">
+          <h1 className="font-display text-3xl md:text-5xl font-bold text-foreground mb-2 tracking-wider">OUR LOCATIONS</h1>
+          <p className="text-muted-foreground text-sm">4 NorCal spots serving up warmth and flavor.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {locations.map((loc) => (
             <Card key={loc.name} className="border-border">
               <CardHeader>
