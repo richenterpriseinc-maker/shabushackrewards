@@ -18,14 +18,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   MapPin, Users, DollarSign, Coins, TrendingUp, Tag, Plus,
-  Loader2, ShieldAlert, Calendar, Clock
+  Loader2, ShieldAlert, Calendar, Clock, Gift
 } from "lucide-react";
 
 const OwnerDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { isOwner, location, locationId, visits, todayVisits, promotions, prepaidTransactions, prepaidDeductions, prepaidLoads, stats, isLoading } = useOwnerDashboard();
+  const { isOwner, location, locationId, visits, todayVisits, promotions, prepaidTransactions, prepaidDeductions, prepaidLoads, redemptions, stats, isLoading } = useOwnerDashboard();
   const [promoDialogOpen, setPromoDialogOpen] = useState(false);
   const [newPromo, setNewPromo] = useState({
     title: "",
@@ -123,12 +123,13 @@ const OwnerDashboard = () => {
           </div>
 
           {/* Stats Row */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
             {[
               { icon: Calendar, label: "Today", value: todayVisits.length.toString(), color: "text-primary" },
               { icon: Users, label: "Total Visits", value: stats.totalVisits.toString(), color: "text-primary" },
               { icon: Users, label: "Unique Guests", value: stats.uniqueCustomers.toString(), color: "text-accent" },
               { icon: DollarSign, label: "Revenue", value: `$${stats.totalRevenue.toFixed(0)}`, color: "text-accent" },
+              { icon: Gift, label: "Redemptions", value: stats.totalRewardRedemptions.toString(), color: "text-primary" },
               { icon: Tag, label: "Active Deals", value: stats.activePromotions.toString(), color: "text-primary" },
             ].map((stat, i) => (
               <motion.div key={stat.label} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
