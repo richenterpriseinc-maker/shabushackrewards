@@ -205,7 +205,7 @@ const AdminDashboard = () => {
 
           {/* Metric Cards */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
               {[
                 { icon: Users, label: "Total Members", value: totalMembers.toLocaleString(), sub: `${recentSignups} new (30d)` },
                 { icon: Utensils, label: "Total Visits", value: totalVisits.toLocaleString(), sub: `${todayVisits} today` },
