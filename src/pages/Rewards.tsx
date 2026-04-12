@@ -132,10 +132,10 @@ const RewardsPage = () => {
                 </div>
                 <p className="text-xs text-muted-foreground mb-3">
                   {currentPoints === 0
-                    ? "Earn 10 points to get a free entrée!"
+                    ? "Earn 500 XP to get a free entrée!"
                     : currentPoints >= 9
-                      ? "🔥 One more point for your free entrée!"
-                      : `${10 - currentPoints} more point${10 - currentPoints === 1 ? "" : "s"} to go!`}
+                      ? "🔥 One more visit for your free entrée!"
+                      : `${(10 - currentPoints) * 50} more XP to go!`}
                 </p>
                 <div className="grid grid-cols-5 gap-2">
                   {Array.from({ length: 10 }).map((_, i) => (
@@ -167,15 +167,15 @@ const RewardsPage = () => {
               <CardContent className="py-5">
                 <h3 className="font-display text-sm font-bold text-foreground tracking-wide uppercase mb-3">How It Works</h3>
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
+                    <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
                     <div className="flex items-center gap-1.5 mb-2">
                       <Utensils className="w-4 h-4 text-primary" />
-                      <span className="text-xs font-bold text-primary uppercase">Punch Card</span>
+                      <span className="text-xs font-bold text-primary uppercase">Free Entrée</span>
                     </div>
                     <p className="text-[11px] text-muted-foreground leading-snug">
-                      Each <span className="font-semibold text-foreground">visit</span> = 1 punch. Collect <span className="font-semibold text-foreground">10 punches</span> for a free entrée.
+                      Each <span className="font-semibold text-foreground">visit</span> earns 50 XP. Collect <span className="font-semibold text-foreground">500 XP</span> for a free entrée.
                     </p>
-                    <p className="text-[10px] text-muted-foreground mt-1.5 italic">Only visits count — no shortcuts!</p>
+                    <p className="text-[10px] text-muted-foreground mt-1.5 italic">Based on visits only — no shortcuts!</p>
                   </div>
                   <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
                     <div className="flex items-center gap-1.5 mb-2">
@@ -183,9 +183,9 @@ const RewardsPage = () => {
                       <span className="text-xs font-bold text-orange-500 uppercase">XP &amp; Tiers</span>
                     </div>
                     <p className="text-[11px] text-muted-foreground leading-snug">
-                      Earn <span className="font-semibold text-foreground">XP</span> from visits, streaks &amp; challenges to unlock higher tiers &amp; perks.
+                      Earn <span className="font-semibold text-foreground">bonus XP</span> from streaks &amp; challenges to unlock higher tiers &amp; perks.
                     </p>
-                    <p className="text-[10px] text-muted-foreground mt-1.5 italic">More ways to earn — more rewards!</p>
+                    <p className="text-[10px] text-muted-foreground mt-1.5 italic">Streaks boost tier XP — more rewards!</p>
                   </div>
                 </div>
               </CardContent>
@@ -302,7 +302,7 @@ const RewardsPage = () => {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <div className="grid grid-cols-3 gap-3 mb-6">
               {[
-                { icon: Utensils, label: "Points", value: `${currentPoints}/10`, color: "text-primary" },
+                { icon: Utensils, label: "Entrée XP", value: `${currentPoints * 50}/500`, color: "text-primary" },
                 { icon: Wallet, label: "Balance", value: `$${prepaidBalance.toFixed(2)}`, color: "text-accent" },
                 { icon: Trophy, label: "Best Streak", value: `${streak.best}wk`, color: "text-orange-500" },
               ].map((stat, i) => (
