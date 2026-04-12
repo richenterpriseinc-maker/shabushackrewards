@@ -307,7 +307,7 @@ const StaffPanel: React.FC = () => {
       toast.success(
         data.points === 0
           ? `🎉 Free entrée earned! ${xpBreakdown}`
-          : `Point added (${data.points}/10) ${xpBreakdown}`
+          : `Visit added (${data.points * 50}/500 XP) ${xpBreakdown}`
       );
     } catch {
       toast.error("Failed to add point");
@@ -513,7 +513,7 @@ const StaffPanel: React.FC = () => {
                 {customer?.name || "Customer"} earned a free entrée!
               </p>
               <p className="text-primary font-bold text-lg">
-                10 points completed 🍲
+                500 XP completed 🍲
               </p>
               <p className="text-xs text-muted-foreground mt-3">Tap anywhere to dismiss</p>
             </motion.div>
@@ -645,9 +645,9 @@ const StaffPanel: React.FC = () => {
 
                   {/* Stats Row */}
                   <div className="grid grid-cols-3 gap-2 text-center mb-3">
-                    <div className="bg-muted rounded-lg p-2">
-                      <p className="text-lg font-bold text-foreground">{customer.points}/10</p>
-                      <p className="text-[10px] text-muted-foreground uppercase">Points</p>
+                     <div className="bg-muted rounded-lg p-2">
+                      <p className="text-lg font-bold text-foreground">{customer.points * 50}/500</p>
+                      <p className="text-[10px] text-muted-foreground uppercase">Entrée XP</p>
                     </div>
                     <div className="bg-muted rounded-lg p-2">
                       <p className="text-lg font-bold text-foreground">{customer.freeEntrees}</p>
@@ -679,7 +679,7 @@ const StaffPanel: React.FC = () => {
                     className={`w-full h-12 text-base font-display tracking-wide transition-all ${confirmAdd ? "animate-pulse" : ""}`}
                   >
                     <Stamp className="w-5 h-5 mr-2" />
-                    {confirmAdd ? "Tap Again to Confirm" : "Add Point (+50 XP)"}
+                    {confirmAdd ? "Tap Again to Confirm" : "Add Visit (+50 XP)"}
                   </Button>
 
                   {/* Points progress visual */}
@@ -703,8 +703,8 @@ const StaffPanel: React.FC = () => {
                     {customer.points === 0 && customer.freeEntrees > 0
                       ? `${customer.freeEntrees} free entrée${customer.freeEntrees > 1 ? "s" : ""} earned!`
                       : customer.points >= 9
-                        ? "🔥 One more point for a free entrée!"
-                        : `${10 - customer.points} more point${10 - customer.points === 1 ? "" : "s"} to free entrée`}
+                        ? "🔥 One more visit for a free entrée!"
+                        : `${(10 - customer.points) * 50} more XP to free entrée`}
                   </p>
 
                   {/* Redeem Free Entrée */}
