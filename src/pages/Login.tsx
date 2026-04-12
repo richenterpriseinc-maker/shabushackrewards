@@ -109,10 +109,10 @@ const Login = () => {
           {/* Header */}
           <div className="mb-8">
             <h1 className="font-display text-3xl font-bold text-foreground tracking-wider mb-2">
-              SHABU SHACK REWARDS
+              {isSignUp ? "CREATE YOUR ACCOUNT" : "WELCOME BACK"}
             </h1>
             <p className="text-muted-foreground text-sm">
-              Join free. Earn points. Get free entrées.
+              {isSignUp ? "Join free. Earn XP. Get free entrées." : "Sign in to check your rewards."}
             </p>
           </div>
 
