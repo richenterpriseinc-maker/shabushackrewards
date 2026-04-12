@@ -14,10 +14,10 @@ const TIER_ORDER = ["bronze", "silver", "gold", "diamond"] as const;
 export type TierName = (typeof TIER_ORDER)[number];
 
 export const TIER_PERKS: Record<TierName, string[]> = {
-  bronze: ["10 points = free entrée", "Monthly challenges", "Birthday spin"],
-  silver: ["10 points = free entrée", "5% off every visit", "Priority seating"],
-  gold: ["10 points = free entrée", "10% off every visit", "Free appetizer monthly", "Early menu access"],
-  diamond: ["10 points = free entrée", "15% off every visit", "Free meal monthly", "Double birthday spin", "VIP events"],
+  bronze: ["500 XP = free entrée", "Monthly challenges", "Birthday spin"],
+  silver: ["500 XP = free entrée", "5% off every visit", "Priority seating"],
+  gold: ["500 XP = free entrée", "10% off every visit", "Free appetizer monthly", "Early menu access"],
+  diamond: ["500 XP = free entrée", "15% off every visit", "Free meal monthly", "Double birthday spin", "VIP events"],
 };
 
 export const TIER_COLORS: Record<TierName, { bg: string; text: string; border: string; gradient: string }> = {

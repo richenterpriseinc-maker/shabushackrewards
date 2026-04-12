@@ -166,7 +166,7 @@ Deno.serve(async (req) => {
           await supabase.from("notifications").insert({
             user_id: userId,
             title: "🎉 Free Entrée Earned!",
-            message: `You've collected 10 points and earned a free entrée! Redeem it at any location.`,
+            message: `You've earned 500 XP and unlocked a free entrée! Redeem it at any location.`,
             type: "milestone",
             link: "/rewards",
           });
@@ -345,7 +345,7 @@ Deno.serve(async (req) => {
             xpEarned,
             baseXp: 50,
             streakMultiplier: multiplier,
-            message: newPoints === 0 ? "🎉 10 points reached! Free entrée earned!" : `Point added (${newPoints}/10)`,
+            message: newPoints === 0 ? "🎉 500 XP reached! Free entrée earned!" : `Visit added (${newPoints * 50}/500 XP)`,
           }),
           { headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );

@@ -83,8 +83,8 @@ const Dashboard = () => {
               <Card className="border-border">
                 <CardContent className="py-3 text-center">
                   <Utensils className="w-5 h-5 mx-auto mb-1 text-primary" />
-                  <p className="text-lg font-bold text-foreground">{currentPoints}/10</p>
-                  <p className="text-[10px] text-muted-foreground">Points</p>
+                  <p className="text-lg font-bold text-foreground">{currentPoints * 50}/500</p>
+                  <p className="text-[10px] text-muted-foreground">Entrée XP</p>
                 </CardContent>
               </Card>
               <Card className="border-border">
@@ -151,14 +151,14 @@ const Dashboard = () => {
                 </div>
                 <div className="flex items-center gap-2 mb-2">
                   <Progress value={(currentPoints / 10) * 100} className="h-3 flex-1" />
-                  <span className="text-sm font-bold text-foreground">{currentPoints}/10</span>
+                  <span className="text-sm font-bold text-foreground">{currentPoints * 50}/500</span>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {currentPoints === 0
-                    ? "Earn 10 points to get a free entrée!"
+                    ? "Earn 500 XP to get a free entrée!"
                     : currentPoints >= 9
-                      ? "🔥 One more point for your free entrée!"
-                      : `${10 - currentPoints} more point${10 - currentPoints === 1 ? "" : "s"} to go!`}
+                      ? "🔥 One more visit for your free entrée!"
+                      : `${(10 - currentPoints) * 50} more XP to go!`}
                 </p>
               </CardContent>
             </Card>
