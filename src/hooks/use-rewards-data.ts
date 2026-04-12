@@ -111,8 +111,8 @@ export function useRewardsData() {
         activities.push({
           date: new Date(tx.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
           action: tx.type === "earn"
-            ? `Earned ${tx.amount} pts`
-            : `Redeemed: ${tx.description || `${tx.amount} pts`}`,
+            ? `Earned ${tx.amount * 50} XP`
+            : `Redeemed: ${tx.description || `${tx.amount * 50} XP`}`,
           location: visit?.locationName || "—",
           type: tx.type === "earn" ? "earn" : "redeem",
         });
