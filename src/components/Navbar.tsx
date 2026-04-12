@@ -57,18 +57,28 @@ const Navbar = () => {
               </Button>
             </div>
           ) : (
-            <Button asChild size="sm">
-              <Link to="/login">Join Now</Link>
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button asChild size="sm" variant="outline">
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link to="/login?mode=signup">Join Now</Link>
+              </Button>
+            </div>
           )}
         </div>
 
         {/* Mobile: context-aware button + hamburger */}
         <div className="flex md:hidden items-center gap-2">
           {isReady && !user && (
-            <Button asChild size="sm" className="h-9 px-3 text-xs">
-              <Link to="/login">Join</Link>
-            </Button>
+            <div className="flex items-center gap-1.5">
+              <Button asChild size="sm" variant="outline" className="h-9 px-3 text-xs">
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button asChild size="sm" className="h-9 px-3 text-xs">
+                <Link to="/login?mode=signup">Join</Link>
+              </Button>
+            </div>
           )}
           {isReady && user && (
             <>
