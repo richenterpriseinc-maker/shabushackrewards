@@ -13,8 +13,9 @@ import { Progress } from "@/components/ui/progress";
 import {
   Flame, Trophy, Star, Shield, Crown, Utensils, Wallet,
   QrCode, ChevronRight, User, Tag, MapPin, Loader2, Clock,
+  Zap, ArrowRight,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { QRCodeSVG } from "qrcode.react";
 
@@ -46,6 +47,7 @@ const Dashboard = () => {
   const freeEntrees = punchCard?.completed_cards ?? 0;
   const prepaidBalance = Number(prepaid?.balance ?? 0) + Number(prepaid?.bonus_credits ?? 0);
   const userId = user?.id ?? null;
+  const visitsToFree = 10 - currentPoints;
 
   if (isLoading) {
     return (
@@ -61,35 +63,141 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
       <Navbar />
-      <main className="pt-24 pb-16">
+      <main className="pt-20 pb-16">
         <div className="container mx-auto px-4 max-w-lg">
-
-          {/* Welcome Header */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-            <h1 className="text-2xl font-display font-bold text-foreground tracking-wide">
-              Welcome back, {profile?.name || "Member"}!
-            </h1>
-            <p className="text-sm text-muted-foreground mt-1">Here's your rewards snapshot</p>
-          </motion.div>
 
           {/* Onboarding */}
           {profile && (
             <OnboardingBanner profile={{ user_id: profile.user_id, date_of_birth: profile.date_of_birth, favorite_location_id: profile.favorite_location_id }} />
           )}
 
-          {/* Stats Row */}
+          {/* ─── HERO: Earn XP CTA ─── */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-5">
+            <Card className="overflow-hidden border-0 shadow-lg bg-gradient-to-br from-primary to-[hsl(0,78%,35%)]">
+              <CardContent className="p-5 text-primary-foreground">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <p className="text-xs uppercase tracking-widest opacity-80 mb-1">
+                      Hi, {profile?.name?.split(" ")[0] || "Member"}
+                    </p>
+                    <h1 className="text-2xl font-display font-bold tracking-wide leading-tight">
+                      EARN 50 XP<br />
+                      <span className="text-lg font-normal opacity-90">every visit</span>
+                    </h1>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                      <Zap className="w-7 h-7 text-white" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Big progress ring-style bar */}
+                <div className="bg-white/15 rounded-2xl p-3 mb-3">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-sm font-bold flex items-center gap-1.5">
+                      <Utensils className="w-4 h-4" />
+                      Free Entrée Progress
+                    </span>
+                    <span className="text-sm font-bold">{currentPoints * 50}/500 XP</span>
+                  </div>
+                  <div className="w-full bg-white/20 rounded-full h-4 overflow-hidden">
+                    <motion.div
+                      className="bg-white rounded-full h-4"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${(currentPoints / 10) * 100}%` }}
+                      transition={{ duration: 1, ease: "easeOut" }}
+                    />
+                  </div>
+                  <p className="text-xs mt-1.5 opacity-90">
+                    {currentPoints === 0
+                      ? "Visit any location to start earning!"
+                      : currentPoints >= 9
+                        ? "🔥 ONE more visit for your FREE entrée!"
+                        : `${visitsToFree} visit${visitsToFree > 1 ? "s" : ""} to free entrée`}
+                  </p>
+                </div>
+
+                {/* Earned badges */}
+                {freeEntrees > 0 && (
+                  <div className="bg-white/20 rounded-xl px-3 py-2 flex items-center gap-2 mb-3">
+                    <Utensils className="w-4 h-4" />
+                    <span className="text-sm font-bold">{freeEntrees} free entrée{freeEntrees > 1 ? "s" : ""} ready!</span>
+                    <span className="text-xs opacity-80 ml-auto">Show staff to redeem</span>
+                  </div>
+                )}
+
+                {/* QR toggle */}
+                <Button
+                  onClick={() => setShowQR(!showQR)}
+                  className="w-full bg-white text-primary hover:bg-white/90 font-bold text-base h-12 rounded-xl shadow-md"
+                >
+                  <QrCode className="w-5 h-5 mr-2" />
+                  {showQR ? "Hide My QR Code" : "Show My QR Code"}
+                </Button>
+
+                <AnimatePresence>
+                  {showQR && userId && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="flex flex-col items-center gap-2 mt-4">
+                        <div className="bg-white p-5 rounded-2xl shadow-lg">
+                          <QRCodeSVG value={`shabu:${userId}`} size={160} bgColor="#ffffff" fgColor="#1a1a1a" level="M" />
+                        </div>
+                        <p className="text-xs opacity-80 text-center">
+                          Show this to staff at checkout to earn XP
+                        </p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* ─── HOW IT WORKS ─── */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-            <div className="grid grid-cols-3 gap-3 mb-6">
+            <Card className="mb-5 border-border bg-muted/30">
+              <CardContent className="py-4 px-4">
+                <h3 className="font-display text-sm font-bold text-foreground tracking-wider uppercase mb-3 flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-primary" />
+                  HOW TO EARN XP
+                </h3>
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  {[
+                    { step: "1", icon: MapPin, label: "Visit any\nlocation" },
+                    { step: "2", icon: QrCode, label: "Show QR\nat checkout" },
+                    { step: "3", icon: Utensils, label: "Earn 50 XP\nper visit" },
+                  ].map((item) => (
+                    <div key={item.step} className="flex flex-col items-center gap-1.5">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <item.icon className="w-5 h-5 text-primary" />
+                      </div>
+                      <p className="text-[11px] text-muted-foreground font-medium whitespace-pre-line leading-tight">{item.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* ─── Stats Row ─── */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
+            <div className="grid grid-cols-3 gap-3 mb-5">
               <Card className="border-border">
                 <CardContent className="py-3 text-center">
-                  <Utensils className="w-5 h-5 mx-auto mb-1 text-primary" />
-                  <p className="text-lg font-bold text-foreground">{currentPoints * 50}/500</p>
-                  <p className="text-[10px] text-muted-foreground">Entrée XP</p>
+                  <TierIcon className={`w-5 h-5 mx-auto mb-1 ${tierColors.text}`} />
+                  <p className="text-lg font-bold text-foreground capitalize">{currentTier}</p>
+                  <p className="text-[10px] text-muted-foreground">{xp.toLocaleString()} XP</p>
                 </CardContent>
               </Card>
               <Card className="border-border">
                 <CardContent className="py-3 text-center">
-                  <Wallet className="w-5 h-5 mx-auto mb-1 text-accent" />
+                  <Wallet className="w-5 h-5 mx-auto mb-1 text-[hsl(var(--warm-gold))]" />
                   <p className="text-lg font-bold text-foreground">${prepaidBalance.toFixed(2)}</p>
                   <p className="text-[10px] text-muted-foreground">Balance</p>
                 </CardContent>
@@ -98,109 +206,41 @@ const Dashboard = () => {
                 <CardContent className="py-3 text-center">
                   <Flame className={`w-5 h-5 mx-auto mb-1 ${streak.current >= 2 ? "text-orange-500" : "text-muted-foreground"}`} />
                   <p className="text-lg font-bold text-foreground">{streak.current}wk</p>
-                  <p className="text-[10px] text-muted-foreground">Streak</p>
+                  <p className="text-[10px] text-muted-foreground">Streak{streak.current >= 2 ? ` (${streak.multiplier}×)` : ""}</p>
                 </CardContent>
               </Card>
             </div>
           </motion.div>
 
-          {/* Tier Card — compact */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }}>
-            <Card className={`mb-6 border-2 ${tierColors.border} overflow-hidden`}>
-              <div className={`bg-gradient-to-r ${tierColors.gradient} p-4 text-white`}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <TierIcon className="w-6 h-6" />
-                    <div>
-                      <h2 className="text-lg font-display font-bold tracking-wider uppercase">{currentTier}</h2>
-                      <p className="text-xs opacity-80">{xp.toLocaleString()} XP</p>
-                    </div>
+          {/* ─── Tier Progress (compact) ─── */}
+          {nextTier && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+              <Card className={`mb-5 border ${tierColors.border}`}>
+                <CardContent className="py-3 px-4">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Next: {nextTier}</span>
+                    <span className="text-xs text-muted-foreground">{xpInfo.needed} XP to go</span>
                   </div>
-                  {nextTier && (
-                    <div className="text-right text-xs opacity-80">
-                      <p>{xpInfo.needed} XP to {nextTier}</p>
-                    </div>
-                  )}
-                </div>
-                {nextTier && (
-                  <div className="w-full bg-white/20 rounded-full h-2 mt-3">
-                    <motion.div
-                      className="bg-white rounded-full h-2"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${xpInfo.progress}%` }}
-                      transition={{ duration: 1, ease: "easeOut" }}
-                    />
-                  </div>
-                )}
-              </div>
-            </Card>
-          </motion.div>
-
-          {/* Free Entrée Progress */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <Card className="mb-6 border-primary/20">
-              <CardContent className="py-4">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Utensils className="w-5 h-5 text-primary" />
-                    <h3 className="font-display text-base font-bold text-foreground tracking-wide">FREE ENTRÉE</h3>
-                  </div>
-                  {freeEntrees > 0 && (
-                    <Badge variant="secondary" className="text-xs">{freeEntrees} earned</Badge>
-                  )}
-                </div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Progress value={(currentPoints / 10) * 100} className="h-3 flex-1" />
-                  <span className="text-sm font-bold text-foreground">{currentPoints * 50}/500</span>
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {currentPoints === 0
-                    ? "Earn 500 XP to get a free entrée!"
-                    : currentPoints >= 9
-                      ? "🔥 One more visit for your free entrée!"
-                      : `${(10 - currentPoints) * 50} more XP to go!`}
-                </p>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* QR Code — compact */}
-          {userId && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-              <Card className="mb-6 border-border">
-                <CardContent className="py-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <QrCode className="w-5 h-5 text-primary" />
-                      <span className="font-display text-sm font-bold text-foreground tracking-wide">MY QR CODE</span>
-                    </div>
-                    <Button size="sm" variant="outline" onClick={() => setShowQR(!showQR)} className="text-xs h-7">
-                      {showQR ? "Hide" : "Show"}
-                    </Button>
-                  </div>
-                  {showQR && (
-                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-2 mt-3">
-                      <div className="bg-white p-4 rounded-xl shadow-inner">
-                        <QRCodeSVG value={`shabu:${userId}`} size={140} bgColor="#ffffff" fgColor="#1a1a1a" level="M" />
-                      </div>
-                      <p className="text-[10px] text-muted-foreground">Show this to staff when you visit</p>
-                    </motion.div>
-                  )}
+                  <Progress value={xpInfo.progress} className="h-2" />
                 </CardContent>
               </Card>
             </motion.div>
           )}
 
-          {/* Recent Activity */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-            <Card className="mb-6 border-border">
+          {/* ─── Recent Activity ─── */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
+            <Card className="mb-5 border-border">
               <CardContent className="py-4">
                 <div className="flex items-center gap-2 mb-3">
                   <Clock className="w-5 h-5 text-primary" />
-                  <h3 className="font-display text-base font-bold text-foreground tracking-wide">RECENT ACTIVITY</h3>
+                  <h3 className="font-display text-sm font-bold text-foreground tracking-wider uppercase">RECENT ACTIVITY</h3>
                 </div>
                 {activity.length === 0 ? (
-                  <p className="text-sm text-muted-foreground text-center py-4">No activity yet. Visit a location to get started!</p>
+                  <div className="text-center py-6">
+                    <Zap className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">No activity yet.</p>
+                    <p className="text-xs text-muted-foreground mt-1">Visit a Shabu Shack to earn your first 50 XP!</p>
+                  </div>
                 ) : (
                   <div className="space-y-2">
                     {activity.slice(0, 5).map((item, i) => (
@@ -218,8 +258,8 @@ const Dashboard = () => {
             </Card>
           </motion.div>
 
-          {/* Quick Links */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          {/* ─── Quick Links ─── */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <div className="grid grid-cols-2 gap-3 mb-6">
               {[
                 { icon: Star, label: "Rewards", to: "/rewards" },
