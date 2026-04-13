@@ -130,10 +130,14 @@ const Dashboard = () => {
                 {/* QR toggle */}
                 <Button
                   onClick={() => setShowQR(!showQR)}
-                  className="w-full bg-white text-primary hover:bg-white/90 font-bold text-base h-12 rounded-xl shadow-md"
+                  className={`w-full font-bold text-base h-12 rounded-xl shadow-lg transition-all ${
+                    showQR
+                      ? "bg-white/80 text-primary hover:bg-white/70"
+                      : "bg-white text-primary hover:bg-white/90 animate-pulse ring-2 ring-white/60 ring-offset-2 ring-offset-primary shadow-[0_0_20px_rgba(255,255,255,0.4)]"
+                  }`}
                 >
                   <QrCode className="w-5 h-5 mr-2" />
-                  {showQR ? "Hide My QR Code" : "Show My QR Code"}
+                  {showQR ? "Hide My QR Code" : "⚡ Show My QR Code"}
                 </Button>
 
                 <AnimatePresence>
