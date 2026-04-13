@@ -59,19 +59,31 @@ export function getStreakMultiplier(weeks: number): number {
 export function useGamification() {
   const queryClient = useQueryClient();
 
-  const profileQuery = useQuery({
-    queryKey: ["gamification-profile"],
+  // Wait for auth session before firing queries
+  const authQuery = useQuery({
+    queryKey: ["auth-user"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return null;
+      return session.user;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const userId = authQuery.data?.id ?? null;
+
+  const profileQuery = useQuery({
+    queryKey: ["gamification-profile", userId],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId!)
         .single();
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,
   });
 
   const streakQuery = useQuery({
