@@ -200,7 +200,7 @@ export function useGamification() {
   const completedChallenges = challengesWithProgress.filter((c) => c.completed).length;
   const totalChallenges = challengesWithProgress.length;
 
-  const isLoading = profileQuery.isLoading || streakQuery.isLoading || challengesQuery.isLoading || progressQuery.isLoading || punchCardQuery.isLoading;
+  const isLoading = authQuery.isLoading || profileQuery.isLoading || streakQuery.isLoading || challengesQuery.isLoading || progressQuery.isLoading || punchCardQuery.isLoading;
 
   return {
     profile,
