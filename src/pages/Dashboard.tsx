@@ -185,6 +185,12 @@ const Dashboard = () => {
                     </div>
                   ))}
                 </div>
+                <Link to="/locations">
+                  <Button variant="outline" className="w-full mt-4 h-11 rounded-xl border-primary/30 text-primary font-bold hover:bg-primary/5">
+                    <MapPin className="w-4 h-4 mr-2" />
+                    Find a Location Near Me
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </motion.div>
