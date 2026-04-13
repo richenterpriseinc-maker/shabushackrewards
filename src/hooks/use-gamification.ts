@@ -87,18 +87,17 @@ export function useGamification() {
   });
 
   const streakQuery = useQuery({
-    queryKey: ["user-streak"],
+    queryKey: ["user-streak", userId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("user_streaks")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId!)
         .maybeSingle();
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,
   });
 
   const challengesQuery = useQuery({
@@ -117,58 +116,53 @@ export function useGamification() {
   });
 
   const progressQuery = useQuery({
-    queryKey: ["challenge-progress"],
+    queryKey: ["challenge-progress", userId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("challenge_progress")
         .select("*")
-        .eq("user_id", user.id);
+        .eq("user_id", userId!);
       if (error) throw error;
       return data || [];
     },
+    enabled: !!userId,
   });
 
   const prepaidQuery = useQuery({
-    queryKey: ["prepaid_balance"],
+    queryKey: ["prepaid_balance", userId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("prepaid_balances")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId!)
         .single();
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,
   });
 
   const punchCardQuery = useQuery({
-    queryKey: ["punch_card"],
+    queryKey: ["punch_card", userId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("punch_cards")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId!)
         .single();
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,
   });
 
   const pointsQuery = useQuery({
-    queryKey: ["points_total"],
+    queryKey: ["points_total", userId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("points_transactions")
         .select("type, amount")
-        .eq("user_id", user.id);
+        .eq("user_id", userId!);
       if (error) throw error;
       let total = 0;
       for (const tx of data || []) {
@@ -176,6 +170,7 @@ export function useGamification() {
       }
       return Math.max(0, total);
     },
+    enabled: !!userId,
   });
 
   const profile = profileQuery.data;
