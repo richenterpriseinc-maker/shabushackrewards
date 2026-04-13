@@ -59,34 +59,45 @@ export function getStreakMultiplier(weeks: number): number {
 export function useGamification() {
   const queryClient = useQueryClient();
 
-  const profileQuery = useQuery({
-    queryKey: ["gamification-profile"],
+  // Wait for auth session before firing queries
+  const authQuery = useQuery({
+    queryKey: ["auth-user"],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.user) return null;
+      return session.user;
+    },
+    staleTime: 1000 * 60 * 5,
+  });
+
+  const userId = authQuery.data?.id ?? null;
+
+  const profileQuery = useQuery({
+    queryKey: ["gamification-profile", userId],
+    queryFn: async () => {
       const { data, error } = await supabase
         .from("profiles")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId!)
         .single();
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,
   });
 
   const streakQuery = useQuery({
-    queryKey: ["user-streak"],
+    queryKey: ["user-streak", userId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("user_streaks")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId!)
         .maybeSingle();
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,
   });
 
   const challengesQuery = useQuery({
@@ -105,58 +116,53 @@ export function useGamification() {
   });
 
   const progressQuery = useQuery({
-    queryKey: ["challenge-progress"],
+    queryKey: ["challenge-progress", userId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("challenge_progress")
         .select("*")
-        .eq("user_id", user.id);
+        .eq("user_id", userId!);
       if (error) throw error;
       return data || [];
     },
+    enabled: !!userId,
   });
 
   const prepaidQuery = useQuery({
-    queryKey: ["prepaid_balance"],
+    queryKey: ["prepaid_balance", userId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("prepaid_balances")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId!)
         .single();
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,
   });
 
   const punchCardQuery = useQuery({
-    queryKey: ["punch_card"],
+    queryKey: ["punch_card", userId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("punch_cards")
         .select("*")
-        .eq("user_id", user.id)
+        .eq("user_id", userId!)
         .single();
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,
   });
 
   const pointsQuery = useQuery({
-    queryKey: ["points_total"],
+    queryKey: ["points_total", userId],
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated");
       const { data, error } = await supabase
         .from("points_transactions")
         .select("type, amount")
-        .eq("user_id", user.id);
+        .eq("user_id", userId!);
       if (error) throw error;
       let total = 0;
       for (const tx of data || []) {
@@ -164,6 +170,7 @@ export function useGamification() {
       }
       return Math.max(0, total);
     },
+    enabled: !!userId,
   });
 
   const profile = profileQuery.data;
@@ -193,7 +200,7 @@ export function useGamification() {
   const completedChallenges = challengesWithProgress.filter((c) => c.completed).length;
   const totalChallenges = challengesWithProgress.length;
 
-  const isLoading = profileQuery.isLoading || streakQuery.isLoading || challengesQuery.isLoading || progressQuery.isLoading || punchCardQuery.isLoading;
+  const isLoading = authQuery.isLoading || profileQuery.isLoading || streakQuery.isLoading || challengesQuery.isLoading || progressQuery.isLoading || punchCardQuery.isLoading;
 
   return {
     profile,
