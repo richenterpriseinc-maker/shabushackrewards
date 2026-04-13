@@ -228,7 +228,7 @@ const OwnerDashboard = () => {
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="discount">Discount</SelectItem>
-                                <SelectItem value="points_multiplier">Points Multiplier</SelectItem>
+                                <SelectItem value="points_multiplier">XP Multiplier</SelectItem>
                                 <SelectItem value="free_item">Free Item</SelectItem>
                                 <SelectItem value="flash_deal">Flash Deal</SelectItem>
                               </SelectContent>
