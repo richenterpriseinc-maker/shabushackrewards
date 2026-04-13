@@ -171,7 +171,7 @@ const OwnerDashboard = () => {
                             </div>
                             <div className="text-right">
                               <p className="text-sm font-medium text-foreground">${Number(visit.amount_spent).toFixed(2)}</p>
-                              <p className="text-xs text-primary">+{visit.points_earned} pts</p>
+                              <p className="text-xs text-primary">+{visit.points_earned * 50} XP</p>
                             </div>
                           </div>
                         );
@@ -228,7 +228,7 @@ const OwnerDashboard = () => {
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="discount">Discount</SelectItem>
-                                <SelectItem value="points_multiplier">Points Multiplier</SelectItem>
+                                <SelectItem value="points_multiplier">XP Multiplier</SelectItem>
                                 <SelectItem value="free_item">Free Item</SelectItem>
                                 <SelectItem value="flash_deal">Flash Deal</SelectItem>
                               </SelectContent>

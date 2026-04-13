@@ -119,7 +119,7 @@ const Login = () => {
           {/* Quick perks */}
           <div className="flex justify-center gap-6 mb-8 text-xs text-muted-foreground">
             {[
-              { icon: Star, label: "Earn Points" },
+              { icon: Star, label: "Earn XP" },
               { icon: Utensils, label: "Free Entrées" },
               { icon: Gift, label: "Birthday Rewards" },
             ].map((p) => (

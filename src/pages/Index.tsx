@@ -10,8 +10,8 @@ import heroImage from "@/assets/shabu-hero.jpg";
 const benefits = [
   {
     icon: Gift,
-    title: "Earn Points",
-    description: "Get 1 point per visit. Collect 10 points and earn a free entrée!",
+    title: "Earn XP",
+    description: "Earn 50 XP per visit. Collect 500 XP and get a free entrée!",
   },
   {
     icon: Star,

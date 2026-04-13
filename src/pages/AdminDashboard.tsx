@@ -253,7 +253,7 @@ const AdminDashboard = () => {
                         <TableHead>Phone</TableHead>
                         <TableHead>Tier</TableHead>
                         <TableHead className="text-right">XP</TableHead>
-                        <TableHead className="text-right">Points</TableHead>
+                        <TableHead className="text-right">Visits</TableHead>
                         <TableHead className="text-right">Free Entrées</TableHead>
                         <TableHead>Joined</TableHead>
                       </TableRow>
@@ -273,7 +273,7 @@ const AdminDashboard = () => {
                               </Badge>
                             </TableCell>
                             <TableCell className="text-right font-mono text-sm">{p.xp_total.toLocaleString()}</TableCell>
-                            <TableCell className="text-right font-mono text-sm">{pc?.punches_count ?? 0}/10</TableCell>
+                            <TableCell className="text-right font-mono text-sm">{(pc?.punches_count ?? 0) * 50}/500 XP</TableCell>
                             <TableCell className="text-right font-mono text-sm">{pc?.completed_cards ?? 0}</TableCell>
                             <TableCell className="text-sm text-muted-foreground">
                               {new Date(p.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "2-digit" })}
