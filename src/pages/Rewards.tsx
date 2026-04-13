@@ -117,7 +117,7 @@ const RewardsPage = () => {
             </Card>
           </motion.div>
 
-          {/* Points Progress: 10 Points = Free Entrée */}
+          {/* Free Entrée Progress: 500 XP = Free Entrée */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.03 }}>
             <Card className="mb-6 border-primary/20">
               <CardContent className="py-5">
@@ -223,7 +223,7 @@ const RewardsPage = () => {
                   <div className="text-right">
                     <p className="text-2xl font-bold text-foreground">{streak.multiplier}x</p>
                     <p className="text-[10px] text-muted-foreground">XP multiplier only</p>
-                    <p className="text-[9px] text-muted-foreground/70 italic">punch card unaffected</p>
+                    <p className="text-[9px] text-muted-foreground/70 italic">Entrée progress unaffected</p>
                   </div>
                 </div>
                 {/* Streak milestones */}

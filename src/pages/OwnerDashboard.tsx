@@ -171,7 +171,7 @@ const OwnerDashboard = () => {
                             </div>
                             <div className="text-right">
                               <p className="text-sm font-medium text-foreground">${Number(visit.amount_spent).toFixed(2)}</p>
-                              <p className="text-xs text-primary">+{visit.points_earned} pts</p>
+                              <p className="text-xs text-primary">+{visit.points_earned * 50} XP</p>
                             </div>
                           </div>
                         );
