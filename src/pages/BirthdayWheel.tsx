@@ -22,15 +22,15 @@ const LOCATION_PINS: Record<string, string> = {
 
 const WHEEL_SLICES: WheelSlice[] = [
   { label: "FREE Drink", color: "hsl(0, 78%, 45%)" },
-  { label: "500 Points", color: "hsl(0, 0%, 14%)" },
+  { label: "500 XP", color: "hsl(0, 0%, 14%)" },
   { label: "20% Off", color: "hsl(38, 80%, 55%)", textColor: "#1a1a1a" },
   { label: "FREE Appetizer", color: "hsl(0, 78%, 38%)" },
-  { label: "1000 Points", color: "hsl(0, 0%, 22%)" },
+  { label: "1000 XP", color: "hsl(0, 0%, 22%)" },
   { label: "10% Off", color: "hsl(25, 60%, 52%)" },
   { label: "FREE Meal!", color: "hsl(0, 78%, 45%)" },
-  { label: "250 Points", color: "hsl(0, 0%, 14%)" },
+  { label: "250 XP", color: "hsl(0, 0%, 14%)" },
   { label: "50% Off!", color: "hsl(38, 80%, 55%)", textColor: "#1a1a1a" },
-  { label: "Double Points", color: "hsl(0, 78%, 38%)" },
+  { label: "Double XP", color: "hsl(0, 78%, 38%)" },
 ];
 
 const BirthdayWheel: React.FC = () => {
@@ -95,7 +95,7 @@ const BirthdayWheel: React.FC = () => {
         const geo = geoRef.current;
         await supabase.from("birthday_spins").insert({
           user_id: user.id,
-          prize_type: slice.label.includes("Points") ? "points" : slice.label.includes("Off") ? "discount" : "free_item",
+          prize_type: slice.label.includes("XP") ? "xp" : slice.label.includes("Off") ? "discount" : "free_item",
           prize_value: slice.label,
           latitude: geo?.latitude ?? null,
           longitude: geo?.longitude ?? null,
