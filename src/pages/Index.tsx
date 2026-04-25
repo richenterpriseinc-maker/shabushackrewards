@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { MapPin, Gift, Star, Utensils } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import heroImage from "@/assets/shabu-hero.jpg";
+import { useAuthReady } from "@/hooks/use-auth-ready";
 
 const benefits = [
   {
@@ -31,6 +32,8 @@ const benefits = [
 ];
 
 const Index = () => {
+  const { user, isReady } = useAuthReady();
+  if (isReady && user) return <Navigate to="/dashboard" replace />;
   return (
     <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
       <Navbar />
