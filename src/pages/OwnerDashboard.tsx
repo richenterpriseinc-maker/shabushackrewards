@@ -144,6 +144,82 @@ const OwnerDashboard = () => {
             ))}
           </div>
 
+          {/* BOGO Signup Conversion Analytics */}
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+            <Card className="mb-8 border-border bg-gradient-to-br from-primary/5 to-accent/5">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <CardTitle className="font-display text-lg tracking-wide flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-primary" />
+                    BOGO SIGNUP CONVERSIONS
+                  </CardTitle>
+                  <Badge variant="outline" className="text-xs">First visit within window</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  New members who redeemed their <strong>Buy One, Get One 50% Off</strong> entrée at this location
+                  on their first visit after signing up.
+                </p>
+              </CardHeader>
+              <CardContent>
+                {!bogo ? (
+                  <div className="py-6 flex items-center justify-center">
+                    <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* 7-day window */}
+                    <div className="p-4 rounded-lg border border-border bg-card">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                          <Clock className="w-4 h-4 text-primary" /> 7-day window
+                        </span>
+                        <Badge className="text-xs">{bogo.rate7.toFixed(0)}%</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <p className="text-2xl font-bold text-foreground">{bogo.signups7}</p>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1">
+                            <UserPlus className="w-3 h-3" /> Signups
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold text-primary">{bogo.conv7}</p>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Gift className="w-3 h-3" /> Redemptions
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 30-day window */}
+                    <div className="p-4 rounded-lg border border-border bg-card">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-medium text-foreground flex items-center gap-1.5">
+                          <Clock className="w-4 h-4 text-accent" /> 30-day window
+                        </span>
+                        <Badge variant="secondary" className="text-xs">{bogo.rate30.toFixed(0)}%</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <p className="text-2xl font-bold text-foreground">{bogo.signups30}</p>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1">
+                            <UserPlus className="w-3 h-3" /> Signups
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-2xl font-bold text-accent">{bogo.conv30}</p>
+                          <p className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Gift className="w-3 h-3" /> Redemptions
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Recent Visits */}
             <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
