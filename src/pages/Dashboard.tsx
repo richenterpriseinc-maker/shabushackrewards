@@ -164,9 +164,9 @@ const Dashboard = () => {
             </Link>
             <Card className="border-border">
               <CardContent className="py-3 px-2 text-center">
-                <Wallet className="w-5 h-5 mx-auto mb-1 text-warm-gold" />
-                <p className="text-base font-bold tabular-nums">${prepaidBalance.toFixed(0)}</p>
-                <p className="text-[10px] text-muted-foreground">Balance</p>
+                <Gift className="w-5 h-5 mx-auto mb-1 text-warm-gold" />
+                <p className="text-base font-bold tabular-nums">{freeEntrees}</p>
+                <p className="text-[10px] text-muted-foreground">Free Entrées</p>
               </CardContent>
             </Card>
             <Card className="border-border">
