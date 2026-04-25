@@ -644,7 +644,7 @@ const StaffPanel: React.FC = () => {
                   </div>
 
                   {/* Stats Row */}
-                  <div className="grid grid-cols-3 gap-2 text-center mb-3">
+                  <div className="grid grid-cols-2 gap-2 text-center mb-3">
                      <div className="bg-muted rounded-lg p-2">
                       <p className="text-lg font-bold text-foreground">{customer.points * 50}/500</p>
                       <p className="text-[10px] text-muted-foreground uppercase">Entrée XP</p>
@@ -652,12 +652,6 @@ const StaffPanel: React.FC = () => {
                     <div className="bg-muted rounded-lg p-2">
                       <p className="text-lg font-bold text-foreground">{customer.freeEntrees}</p>
                       <p className="text-[10px] text-muted-foreground uppercase">Free Entrées</p>
-                    </div>
-                    <div className="bg-muted rounded-lg p-2">
-                      <p className="text-lg font-bold text-foreground">
-                        ${(customer.prepaidBalance + customer.bonusCredits).toFixed(2)}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground uppercase">Balance</p>
                     </div>
                   </div>
 
