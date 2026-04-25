@@ -36,12 +36,6 @@ const EVERGREEN_PERKS = [
     cta: { label: "Spin now", to: "/birthday" },
   },
   {
-    icon: Wallet,
-    title: "Prepaid Bonus",
-    description: "Load $100+ to your balance and get a 20% bonus credit. The more you load, the more you earn.",
-    badge: "All members",
-  },
-  {
     icon: Crown,
     title: "VIP Multiplier",
     description: "VIP members earn 2× XP on every visit and unlock exclusive monthly perks.",
