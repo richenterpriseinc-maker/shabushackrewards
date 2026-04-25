@@ -9,8 +9,8 @@ import { useRewardsData } from "@/hooks/use-rewards-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Flame, Trophy, Star, Shield, Crown, Utensils, Wallet,
-  QrCode, Loader2, Clock, Zap, ChevronRight, MapPin, Cake,
+  Flame, Trophy, Star, Shield, Crown, Utensils,
+  QrCode, Loader2, Clock, Zap, ChevronRight, MapPin, Cake, Gift,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
