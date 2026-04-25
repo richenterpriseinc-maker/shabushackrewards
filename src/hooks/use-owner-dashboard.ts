@@ -185,6 +185,7 @@ export function useOwnerDashboard() {
     prepaidDeductions,
     prepaidLoads,
     redemptions: redemptionsQuery.data ?? [],
+    bogo: bogoQuery.data,
     stats,
     isLoading: locationAccessQuery.isLoading,
   };
