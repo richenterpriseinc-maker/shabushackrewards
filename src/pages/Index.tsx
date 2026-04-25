@@ -32,6 +32,8 @@ const benefits = [
 ];
 
 const Index = () => {
+  const { user, isReady } = useAuthReady();
+  if (isReady && user) return <Navigate to="/dashboard" replace />;
   return (
     <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
       <Navbar />
