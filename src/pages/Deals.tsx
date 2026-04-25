@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Sparkles, Cake, Wallet, Crown, Loader2 } from "lucide-react";
+import { MapPin, Sparkles, Cake, Crown, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -34,12 +34,6 @@ const EVERGREEN_PERKS = [
     description: "It's your birthday month? Spin the wheel in-store for a guaranteed prize.",
     badge: "Birthday month",
     cta: { label: "Spin now", to: "/birthday" },
-  },
-  {
-    icon: Wallet,
-    title: "Prepaid Bonus",
-    description: "Load $100+ to your balance and get a 20% bonus credit. The more you load, the more you earn.",
-    badge: "All members",
   },
   {
     icon: Crown,

@@ -9,8 +9,8 @@ import { useRewardsData } from "@/hooks/use-rewards-data";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Flame, Trophy, Star, Shield, Crown, Utensils, Wallet,
-  QrCode, Loader2, Clock, Zap, ChevronRight, MapPin, Cake,
+  Flame, Trophy, Star, Shield, Crown, Utensils,
+  QrCode, Loader2, Clock, Zap, ChevronRight, MapPin, Cake, Gift,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { QRCodeSVG } from "qrcode.react";
@@ -26,7 +26,7 @@ const Dashboard = () => {
   const { user } = useAuthReady();
   const {
     profile, xp, currentTier, streak,
-    punchCard, prepaid, isLoading,
+    punchCard, isLoading,
   } = useGamification();
   const { activity } = useRewardsData();
   const [showQR, setShowQR] = useState(false);
@@ -35,7 +35,6 @@ const Dashboard = () => {
   const TierIcon = TIER_ICONS[currentTier];
   const currentPoints = punchCard?.punches_count ?? 0;
   const freeEntrees = punchCard?.completed_cards ?? 0;
-  const prepaidBalance = Number(prepaid?.balance ?? 0) + Number(prepaid?.bonus_credits ?? 0);
   const userId = user?.id ?? null;
   const visitsToFree = 10 - currentPoints;
   const xpToFree = visitsToFree * 50;
@@ -165,9 +164,9 @@ const Dashboard = () => {
             </Link>
             <Card className="border-border">
               <CardContent className="py-3 px-2 text-center">
-                <Wallet className="w-5 h-5 mx-auto mb-1 text-warm-gold" />
-                <p className="text-base font-bold tabular-nums">${prepaidBalance.toFixed(0)}</p>
-                <p className="text-[10px] text-muted-foreground">Balance</p>
+                <Gift className="w-5 h-5 mx-auto mb-1 text-warm-gold" />
+                <p className="text-base font-bold tabular-nums">{freeEntrees}</p>
+                <p className="text-[10px] text-muted-foreground">Free Entrées</p>
               </CardContent>
             </Card>
             <Card className="border-border">
