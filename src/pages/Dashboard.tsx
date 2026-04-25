@@ -26,7 +26,7 @@ const Dashboard = () => {
   const { user } = useAuthReady();
   const {
     profile, xp, currentTier, streak,
-    punchCard, prepaid, isLoading,
+    punchCard, isLoading,
   } = useGamification();
   const { activity } = useRewardsData();
   const [showQR, setShowQR] = useState(false);
@@ -35,7 +35,6 @@ const Dashboard = () => {
   const TierIcon = TIER_ICONS[currentTier];
   const currentPoints = punchCard?.punches_count ?? 0;
   const freeEntrees = punchCard?.completed_cards ?? 0;
-  const prepaidBalance = Number(prepaid?.balance ?? 0) + Number(prepaid?.bonus_credits ?? 0);
   const userId = user?.id ?? null;
   const visitsToFree = 10 - currentPoints;
   const xpToFree = visitsToFree * 50;
