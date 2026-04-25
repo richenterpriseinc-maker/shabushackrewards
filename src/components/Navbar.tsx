@@ -81,12 +81,7 @@ const Navbar = () => {
             </div>
           )}
           {isReady && user && (
-            <>
-              <NotificationBell />
-              <Button asChild size="sm" variant="outline" className="h-9 px-3 text-xs gap-1.5">
-                <Link to="/dashboard">Dashboard</Link>
-              </Button>
-            </>
+            <NotificationBell />
           )}
           <button
             className="text-secondary-foreground p-2 -mr-2 min-h-[44px] min-w-[44px] flex items-center justify-center"

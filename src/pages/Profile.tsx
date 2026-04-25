@@ -26,9 +26,7 @@ const Profile = () => {
   const [dob, setDob] = useState<Date | undefined>();
   const [favoriteLocationId, setFavoriteLocationId] = useState<string>("");
 
-  useEffect(() => {
-    if (isReady && !user) navigate("/login", { replace: true });
-  }, [isReady, user, navigate]);
+  // RequireAuth handles redirect; this page assumes user exists.
 
   const profileQuery = useQuery({
     queryKey: ["profile"],
