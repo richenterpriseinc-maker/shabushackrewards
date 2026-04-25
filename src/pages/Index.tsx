@@ -46,32 +46,32 @@ const Index = () => {
             alt="Shabu Shack premium hot pot with fresh sliced beef"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-secondary/95 via-secondary/75 to-secondary/40" />
+          <div className="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-secondary/95 via-secondary/80 to-secondary/40" />
         </div>
 
-        <div className="relative container mx-auto px-4 py-16 md:py-40 flex flex-col items-center md:items-start text-center md:text-left">
+        <div className="relative container mx-auto px-5 py-20 md:py-40 flex flex-col items-center md:items-start text-center md:text-left">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="max-w-xl"
+            className="max-w-xl w-full"
           >
-            <h1 className="font-display text-4xl md:text-7xl font-bold text-secondary-foreground mb-3 leading-none tracking-wider">
+            <h1 className="font-display text-5xl md:text-7xl font-bold text-secondary-foreground mb-3 leading-[0.95] tracking-wider">
               NORCAL'S #1 <br />
               <span className="text-primary">HOTPOT</span>
             </h1>
-            <p className="text-base md:text-xl text-secondary-foreground/80 mb-6">
-              Join Shabu Shack Rewards and earn free meals, exclusive deals, and VIP perks every time you dine with us.
+            <p className="text-base md:text-xl text-secondary-foreground/80 mb-7 max-w-md mx-auto md:mx-0">
+              Join Shabu Shack Rewards. Earn free meals, exclusive deals, and VIP perks every visit.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-xs mx-auto md:mx-0 sm:max-w-none">
-              <Button asChild size="lg" className="text-base">
-                <Link to="/login">Join for Free</Link>
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto sm:max-w-none">
+              <Button asChild size="lg" className="text-base h-12 w-full sm:w-auto">
+                <Link to="/login?mode=signup">Join for Free</Link>
               </Button>
               <Button
                 asChild
                 variant="outline"
                 size="lg"
-                className="text-base bg-secondary-foreground/10 border-secondary-foreground/30 text-secondary-foreground hover:bg-secondary-foreground/20"
+                className="text-base h-12 w-full sm:w-auto bg-secondary-foreground/10 border-secondary-foreground/30 text-secondary-foreground hover:bg-secondary-foreground/20"
               >
                 <a href="https://www.shabushack.com" target="_blank" rel="noopener noreferrer">View Menu</a>
               </Button>
