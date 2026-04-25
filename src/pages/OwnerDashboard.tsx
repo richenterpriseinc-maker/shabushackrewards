@@ -18,7 +18,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import {
   MapPin, Users, DollarSign, Coins, TrendingUp, Tag, Plus,
-  Loader2, ShieldAlert, Calendar, Clock, Gift
+  Loader2, ShieldAlert, Calendar, Clock, Gift, Sparkles, UserPlus
 } from "lucide-react";
 
 const OwnerDashboard = () => {
