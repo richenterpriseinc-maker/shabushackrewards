@@ -1,88 +1,196 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Tag, Zap, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { MapPin, Sparkles, Cake, Wallet, Crown, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
 
-const deals = [
+interface Promo {
+  id: string;
+  title: string;
+  description: string | null;
+  type: string;
+  members_only: boolean;
+  end_date: string | null;
+  location_id: string | null;
+  location_name?: string;
+}
+
+// Curated evergreen perks shown when no live DB promotions exist.
+const EVERGREEN_PERKS = [
   {
-    title: "10% Off Every Visit",
-    description: "Members save 10% on every visit, every time. Just show your QR code!",
-    location: "All Locations",
-    type: "Ongoing",
-    membersOnly: true,
+    icon: Sparkles,
+    title: "Earn 50 XP every visit",
+    description: "Show your QR code at checkout. Reach 500 XP and we'll comp you a free entrée.",
+    badge: "Always on",
   },
   {
-    title: "Happy Hour Brews",
-    description: "$3 Japanese beers Mon–Fri, 3pm to 6pm.",
-    location: "Midtown",
-    type: "Daily",
-    membersOnly: false,
+    icon: Cake,
+    title: "Birthday Spin",
+    description: "It's your birthday month? Spin the wheel in-store for a guaranteed prize.",
+    badge: "Birthday month",
+    cta: { label: "Spin now", to: "/birthday" },
   },
   {
-    title: "Flash Deal: Free Gyoza",
-    description: "Get a free plate of gyoza with any combo order. This week only!",
-    location: "All Locations",
-    type: "Limited",
-    membersOnly: true,
+    icon: Wallet,
+    title: "Prepaid Bonus",
+    description: "Load $100+ to your balance and get a 20% bonus credit. The more you load, the more you earn.",
+    badge: "All members",
   },
   {
-    title: "VIP Birthday Reward",
-    description: "Free premium dessert during your birthday month. VIP members only.",
-    location: "All Locations",
-    type: "Ongoing",
-    membersOnly: true,
-  },
-  {
-    title: "Family Night",
-    description: "Kids eat free every Thursday with a paying adult.",
-    location: "Eastgate",
-    type: "Weekly",
-    membersOnly: false,
-  },
-  {
-    title: "Weekend Wagyu Special",
-    description: "20% off Wagyu platters on Fri & Sat evenings. VIP exclusive.",
-    location: "Westside",
-    type: "Weekly",
-    membersOnly: true,
+    icon: Crown,
+    title: "VIP Multiplier",
+    description: "VIP members earn 2× XP on every visit and unlock exclusive monthly perks.",
+    badge: "VIP",
   },
 ];
 
-const DealsPage = () => (
-  <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
-    <Navbar />
-    <main className="pt-24 pb-16">
-      <div className="container mx-auto px-4 max-w-lg md:max-w-5xl">
-        <div className="text-center mb-8">
-          <h1 className="font-display text-3xl font-bold text-foreground mb-2 tracking-wider">DEALS & PROMOTIONS</h1>
-          <p className="text-muted-foreground text-sm">Exclusive offers to make every visit even better.</p>
-        </div>
+const DealsPage = () => {
+  const [promos, setPromos] = useState<Promo[]>([]);
+  const [loading, setLoading] = useState(true);
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {deals.map((deal) => (
-            <Card key={deal.title} className="border-border hover:shadow-lg transition-shadow">
-              <CardHeader className="pb-2">
-                <div className="flex items-center gap-2 mb-1">
-                  <Badge variant={deal.membersOnly ? "default" : "secondary"} className="text-xs">
-                    {deal.membersOnly ? "Members Only" : deal.type}
-                  </Badge>
-                </div>
-                <CardTitle className="font-display text-xl">{deal.title}</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <p className="text-sm text-muted-foreground">{deal.description}</p>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                  <MapPin className="w-3 h-3" /> {deal.location}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+  useEffect(() => {
+    const load = async () => {
+      const { data, error } = await supabase
+        .from("promotions")
+        .select("id, title, description, type, members_only, end_date, location_id, locations(name)")
+        .eq("is_active", true)
+        .order("created_at", { ascending: false });
+      if (!error && data) {
+        setPromos(
+          data.map((p: any) => ({
+            ...p,
+            location_name: p.locations?.name,
+          }))
+        );
+      }
+      setLoading(false);
+    };
+    load();
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
+      <Navbar />
+      <main className="pt-20 pb-16">
+        <div className="container mx-auto px-4 max-w-lg md:max-w-5xl">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-8"
+          >
+            <h1 className="font-display text-3xl md:text-5xl text-foreground tracking-wider">
+              DEALS &amp; PERKS
+            </h1>
+            <p className="text-muted-foreground text-sm mt-2">
+              Member benefits + live promotions across all 4 locations.
+            </p>
+          </motion.div>
+
+          {/* Live promotions */}
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="w-6 h-6 animate-spin text-primary" />
+            </div>
+          ) : promos.length > 0 ? (
+            <section className="mb-10">
+              <h2 className="font-display text-sm tracking-[0.2em] uppercase text-muted-foreground mb-3">
+                Live now
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {promos.map((promo) => (
+                  <Card key={promo.id} className="border-primary/20 hover:shadow-md transition-shadow">
+                    <CardHeader className="pb-2">
+                      <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <Badge variant={promo.members_only ? "default" : "secondary"} className="text-[10px]">
+                          {promo.members_only ? "Members Only" : promo.type}
+                        </Badge>
+                        {promo.end_date && (
+                          <Badge variant="outline" className="text-[10px]">
+                            Ends {new Date(promo.end_date).toLocaleDateString()}
+                          </Badge>
+                        )}
+                      </div>
+                      <CardTitle className="font-display text-xl tracking-wide">{promo.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      {promo.description && (
+                        <p className="text-sm text-muted-foreground">{promo.description}</p>
+                      )}
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <MapPin className="w-3 h-3" />
+                        {promo.location_name || "All locations"}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {/* Evergreen perks */}
+          <section>
+            <h2 className="font-display text-sm tracking-[0.2em] uppercase text-muted-foreground mb-3">
+              Member perks
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {EVERGREEN_PERKS.map((perk, i) => (
+                <motion.div
+                  key={perk.title}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                >
+                  <Card className="border-border h-full hover:border-primary/40 transition-colors">
+                    <CardContent className="py-5">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <perk.icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between gap-2 mb-1">
+                            <h3 className="font-display text-lg tracking-wide leading-none">
+                              {perk.title}
+                            </h3>
+                            <Badge variant="secondary" className="text-[10px] flex-shrink-0">
+                              {perk.badge}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground leading-snug">
+                            {perk.description}
+                          </p>
+                          {perk.cta && (
+                            <Button asChild size="sm" variant="outline" className="mt-3 h-8">
+                              <Link to={perk.cta.to}>{perk.cta.label}</Link>
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </section>
+
+          {/* CTA */}
+          <div className="mt-10 text-center">
+            <p className="text-sm text-muted-foreground mb-3">
+              New here? Join free in seconds.
+            </p>
+            <Button asChild size="lg">
+              <Link to="/login?mode=signup">Join Shabu Shack Rewards</Link>
+            </Button>
+          </div>
         </div>
-      </div>
-    </main>
-    <Footer />
-  </div>
-);
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
 export default DealsPage;
