@@ -23,6 +23,7 @@ import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import MobileBottomNav from "./components/MobileBottomNav";
+import RequireAuth from "./components/RequireAuth";
 
 const queryClient = new QueryClient();
 
@@ -60,12 +61,12 @@ const App = () => (
           <Route path="/join" element={<Join />} />
           <Route path="/birthday" element={<BirthdayWheel />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/owner" element={<OwnerDashboard />} />
+          <Route path="/owner" element={<RequireAuth><OwnerDashboard /></RequireAuth>} />
           <Route path="/staff" element={<StaffPanel />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+          <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
+          <Route path="/admin" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
           <Route path="/install" element={<Install />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
