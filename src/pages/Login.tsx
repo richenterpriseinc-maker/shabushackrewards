@@ -99,7 +99,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
       <Navbar />
-      <main className="container mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-[75vh]">
+      <main className="container mx-auto px-5 pt-20 pb-10 md:py-12 flex flex-col items-center justify-start md:justify-center md:min-h-[75vh]">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
