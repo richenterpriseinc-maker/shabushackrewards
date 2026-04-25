@@ -11,22 +11,22 @@ import { useAuthReady } from "@/hooks/use-auth-ready";
 const benefits = [
   {
     icon: Gift,
-    title: "Earn XP",
-    description: "Earn 50 XP per visit. Collect 500 XP and get a free entrée!",
+    title: "Earn 50 XP per visit",
+    description: "Reach 500 XP and unlock a free entrée — no paper cards required.",
   },
   {
     icon: Star,
-    title: "Level Up",
-    description: "Rise through Bronze, Silver, Gold, and Diamond tiers for bigger perks.",
+    title: "Level up your tier",
+    description: "Climb Bronze → Silver → Gold → Diamond for bigger perks every visit.",
   },
   {
     icon: Utensils,
-    title: "Prepaid & Save",
+    title: "Prepay & save",
     description: "Load funds for bonus credit. The more you load, the more you earn.",
   },
   {
     icon: MapPin,
-    title: "4 NorCal Locations",
+    title: "4 NorCal locations",
     description: "Earn and redeem across Elk Grove, SSF, Downtown Sac, and Davis.",
   },
 ];
@@ -121,7 +121,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Points Preview */}
+      {/* Free Entrée Preview */}
       <section className="py-16">
         <div className="container mx-auto px-4 max-w-lg md:max-w-5xl">
           <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
@@ -132,10 +132,10 @@ const Index = () => {
               className="flex-1 text-center md:text-left"
             >
               <h2 className="font-display text-2xl md:text-5xl font-bold text-foreground mb-3 tracking-wider">
-                10 POINTS = FREE ENTRÉE
+                500 XP = FREE ENTRÉE
               </h2>
               <p className="text-muted-foreground text-sm md:text-lg mb-6">
-                No paper cards needed. Track your points digitally across all 4 locations.
+                Earn 50 XP each visit across all 4 locations. Track your progress digitally — no paper cards.
               </p>
               <Button asChild>
                 <Link to="/login">Start Earning</Link>
@@ -151,8 +151,8 @@ const Index = () => {
               <Card className="bg-gradient-to-br from-primary to-secondary p-1 rounded-2xl">
                 <div className="bg-background rounded-xl p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="font-display text-lg font-semibold text-foreground tracking-wider">YOUR POINTS</span>
-                    <span className="text-sm text-muted-foreground">7 / 10</span>
+                    <span className="font-display text-lg font-semibold text-foreground tracking-wider">FREE ENTRÉE</span>
+                    <span className="text-sm text-muted-foreground tabular-nums">350 / 500 XP</span>
                   </div>
                   <div className="grid grid-cols-5 gap-3 mb-4">
                     {Array.from({ length: 10 }).map((_, i) => (
@@ -169,7 +169,7 @@ const Index = () => {
                     ))}
                   </div>
                   <p className="text-center text-sm text-muted-foreground">
-                    3 more points until your <strong className="text-primary">free entrée!</strong>
+                    3 more visits until your <strong className="text-primary">free entrée!</strong>
                   </p>
                 </div>
               </Card>
