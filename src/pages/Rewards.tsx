@@ -39,10 +39,7 @@ const RewardsPage = () => {
 
   const userId = user?.id ?? null;
 
-  if (isReady && !user) {
-    navigate("/login", { replace: true });
-    return null;
-  }
+  // RequireAuth wraps this route in App.tsx — no inline redirect needed.
 
   const prepaidBalance = Number(prepaid?.balance ?? 0) + Number(prepaid?.bonus_credits ?? 0);
   const tierColors = TIER_COLORS[currentTier];
