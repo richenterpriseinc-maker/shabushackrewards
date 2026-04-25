@@ -107,7 +107,7 @@ const Login = () => {
           className="w-full max-w-sm text-center"
         >
           {/* Header */}
-          <div className="mb-7">
+          <div className="mb-5">
             <h1 className="font-display text-[28px] sm:text-3xl font-bold text-foreground tracking-wider mb-2 leading-tight">
               {isSignUp ? "CREATE ACCOUNT" : "WELCOME BACK"}
             </h1>
@@ -115,6 +115,33 @@ const Login = () => {
               {isSignUp ? "Join free. Earn XP. Get free entrées." : "Sign in to check your rewards."}
             </p>
           </div>
+
+          {/* Signup bonus banner */}
+          {isSignUp && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1, duration: 0.4 }}
+              className="mb-6 rounded-2xl border-2 border-primary/40 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent p-4 text-left shadow-sm"
+            >
+              <div className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-11 h-11 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Gift className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-[10px] font-semibold uppercase tracking-wider text-primary mb-0.5">
+                    Sign-up Bonus
+                  </div>
+                  <div className="font-display text-base font-bold text-foreground leading-tight">
+                    Buy One Entrée, Get One 50% Off
+                  </div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    Yours instantly when you join — redeem on your next visit.
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
           {/* Quick perks */}
           <div className="flex justify-center gap-5 sm:gap-6 mb-7 text-xs text-muted-foreground">
