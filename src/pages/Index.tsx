@@ -60,12 +60,16 @@ const Index = () => {
               NORCAL'S #1 <br />
               <span className="text-primary">HOTPOT</span>
             </h1>
-            <p className="text-base md:text-xl text-secondary-foreground/80 mb-7 max-w-md mx-auto md:mx-0">
+            <p className="text-base md:text-xl text-secondary-foreground/80 mb-5 max-w-md mx-auto md:mx-0">
               Join Shabu Shack Rewards. Earn free meals, exclusive deals, and VIP perks every visit.
             </p>
+            <div className="inline-flex items-center gap-2 mb-6 px-3 py-1.5 rounded-full bg-primary/20 border border-primary/40 text-primary text-xs md:text-sm font-semibold">
+              <Gift className="w-4 h-4" />
+              Sign-up bonus: Buy 1 entrée, get 1 50% off
+            </div>
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto sm:max-w-none">
               <Button asChild size="lg" className="text-base h-12 w-full sm:w-auto">
-                <Link to="/login?mode=signup">Join for Free</Link>
+                <Link to="/login?mode=signup">Claim My BOGO 50% Off</Link>
               </Button>
               <Button
                 asChild
