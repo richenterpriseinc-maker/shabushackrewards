@@ -93,6 +93,71 @@ export function useOwnerDashboard() {
   const prepaidDeductions = prepaidTxQuery.data?.filter(t => t.type === "deduct") ?? [];
   const prepaidLoads = prepaidTxQuery.data?.filter(t => t.type === "load") ?? [];
 
+  // BOGO / Signup-conversion analytics
+  // Definition (proxy, since redemption isn't a discrete event in DB):
+  //   - "Signup" = profile.created_at
+  //   - "BOGO redemption" = customer's first visit at THIS location, occurring
+  //     within N days of their signup. This matches the BOGO offer that's
+  //     redeemed in-store on the first visit after sign-up.
+  const bogoQuery = useQuery({
+    queryKey: ["owner_bogo_analytics", locationId],
+    enabled: !!locationId,
+    queryFn: async () => {
+      // Pull all visits at this location with visited_at (we already have, but
+      // get full set rather than the limited-50 from the visits query above).
+      const { data: locVisits, error: vErr } = await supabase
+        .from("visits")
+        .select("user_id, visited_at")
+        .eq("location_id", locationId!)
+        .order("visited_at", { ascending: true });
+      if (vErr) throw vErr;
+
+      // First-visit-at-this-location per user
+      const firstVisit = new Map<string, string>();
+      (locVisits || []).forEach(v => {
+        if (!firstVisit.has(v.user_id)) firstVisit.set(v.user_id, v.visited_at);
+      });
+
+      // Pull signup dates for users who have visited this location
+      const userIds = Array.from(firstVisit.keys());
+      const { data: profs, error: pErr } = await supabase
+        .from("profiles")
+        .select("user_id, created_at")
+        .in("user_id", userIds.length > 0 ? userIds : ["none"]);
+      if (pErr) throw pErr;
+
+      const now = Date.now();
+      const day = 24 * 60 * 60 * 1000;
+      let signups7 = 0, signups30 = 0;
+      let conv7 = 0, conv30 = 0;
+
+      (profs || []).forEach(p => {
+        const created = new Date(p.created_at).getTime();
+        const daysSinceSignup = (now - created) / day;
+        const fv = firstVisit.get(p.user_id);
+        const daysToFirstVisit = fv
+          ? (new Date(fv).getTime() - created) / day
+          : Infinity;
+
+        if (daysSinceSignup <= 7) signups7 += 1;
+        if (daysSinceSignup <= 30) signups30 += 1;
+
+        // Redeemed within 7 days of signup AND signup happened in last 7 days
+        if (daysSinceSignup <= 7 && daysToFirstVisit <= 7 && daysToFirstVisit >= 0) conv7 += 1;
+        if (daysSinceSignup <= 30 && daysToFirstVisit <= 30 && daysToFirstVisit >= 0) conv30 += 1;
+      });
+
+      return {
+        signups7,
+        signups30,
+        conv7,
+        conv30,
+        rate7: signups7 > 0 ? (conv7 / signups7) * 100 : 0,
+        rate30: signups30 > 0 ? (conv30 / signups30) * 100 : 0,
+      };
+    },
+  });
+
   // Stats
   const stats = {
     totalVisits: visitsQuery.data?.length ?? 0,
