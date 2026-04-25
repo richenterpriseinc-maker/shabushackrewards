@@ -715,62 +715,7 @@ const StaffPanel: React.FC = () => {
                   )}
                 </CardContent>
               </Card>
-
-              {/* Prepaid Balance */}
-              <Card>
-                <CardContent className="p-3 space-y-2">
-                  <div className="flex items-center gap-2 mb-1">
-                    <CreditCard className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-semibold">Prepaid</span>
-                    <span className="text-xs text-muted-foreground ml-auto">
-                      ${customer.prepaidBalance.toFixed(2)} cash + ${customer.bonusCredits.toFixed(2)} bonus
-                    </span>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Input
-                      type="number"
-                      placeholder="$ Deduct"
-                      value={deductAmount}
-                      onChange={(e) => setDeductAmount(e.target.value)}
-                      className="flex-1 h-10"
-                    />
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={deductBalance}
-                      disabled={
-                        actionLoading ||
-                        customer.prepaidBalance + customer.bonusCredits <= 0
-                      }
-                      className="h-10 px-4"
-                    >
-                      <Minus className="w-3 h-3 mr-1" /> Use
-                    </Button>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Input
-                      type="number"
-                      placeholder="$ Load"
-                      value={loadAmount}
-                      onChange={(e) => setLoadAmount(e.target.value)}
-                      className="flex-1 h-10"
-                    />
-                    <Button
-                      size="sm"
-                      onClick={loadBalance}
-                      disabled={actionLoading}
-                      className="h-10 px-4"
-                    >
-                      <Plus className="w-3 h-3 mr-1" /> Load
-                    </Button>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">
-                    $50+ → 10% bonus • $100+ → 20% bonus
-                  </p>
-                </CardContent>
-              </Card>
+              {/* Prepaid balance UI removed — gift card balances live in the POS (Menusifu / KwickPOS). */}
             </motion.div>
           )}
         </AnimatePresence>
