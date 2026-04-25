@@ -129,10 +129,10 @@ const RewardsPage = () => {
                 </div>
                 <p className="text-xs text-muted-foreground mb-3">
                   {currentPoints === 0
-                    ? "Earn 500 XP to get a free entrée!"
+                    ? "Earn 500 XP to unlock a free entrée."
                     : currentPoints >= 9
                       ? "🔥 One more visit for your free entrée!"
-                      : `${(10 - currentPoints) * 50} more XP to go!`}
+                      : `${(10 - currentPoints) * 50} more XP to go.`}
                 </p>
                 <div className="grid grid-cols-5 gap-2">
                   {Array.from({ length: 10 }).map((_, i) => (
@@ -153,37 +153,6 @@ const RewardsPage = () => {
                       )}
                     </div>
                   ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* How It Works Explainer */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.04 }}>
-            <Card className="mb-6 border-border bg-muted/30">
-              <CardContent className="py-5">
-                <h3 className="font-display text-sm font-bold text-foreground tracking-wide uppercase mb-3">How It Works</h3>
-                <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <Utensils className="w-4 h-4 text-primary" />
-                      <span className="text-xs font-bold text-primary uppercase">Free Entrée</span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground leading-snug">
-                      Each <span className="font-semibold text-foreground">visit</span> earns 50 XP. Collect <span className="font-semibold text-foreground">500 XP</span> for a free entrée.
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-1.5 italic">Based on visits only — no shortcuts!</p>
-                  </div>
-                  <div className="rounded-lg border border-orange-500/20 bg-orange-500/5 p-3">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <Zap className="w-4 h-4 text-orange-500" />
-                      <span className="text-xs font-bold text-orange-500 uppercase">XP &amp; Tiers</span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground leading-snug">
-                      Earn <span className="font-semibold text-foreground">bonus XP</span> from streaks &amp; challenges to unlock higher tiers &amp; perks.
-                    </p>
-                    <p className="text-[10px] text-muted-foreground mt-1.5 italic">Streaks boost tier XP — more rewards!</p>
-                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -286,70 +255,36 @@ const RewardsPage = () => {
                   </div>
                 )}
 
-                {completedChallenges === totalChallenges && totalChallenges > 0 && (
-                  <div className="mt-4 p-3 rounded-lg bg-primary/10 border border-primary/20 text-center">
-                    <p className="text-sm font-bold text-primary">🎉 All challenges completed! +500 bonus XP</p>
-                  </div>
-                )}
+          {/* Birthday CTA */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <Card className="mb-6 border-warm-gold/40 bg-warm-gold/5">
+              <CardContent className="py-4 flex items-center gap-4">
+                <Cake className="w-8 h-8 text-warm-gold flex-shrink-0" />
+                <div className="flex-1">
+                  <h3 className="font-display text-base font-bold text-foreground">Birthday Spin</h3>
+                  <p className="text-xs text-muted-foreground">Spin for a free prize at any location.</p>
+                </div>
+                <Button asChild size="sm" className="bg-warm-gold hover:bg-warm-gold/90 text-secondary">
+                  <Link to="/birthday">Spin</Link>
+                </Button>
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Stats Row */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-            <div className="grid grid-cols-3 gap-3 mb-6">
-              {[
-                { icon: Utensils, label: "Entrée XP", value: `${currentPoints * 50}/500`, color: "text-primary" },
-                { icon: Wallet, label: "Balance", value: `$${prepaidBalance.toFixed(2)}`, color: "text-accent" },
-                { icon: Trophy, label: "Best Streak", value: `${streak.best}wk`, color: "text-orange-500" },
-              ].map((stat, i) => (
-                <Card key={stat.label} className="border-border">
-                  <CardContent className="py-3 text-center">
-                    <stat.icon className={`w-5 h-5 mx-auto mb-1 ${stat.color}`} />
-                    <p className="text-lg font-bold text-foreground">{stat.value}</p>
-                    <p className="text-[10px] text-muted-foreground">{stat.label}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* QR Code */}
-          {userId && (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <Card className="mb-6 border-border">
-                <CardContent className="py-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <QrCode className="w-5 h-5 text-primary" />
-                      <span className="font-display text-sm font-bold text-foreground tracking-wide">MY QR CODE</span>
-                    </div>
-                    <Button size="sm" variant="outline" onClick={() => setShowQR(!showQR)} className="text-xs h-7">
-                      {showQR ? "Hide" : "Show"}
-                    </Button>
-                  </div>
-                  {showQR && (
-                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-2 mt-3">
-                      <div className="bg-white p-4 rounded-xl shadow-inner">
-                        <QRCodeSVG value={`${window.location.origin}/staff?customer=${userId}`} size={160} bgColor="#ffffff" fgColor="#1a1a1a" level="M" />
-                      </div>
-                      <p className="text-[10px] text-muted-foreground">{profile?.name || "Member"}</p>
-                    </motion.div>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {/* Birthday CTA */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-            <Card className="mb-6 border-warm-gold bg-warm-gold/5">
-              <CardContent className="py-4 flex items-center gap-4">
-                <Cake className="w-8 h-8 text-warm-gold flex-shrink-0" />
-                <div className="flex-1">
-                  <h3 className="font-display text-base font-bold text-foreground">🎂 Birthday Spin</h3>
-                  <p className="text-xs text-muted-foreground">Spin for a free prize at any location!</p>
-                </div>
+          {/* Sign Out */}
+          <div className="text-center pt-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground text-xs"
+              onClick={async () => {
+                await supabase.auth.signOut();
+                navigate("/login");
+              }}
+            >
+              <LogOut className="w-3 h-3 mr-1" /> Sign Out
+            </Button>
+          </div>
                 <Button asChild size="sm" className="bg-warm-gold hover:bg-warm-gold/90 text-secondary">
                   <Link to="/birthday">Spin</Link>
                 </Button>
