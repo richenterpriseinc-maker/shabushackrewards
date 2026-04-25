@@ -92,22 +92,23 @@ const LocationsPage = () => (
                     <span className="font-medium">{loc.perk}</span>
                   </div>
 
-                  <div className="flex gap-2 pt-1">
-                    <Button asChild variant="outline" size="sm" className="flex-1 h-9">
+                  <div className="grid grid-cols-2 gap-2 pt-1">
+                    <Button asChild variant="outline" size="sm" className="h-10">
                       <a href={loc.mapUrl} target="_blank" rel="noopener noreferrer">
-                        <MapPin className="w-3.5 h-3.5 mr-1.5" />
+                        <MapPin className="w-4 h-4 mr-1.5" />
                         Directions
                       </a>
                     </Button>
-                    <Button asChild variant="outline" size="sm" className="flex-1 h-9">
+                    <Button asChild variant="outline" size="sm" className="h-10">
                       <a href={`tel:${loc.phone.replace(/\D/g, "")}`}>
-                        <Phone className="w-3.5 h-3.5 mr-1.5" />
+                        <Phone className="w-4 h-4 mr-1.5" />
                         Call
                       </a>
                     </Button>
-                    <Button asChild variant="ghost" size="sm" className="h-9 px-3">
-                      <a href={loc.yelpUrl} target="_blank" rel="noopener noreferrer" aria-label="View on Yelp">
-                        <ExternalLink className="w-3.5 h-3.5" />
+                    <Button asChild variant="ghost" size="sm" className="h-10 col-span-2 text-xs text-muted-foreground hover:text-foreground">
+                      <a href={loc.yelpUrl} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
+                        View on Yelp
                       </a>
                     </Button>
                   </div>
