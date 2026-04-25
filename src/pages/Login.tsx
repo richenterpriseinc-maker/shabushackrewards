@@ -99,7 +99,7 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-background pb-mobile-nav md:pb-0">
       <Navbar />
-      <main className="container mx-auto px-4 py-12 flex flex-col items-center justify-center min-h-[75vh]">
+      <main className="container mx-auto px-5 pt-20 pb-10 md:py-12 flex flex-col items-center justify-start md:justify-center md:min-h-[75vh]">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -107,9 +107,9 @@ const Login = () => {
           className="w-full max-w-sm text-center"
         >
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="font-display text-3xl font-bold text-foreground tracking-wider mb-2">
-              {isSignUp ? "CREATE YOUR ACCOUNT" : "WELCOME BACK"}
+          <div className="mb-7">
+            <h1 className="font-display text-[28px] sm:text-3xl font-bold text-foreground tracking-wider mb-2 leading-tight">
+              {isSignUp ? "CREATE ACCOUNT" : "WELCOME BACK"}
             </h1>
             <p className="text-muted-foreground text-sm">
               {isSignUp ? "Join free. Earn XP. Get free entrées." : "Sign in to check your rewards."}
@@ -117,11 +117,11 @@ const Login = () => {
           </div>
 
           {/* Quick perks */}
-          <div className="flex justify-center gap-6 mb-8 text-xs text-muted-foreground">
+          <div className="flex justify-center gap-5 sm:gap-6 mb-7 text-xs text-muted-foreground">
             {[
               { icon: Star, label: "Earn XP" },
               { icon: Utensils, label: "Free Entrées" },
-              { icon: Gift, label: "Birthday Rewards" },
+              { icon: Gift, label: "Birthday" },
             ].map((p) => (
               <div key={p.label} className="flex flex-col items-center gap-1">
                 <p.icon className="w-5 h-5 text-primary" />

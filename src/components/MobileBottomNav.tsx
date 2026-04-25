@@ -22,7 +22,7 @@ const MobileBottomNav = () => {
       ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-secondary/95 backdrop-blur-md border-t border-border safe-bottom" style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}>
+    <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-secondary/95 backdrop-blur-md border-t border-border safe-bottom shadow-[0_-2px_10px_rgba(0,0,0,0.06)]">
       <div className="flex items-stretch justify-around">
         {navItems.map((item) => {
           const isActive = pathname === item.to || (item.to !== "/" && pathname.startsWith(item.to));
