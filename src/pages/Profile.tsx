@@ -121,10 +121,10 @@ const Profile = () => {
         >
           <Button
             variant="ghost"
-            className="mb-4 gap-2 text-muted-foreground"
-            onClick={() => navigate("/rewards")}
+            className="mb-4 gap-2 text-muted-foreground -ml-2"
+            onClick={() => navigate(-1)}
           >
-            <ArrowLeft className="w-4 h-4" /> Back to Rewards
+            <ArrowLeft className="w-4 h-4" /> Back
           </Button>
 
           <Card className="border-primary/20">
