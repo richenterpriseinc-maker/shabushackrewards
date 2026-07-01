@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Sparkles, Cake, Crown, Loader2 } from "lucide-react";
+import { MapPin, Loader2, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,28 +20,6 @@ interface Promo {
   location_name?: string;
 }
 
-// Curated evergreen perks shown when no live DB promotions exist.
-const EVERGREEN_PERKS = [
-  {
-    icon: Sparkles,
-    title: "Earn 50 XP every visit",
-    description: "Show your QR code at checkout. Reach 500 XP and we'll comp you a free entrée.",
-    badge: "Always on",
-  },
-  {
-    icon: Cake,
-    title: "Birthday Spin",
-    description: "It's your birthday month? Spin the wheel in-store for a guaranteed prize.",
-    badge: "Birthday month",
-    cta: { label: "Spin now", to: "/birthday" },
-  },
-  {
-    icon: Crown,
-    title: "VIP Multiplier",
-    description: "VIP members earn 2× XP on every visit and unlock exclusive monthly perks.",
-    badge: "VIP",
-  },
-];
 
 const DealsPage = () => {
   const [promos, setPromos] = useState<Promo[]>([]);
