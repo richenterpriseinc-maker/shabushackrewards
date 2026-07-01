@@ -170,39 +170,48 @@ export type Database = {
       locations: {
         Row: {
           address: string
+          badge: string | null
           city: string
           created_at: string
           hours: string | null
           id: string
           is_active: boolean
           name: string
+          perk: string | null
           phone: string | null
           pin_code: string | null
           updated_at: string
+          yelp_url: string | null
         }
         Insert: {
           address: string
+          badge?: string | null
           city: string
           created_at?: string
           hours?: string | null
           id?: string
           is_active?: boolean
           name: string
+          perk?: string | null
           phone?: string | null
           pin_code?: string | null
           updated_at?: string
+          yelp_url?: string | null
         }
         Update: {
           address?: string
+          badge?: string | null
           city?: string
           created_at?: string
           hours?: string | null
           id?: string
           is_active?: boolean
           name?: string
+          perk?: string | null
           phone?: string | null
           pin_code?: string | null
           updated_at?: string
+          yelp_url?: string | null
         }
         Relationships: []
       }
