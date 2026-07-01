@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MapPin, Sparkles, Cake, Crown, Loader2 } from "lucide-react";
+import { MapPin, Loader2, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,28 +20,6 @@ interface Promo {
   location_name?: string;
 }
 
-// Curated evergreen perks shown when no live DB promotions exist.
-const EVERGREEN_PERKS = [
-  {
-    icon: Sparkles,
-    title: "Earn 50 XP every visit",
-    description: "Show your QR code at checkout. Reach 500 XP and we'll comp you a free entrée.",
-    badge: "Always on",
-  },
-  {
-    icon: Cake,
-    title: "Birthday Spin",
-    description: "It's your birthday month? Spin the wheel in-store for a guaranteed prize.",
-    badge: "Birthday month",
-    cta: { label: "Spin now", to: "/birthday" },
-  },
-  {
-    icon: Crown,
-    title: "VIP Multiplier",
-    description: "VIP members earn 2× XP on every visit and unlock exclusive monthly perks.",
-    badge: "VIP",
-  },
-];
 
 const DealsPage = () => {
   const [promos, setPromos] = useState<Promo[]>([]);
@@ -126,50 +104,12 @@ const DealsPage = () => {
             </section>
           ) : null}
 
-          {/* Evergreen perks */}
-          <section>
-            <h2 className="font-display text-sm tracking-[0.2em] uppercase text-muted-foreground mb-3">
-              Member perks
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {EVERGREEN_PERKS.map((perk, i) => (
-                <motion.div
-                  key={perk.title}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Card className="border-border h-full hover:border-primary/40 transition-colors">
-                    <CardContent className="py-5">
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <perk.icon className="w-5 h-5 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between gap-2 mb-1">
-                            <h3 className="font-display text-lg tracking-wide leading-none">
-                              {perk.title}
-                            </h3>
-                            <Badge variant="secondary" className="text-[10px] flex-shrink-0">
-                              {perk.badge}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground leading-snug">
-                            {perk.description}
-                          </p>
-                          {perk.cta && (
-                            <Button asChild size="sm" variant="outline" className="mt-3 h-8">
-                              <Link to={perk.cta.to}>{perk.cta.label}</Link>
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+          {!loading && promos.length === 0 && (
+            <div className="text-center py-12 text-muted-foreground text-sm flex flex-col items-center gap-2">
+              <Sparkles className="w-6 h-6 text-primary" />
+              No active promotions right now — check back soon.
             </div>
-          </section>
+          )}
 
           {/* CTA */}
           <div className="mt-10 text-center">
