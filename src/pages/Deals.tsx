@@ -104,50 +104,12 @@ const DealsPage = () => {
             </section>
           ) : null}
 
-          {/* Evergreen perks */}
-          <section>
-            <h2 className="font-display text-sm tracking-[0.2em] uppercase text-muted-foreground mb-3">
-              Member perks
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {EVERGREEN_PERKS.map((perk, i) => (
-                <motion.div
-                  key={perk.title}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                >
-                  <Card className="border-border h-full hover:border-primary/40 transition-colors">
-                    <CardContent className="py-5">
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                          <perk.icon className="w-5 h-5 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between gap-2 mb-1">
-                            <h3 className="font-display text-lg tracking-wide leading-none">
-                              {perk.title}
-                            </h3>
-                            <Badge variant="secondary" className="text-[10px] flex-shrink-0">
-                              {perk.badge}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground leading-snug">
-                            {perk.description}
-                          </p>
-                          {perk.cta && (
-                            <Button asChild size="sm" variant="outline" className="mt-3 h-8">
-                              <Link to={perk.cta.to}>{perk.cta.label}</Link>
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
+          {!loading && promos.length === 0 && (
+            <div className="text-center py-12 text-muted-foreground text-sm flex flex-col items-center gap-2">
+              <Sparkles className="w-6 h-6 text-primary" />
+              No active promotions right now — check back soon.
             </div>
-          </section>
+          )}
 
           {/* CTA */}
           <div className="mt-10 text-center">
