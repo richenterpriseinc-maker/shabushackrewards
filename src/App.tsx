@@ -1,79 +1,10 @@
-import { useEffect } from "react";
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
-import Index from "./pages/Index";
+import RetiredRedirect from "./pages/RetiredRedirect";
 
-import Locations from "./pages/Locations";
-import Deals from "./pages/Deals";
-import Rewards from "./pages/Rewards";
-import Join from "./pages/Join";
-import BirthdayWheel from "./pages/BirthdayWheel";
-import Login from "./pages/Login";
-import OwnerDashboard from "./pages/OwnerDashboard";
-import StaffPanel from "./pages/StaffPanel";
-import ResetPassword from "./pages/ResetPassword";
-import Profile from "./pages/Profile";
-import Dashboard from "./pages/Dashboard";
-import AdminDashboard from "./pages/AdminDashboard";
-import Install from "./pages/Install";
-import NotFound from "./pages/NotFound";
-import ScrollToTop from "./components/ScrollToTop";
-import MobileBottomNav from "./components/MobileBottomNav";
-import RequireAuth from "./components/RequireAuth";
-
-const queryClient = new QueryClient();
-
-/** Listens for OAuth sign-in at app level so Google SSO redirects work from any page */
-function AuthRedirectHandler() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session && location.pathname !== "/dashboard") {
-        navigate("/dashboard", { replace: true });
-      }
-    });
-    return () => subscription.unsubscribe();
-  }, [navigate, location.pathname]);
-
-  return null;
-}
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthRedirectHandler />
-        <ScrollToTop />
-        <Routes>
-          <Route path="/" element={<Index />} />
-          
-          <Route path="/locations" element={<Locations />} />
-          <Route path="/deals" element={<Deals />} />
-          <Route path="/rewards" element={<Rewards />} />
-          <Route path="/join" element={<Join />} />
-          <Route path="/birthday" element={<BirthdayWheel />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/owner" element={<RequireAuth><OwnerDashboard /></RequireAuth>} />
-          <Route path="/staff" element={<StaffPanel />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
-          <Route path="/dashboard" element={<RequireAuth><Dashboard /></RequireAuth>} />
-          <Route path="/admin" element={<RequireAuth><AdminDashboard /></RequireAuth>} />
-          <Route path="/install" element={<Install />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <MobileBottomNav />
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+/**
+ * This app has been retired — the rewards program now lives at
+ * shabushack.com/rewards. Every route renders the redirect screen.
+ * Database, edge functions, and existing source files are left intact.
+ */
+const App = () => <RetiredRedirect />;
 
 export default App;
